@@ -4,3 +4,4 @@ swtch.s
 *.coff
 deps.mk
 tags
+.clang
