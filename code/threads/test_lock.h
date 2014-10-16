@@ -1,4 +1,5 @@
 #include "synch.h"
+#include "system.h"
 
 #ifndef TEST_LOCK_H
 #define TEST_LOCK_H
