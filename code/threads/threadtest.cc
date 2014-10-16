@@ -71,6 +71,9 @@ ThreadTest()
     case 11:
     	test_single_lock();
     	break;
+    case 12:
+    	test_holder();
+    	break;
     default:
         printf("No test specified.\n");
         break;

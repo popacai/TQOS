@@ -108,6 +108,7 @@ Lock::Lock(char* debugName) {
 
 	this->queue = new List();
 	this->held = false;
+	this->holder = NULL;
 }
 Lock::~Lock() {
 	delete this->name;
@@ -128,7 +129,9 @@ void Lock::Acquire() {
     	this->queue->Append(currentThread);
     	currentThread->Sleep();
     }
+    ASSERT(this->holder == NULL);
     this->held = true;
+    this->holder = currentThread;
     (void) interrupt->SetLevel(oldLevel);
 }
 
@@ -137,17 +140,18 @@ void Lock::Release() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     if (!this->queue->IsEmpty()){
-    	ASSERT (this->held == true);  //This should be always true
+    	ASSERT (this->held);  //This should be always true
+    	ASSERT (this->holder)
         thread = (Thread *)this->queue->Remove();
         scheduler->ReadyToRun(thread);
     }
     this->held = false;
+    this->holder = NULL;
     (void) interrupt->SetLevel(oldLevel);
 }
 
 bool Lock::isHeldByCurrentThread() {
-	ASSERT (false);
-	return false;
+	return (this->holder == currentThread && this->held == true);
 }
 
 Condition::Condition(char* debugName) { }

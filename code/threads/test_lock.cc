@@ -24,21 +24,33 @@ void lock_and_increase(int arg) {
 	Lock* lock = (Lock*) args[0];
 	int* value = (int*) args[1];
 
+	int first_value_in_loop;
+	int second_value_in_loop;
+
 	for (int i = 0; i < 10; i++) {
         lock->Acquire();
         (*value)++;
         printf("currentThread=%s,%d\n", currentThread->getName(), *value);
+        first_value_in_loop = *value;
+
 	    currentThread->Yield();
         (*value)++;
         printf("currentThread=%s,%d\n", currentThread->getName(), *value);
+        second_value_in_loop = *value;
+        ASSERT(second_value_in_loop == first_value_in_loop + 1);
+
         lock->Release();
 	    currentThread->Yield();
-        printf("currentThread=%s,%d\n", currentThread->getName(), *value);
-        //ASSERT, value % 2 == 0
 	}
 }
 
 int test_single_lock() {
+	/*
+	 * Create 3 threads. which may yield in / out the critical section.
+	 * Without the lock. The value will be increased by two by different threads
+	 * With the lock. The value will be increased by two by one thread
+	 */
+
 	Lock *lock = new Lock("simplelock");
 	int* value = new int;
 
@@ -56,3 +68,27 @@ int test_single_lock() {
 	return 1;
 }
 
+void i_am_not_holder(int arg) {
+	Lock* lock = (Lock*) arg;
+	printf("currentThread=%s, lock->is_held_by_current=%d\n", \
+			currentThread->getName(), lock->isHeldByCurrentThread());
+	ASSERT(lock->isHeldByCurrentThread() == false);
+	currentThread->Yield();
+}
+
+int test_holder() {
+	Lock *lock = new Lock("simplelock");
+	int args = (int)lock;
+
+	Thread* t = new Thread("not holder");
+	lock->Acquire();
+	t->Fork(i_am_not_holder, args);
+
+	printf("currentThread=%s, lock->is_held_by_current=%d\n",
+			currentThread->getName(), lock->isHeldByCurrentThread());
+	ASSERT (lock->isHeldByCurrentThread() == true);
+	for (int i = 0; i < 10; i++){
+        currentThread->Yield();
+	}
+	return 1;
+}
