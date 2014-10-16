@@ -111,6 +111,14 @@ Lock::Lock(char* debugName) {
 }
 Lock::~Lock() {
 	delete this->name;
+
+	// TODO: need to verify what's the behavior of delete the lock which is helded
+    Thread *thread;
+	while (!this->queue->IsEmpty()){
+        thread = (Thread *)this->queue->Remove();
+        scheduler->ReadyToRun(thread);
+	}
+
 	delete this->queue;
 }
 
@@ -129,6 +137,7 @@ void Lock::Release() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     if (!this->queue->IsEmpty()){
+    	ASSERT (this->held == true);  //This should be always true
         thread = (Thread *)this->queue->Remove();
         scheduler->ReadyToRun(thread);
     }
