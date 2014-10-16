@@ -24,6 +24,7 @@
 #include "copyright.h"
 #include "synch.h"
 #include "system.h"
+#include <string.h>
 
 //----------------------------------------------------------------------
 // Semaphore::Semaphore
@@ -100,8 +101,18 @@ Semaphore::V()
 // Dummy functions -- so we can compile our later assignments
 // Note -- without a correct implementation of Condition::Wait(),
 // the test case in the network assignment won't work!
-Lock::Lock(char* debugName) {}
-Lock::~Lock() {}
+Lock::Lock(char* debugName) {
+	int stringLength = strlen(debugName);
+	this->name = new char[stringLength + 1];
+	strcpy(this->name, debugName);
+
+	this->queue = new List();
+}
+Lock::~Lock() {
+	delete this->name;
+	delete this->queue;
+}
+
 void Lock::Acquire() {}
 void Lock::Release() {}
 bool Lock::isHeldByCurrentThread() {
