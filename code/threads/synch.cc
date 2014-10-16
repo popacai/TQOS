@@ -142,6 +142,7 @@ void Lock::Release() {
     if (!this->queue->IsEmpty()){
     	ASSERT (this->held);  //This should be always true
     	ASSERT (this->holder)
+    	ASSERT (this->holder == currentThread);  //Only the thread that acquire the lock may release it?
         thread = (Thread *)this->queue->Remove();
         scheduler->ReadyToRun(thread);
     }
@@ -151,13 +152,45 @@ void Lock::Release() {
 }
 
 bool Lock::isHeldByCurrentThread() {
-	return (this->holder == currentThread && this->held == true);
+	bool flag;
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+	if (!this->held && this->holder == NULL)
+		flag = false;
+	else
+		flag = this->holder == currentThread && this->held == true;
+    (void) interrupt->SetLevel(oldLevel);
+	return flag;
 }
 
-Condition::Condition(char* debugName) { }
-Condition::~Condition() { }
-void Condition::Wait(Lock* conditionLock) {
-    ASSERT(FALSE);
+Condition::Condition(char* debugName) {
+	int stringLength = strlen(debugName);
+	this->name = new char[stringLength + 1];
+	strcpy(this->name, debugName);
+
+	this->queue = new List;
 }
-void Condition::Signal(Lock* conditionLock) { }
+
+Condition::~Condition() {
+	delete this->name;
+
+	//TODO: Do we need to empty the queue?
+	delete this->queue;
+}
+
+void Condition::Wait(Lock* conditionLock) {
+	ASSERT (conditionLock->isHeldByCurrentThread());
+	this->queue->Append(currentThread);
+	conditionLock->Release();
+    currentThread->Sleep();
+}
+
+void Condition::Signal(Lock* conditionLock) {
+	ASSERT (conditionLock->isHeldByCurrentThread());
+
+	Thread* thread;
+	if (!this->queue->IsEmpty()) {
+        thread = (Thread*)this->queue->Remove();
+        scheduler->ReadyToRun(thread);
+	}
+}
 void Condition::Broadcast(Lock* conditionLock) { }
