@@ -104,6 +104,10 @@ Lock::Lock(char* debugName) {}
 Lock::~Lock() {}
 void Lock::Acquire() {}
 void Lock::Release() {}
+bool Lock::isHeldByCurrentThread() {
+	ASSERT (false);
+	return false;
+}
 
 Condition::Condition(char* debugName) { }
 Condition::~Condition() { }
