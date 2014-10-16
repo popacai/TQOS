@@ -114,16 +114,11 @@ Lock::~Lock() {
 }
 
 void Lock::Acquire() {
-	int* a = new int;
-	this->queue->Append(a);
 }
 
 void Lock::Release() {
-	int* b;
-	b = (int*)this->queue->Remove();
-	printf("%d\n", *b);
-	delete b;
 }
+
 bool Lock::isHeldByCurrentThread() {
 	ASSERT (false);
 	return false;
