@@ -107,6 +107,7 @@ Lock::Lock(char* debugName) {
 	strcpy(this->name, debugName);
 
 	this->queue = new List();
+	this->held = false;
 }
 Lock::~Lock() {
 	delete this->name;
@@ -114,9 +115,25 @@ Lock::~Lock() {
 }
 
 void Lock::Acquire() {
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+    if (this->held){
+    	this->queue->Append(currentThread);
+    	currentThread->Sleep();
+    }
+    this->held = true;
+    (void) interrupt->SetLevel(oldLevel);
 }
 
 void Lock::Release() {
+    Thread *thread;
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+
+    if (!this->queue->IsEmpty()){
+        thread = (Thread *)this->queue->Remove();
+        scheduler->ReadyToRun(thread);
+    }
+    this->held = false;
+    (void) interrupt->SetLevel(oldLevel);
 }
 
 bool Lock::isHeldByCurrentThread() {

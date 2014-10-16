@@ -86,6 +86,7 @@ private:
     // plus some other stuff you'll need to define
 
     List *queue; //Queue to store the waiting threads >_<!!!!
+    bool held;
 };
 
 // The following class defines a "condition variable".  A condition
