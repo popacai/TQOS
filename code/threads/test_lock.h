@@ -4,6 +4,7 @@
 #ifndef TEST_LOCK_H
 #define TEST_LOCK_H
 
-int test_mock_lock();
+int test_pass_arguments();
+int test_single_lock();
 
 #endif

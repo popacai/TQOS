@@ -8,11 +8,17 @@ void runThread(int args) {
 	ASSERT(strcmp(name, "simplelock") == 0);
 }
 
-int test_mock_lock() {
+int test_pass_arguments() {
 	Lock *lock1 = new Lock("simplelock");
-	Thread *t = new Thread("t1");
-	t->Fork(runThread, (int)lock1);
+    Thread *t = new Thread("t1");
+
+
+    t->Fork(runThread, (int)lock1);
 	runThread((int)lock1);
+	return 1;
+}
+
+int test_single_lock() {
 	return 1;
 }
 

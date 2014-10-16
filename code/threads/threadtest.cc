@@ -66,7 +66,10 @@ ThreadTest()
         ThreadTest1();
         break;
     case 10:
-    	test_mock_lock();
+    	test_pass_arguments();
+    	break;
+    case 11:
+    	test_single_lock();
     	break;
     default:
         printf("No test specified.\n");
