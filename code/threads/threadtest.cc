@@ -11,6 +11,7 @@
 
 #include "copyright.h"
 #include "system.h"
+#include "test_lock.h"
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -64,6 +65,9 @@ ThreadTest()
     case 1:
         ThreadTest1();
         break;
+    case 10:
+    	test_mock_lock();
+    	break;
     default:
         printf("No test specified.\n");
         break;
