@@ -12,6 +12,7 @@
 #include "copyright.h"
 #include "system.h"
 #include "test_lock.h"
+#include "test_cond.h"
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -73,6 +74,9 @@ ThreadTest()
     	break;
     case 12:
     	test_holder();
+    	break;
+    case 31:
+    	test_single_cond();
     	break;
     default:
         printf("No test specified.\n");

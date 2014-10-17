@@ -172,6 +172,8 @@ Condition::~Condition() {
 	delete this->name;
 
 	//TODO: Do we need to empty the queue?
+	ASSERT (!this->queue->IsEmpty());
+
 	delete this->queue;
 }
 
@@ -180,6 +182,8 @@ void Condition::Wait(Lock* conditionLock) {
 	this->queue->Append(currentThread);
 	conditionLock->Release();
     currentThread->Sleep();
+    printf("1\n");
+    conditionLock->Acquire();
 }
 
 void Condition::Signal(Lock* conditionLock) {
