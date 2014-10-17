@@ -126,6 +126,7 @@ Lock::~Lock() {
 void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     if (this->held){
+        printf("In the acquire func Current thread name is %s\n",currentThread->getName());
     	this->queue->Append(currentThread);
     	currentThread->Sleep();
     }
