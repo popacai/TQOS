@@ -110,22 +110,21 @@ Lock::Lock(char* debugName) {
 	this->held = false;
 	this->holder = NULL;
 }
+
 Lock::~Lock() {
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+	ASSERT (this->held == false);
+
 	delete this->name;
-
-	// TODO: need to verify what's the behavior of delete the lock which is helded
-    Thread *thread;
-	while (!this->queue->IsEmpty()){
-        thread = (Thread *)this->queue->Remove();
-        scheduler->ReadyToRun(thread);
-	}
-
 	delete this->queue;
+
+    (void) interrupt->SetLevel(oldLevel);
 }
 
 void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-    if (this->held){
+    if (this->held) {
+    	ASSERT (this->holder != currentThread);  //Single thread can't acquire twice
     	this->queue->Append(currentThread);
     	currentThread->Sleep();
     }
@@ -139,13 +138,15 @@ void Lock::Release() {
     Thread *thread;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
+    ASSERT (this->held);  //This should be always true
+    ASSERT (this->holder)
+    ASSERT (this->holder == currentThread);  //Only the thread that acquire the lock may release it?
+
     if (!this->queue->IsEmpty()){
-    	ASSERT (this->held);  //This should be always true
-    	ASSERT (this->holder)
-    	ASSERT (this->holder == currentThread);  //Only the thread that acquire the lock may release it?
         thread = (Thread *)this->queue->Remove();
         scheduler->ReadyToRun(thread);
     }
+
     this->held = false;
     this->holder = NULL;
     (void) interrupt->SetLevel(oldLevel);
@@ -154,10 +155,7 @@ void Lock::Release() {
 bool Lock::isHeldByCurrentThread() {
 	bool flag;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-	if (!this->held && this->holder == NULL)
-		flag = false;
-	else
-		flag = this->holder == currentThread && this->held == true;
+    flag = this->holder == currentThread && this->held == true;
     (void) interrupt->SetLevel(oldLevel);
 	return flag;
 }
@@ -193,4 +191,7 @@ void Condition::Signal(Lock* conditionLock) {
         scheduler->ReadyToRun(thread);
 	}
 }
-void Condition::Broadcast(Lock* conditionLock) { }
+
+void Condition::Broadcast(Lock* conditionLock) {
+
+}
