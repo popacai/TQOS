@@ -9,7 +9,7 @@ void run_thread_v(int args){
     }
     currentThread->Yield();
     semaphore->V();
-    printf("currentThread=%s is %s, %d\n", currentThread->getName(),"producer",semaphore->getValue());
+    printf("currentThread=%s is %s,%d\n", currentThread->getName(),"producer",semaphore->getValue());
     currentThread->Yield();
 }
 
