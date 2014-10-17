@@ -12,12 +12,8 @@
 #include "copyright.h"
 #include "system.h"
 #include "test_lock.h"
-<<<<<<< HEAD
 #include "test_cond.h"
-=======
 #include "test_semaphore.h"
-
->>>>>>> 97a81fec8ceb518308778db5fbfae15e3c6b1769
 
 // testnum is set in main.cc
 int testnum = 1;
