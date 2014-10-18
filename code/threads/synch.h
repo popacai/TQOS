@@ -43,9 +43,11 @@ public:
     char* getName() {
         return name;   // debugging assist
     }
-    int getvalue() {
+
+    int getValue(){
         return value;
     }
+
     void P();	 // these are the only operations on a semaphore
     void V();	 // they are both *atomic*
 

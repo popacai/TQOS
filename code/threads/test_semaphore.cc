@@ -1,44 +1,36 @@
 #include "test_semaphore.h"
 
-void produce(int arg){
-    int* args = (int*) arg;
-    
+
+void run_thread_v(int args){
+    // execute semaphore V()
     Semaphore* semaphore = (Semaphore*) args;
-    
     for (int i=0; i<2; i++){
         semaphore->V();
-        printf("currentThread=%s,%d\n", currentThread->getName(), semaphore->getvalue());
+        printf("currentThread=%s is %s,%d\n", currentThread->getName(),"producer",semaphore->getValue());
     }
-
     currentThread->Yield();
-    
     semaphore->V();
-    printf("currentThread=%s,%d\n", currentThread->getName(), semaphore->getvalue());
-
-    currentThread->Yield();    
+    printf("currentThread=%s is %s,%d\n", currentThread->getName(),"producer",semaphore->getValue());
+    currentThread->Yield();
 }
 
-void consume(int arg){    
-    int* args = (int*) arg;
-
+void run_thread_p(int args){
+    // execute semaphore P()
     Semaphore* semaphore = (Semaphore*) args;
-
     for (int i=0; i<3; i++){
         semaphore->P();
-        printf("currentThread=%s,%d\n", currentThread->getName(), semaphore->getvalue());
+        printf("currentThread=%s is %s,%d\n", currentThread->getName(),"consumer",semaphore->getValue());
     }
-    
-    currentThread->Yield();
+    printf("Test Finish!");
 }
 
 int test_semaphore(){
-    Semaphore *semaphore = new Semaphore("simplesemaphore", 0);
-    int args = (int)semaphore;
-    
-    Thread* t= new Thread("producer");
-    t->Fork(produce, args);
-   
-    t = new Thread("consumer");
-    t->Fork(consume, args);
+    Semaphore* semaphore1 = new Semaphore("simplesemaphore",0);
+
+    Thread *t1 = new Thread("t1");
+    t1->Fork(run_thread_v, (int)semaphore1);
+
+    Thread *t2 = new Thread("t2");
+    t2->Fork(run_thread_p, (int)semaphore1);
     return 1;
-}
+}    

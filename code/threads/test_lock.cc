@@ -1,4 +1,34 @@
 #include "test_lock.h"
+void release_not_held_lock(int args){
+    Lock* lock = (Lock*) args;
+    printf("Current lock name is %s\n",lock->getName());
+    printf("Current thread name is %s\n",currentThread->getName());
+    if (!lock->isHeldByCurrentThread()){
+        printf("release a lock not acquire by both threads!\n");
+        lock->Release();
+    }
+    //currentThread->Yield();   
+}
+
+void test_release_not_held(){
+    Lock* lock = new Lock("lock_not_held");
+    Thread* t = new Thread("t3");
+    printf("Current lock name is %s\n",lock->getName());
+    printf("Current thread name is %s\n",currentThread->getName());    
+    release_not_held_lock((int)lock);
+    printf("Process B release a lock have never been held\n");
+    lock->Acquire();
+    printf("Process A has already aquire this lock\n");   // test for some thread first release the lock
+    t->Fork(release_not_held_lock, (int)lock);
+    // The process B has release the lock, since the queue is empty for the lock, it will successfully acquire twice for Process A
+    currentThread->Yield();
+    // If no Yield(), the parents will acquire the lock twice and append to the queue
+    // The current code in Lock::Release will check "ASSERT" the holder of lock, Process B cannot release  
+    lock->Acquire();
+    printf("Process A aquires the same lock twice\n");
+    currentThread->Yield();
+}    
+
 
 void runThread(int args) {
     Lock* lock = (Lock*) args;
