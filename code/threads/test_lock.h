@@ -7,5 +7,6 @@
 int test_pass_arguments();
 int test_single_lock();
 int test_holder();
+int test_delete();
 
 #endif

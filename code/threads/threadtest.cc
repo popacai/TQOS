@@ -12,6 +12,7 @@
 #include "copyright.h"
 #include "system.h"
 #include "test_lock.h"
+#include "test_semaphore.h"
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -74,6 +75,9 @@ ThreadTest()
     case 12:
     	test_holder();
     	break;
+    case 21:
+        test_delete();
+        break;
     default:
         printf("No test specified.\n");
         break;
