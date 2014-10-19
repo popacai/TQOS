@@ -1,5 +1,6 @@
 #include "test_semaphore.h"
 
+
 void run_thread_v(int args){
     // execute semaphore V()
     Semaphore* semaphore = (Semaphore*) args;

@@ -80,6 +80,9 @@ ThreadTest()
     case 12:
     	test_holder();
     	break;
+    case 21:
+        test_delete();
+        break;
     case 22:
         test_release_not_held();
         break;

@@ -43,6 +43,7 @@ public:
     char* getName() {
         return name;   // debugging assist
     }
+
     int getValue(){
         return value;
     }

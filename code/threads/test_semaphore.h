@@ -9,4 +9,6 @@ int test_semaphore();
 void run_thread_p();
 void run_thread_v();
 
+int test_semaphore();
+
 #endif
