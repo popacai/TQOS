@@ -14,6 +14,7 @@
 #include "test_lock.h"
 #include "test_cond.h"
 #include "test_semaphore.h"
+#include "test_whale.h"
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -84,6 +85,9 @@ ThreadTest()
         break;
     case 31:
     	test_single_cond();
+    	break;
+    case 100:
+    	test_simple_whale();
     	break;
     default:
         printf("No test specified.\n");

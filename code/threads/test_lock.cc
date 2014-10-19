@@ -1,5 +1,7 @@
 #include "test_lock.h"
-void release_not_held_lock(int args){
+
+
+void release_not_held_lock(int args) {
     Lock* lock = (Lock*) args;
     printf("Current lock name is %s\n",lock->getName());
     printf("Current thread name is %s\n",currentThread->getName());
@@ -10,7 +12,7 @@ void release_not_held_lock(int args){
     //currentThread->Yield();   
 }
 
-void test_release_not_held(){
+void test_release_not_held() {
     Lock* lock = new Lock("lock_not_held");
     Thread* t = new Thread("t3");
     printf("Current lock name is %s\n",lock->getName());
@@ -60,12 +62,12 @@ void lock_and_increase(int arg) {
 	for (int i = 0; i < 10; i++) {
         lock->Acquire();
         (*value)++;
-        printf("currentThread=%s,%d\n", currentThread->getName(), *value);
+        // printf("currentThread=%s,%d\n", currentThread->getName(), *value);
         first_value_in_loop = *value;
 
 	    currentThread->Yield();
         (*value)++;
-        printf("currentThread=%s,%d\n", currentThread->getName(), *value);
+		// printf("currentThread=%s,%d\n", currentThread->getName(), *value);
         second_value_in_loop = *value;
         ASSERT(second_value_in_loop == first_value_in_loop + 1);
 
