@@ -142,7 +142,9 @@ public:
     void Signal(Lock *conditionLock);   // conditionLock must be held by
     void Broadcast(Lock *conditionLock);// the currentThread for all of
     // these operations
-
+    bool waitqueue_isempty() {    //check whether the wait queue is empty
+        return (this->queue->IsEmpty());  //return true if the wait queue is empty
+    };
 private:
     char* name;
     // plus some other stuff you'll need to define

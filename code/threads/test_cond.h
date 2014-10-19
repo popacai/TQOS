@@ -6,5 +6,6 @@
 
 int test_single_cond();
 int test_nowaiter(int signal_or_broadcast);
+int test_broadcast_cond();
 
 #endif

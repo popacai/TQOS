@@ -86,6 +86,15 @@ ThreadTest()
     case 22:
         test_release_not_held();
         break;
+    case 23:
+        test_broadcast_cond();
+        break;       
+    case 24:
+        test_nowaiter(0); //signal with no waiter
+        break;
+    case 25:
+        test_nowaiter(1); //broadcast with no waiter
+        break;
     case 31:
     	test_single_cond();
     	break;
