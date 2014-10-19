@@ -12,6 +12,13 @@ Whale::Whale(char* debugName) {
 	*male = 0;
 	*female = 0;
 	*matcher = 0;
+
+	readyMale = new int;
+	readyFemale = new int;
+	readyMatcher = new int;
+	*readyMale = 0;
+	*readyFemale = 0;
+	*readyMatcher = 0;
 }
 
 Whale::~Whale() {
@@ -27,9 +34,6 @@ bool Whale::isMatch() {
 	if (*male > 0 && *female > 0 && *matcher > 0) {
 		return true;
 	} else {
-		(*male)--;
-		(*female)--;
-		(*matcher)--;
 		return false;
 	}
 }
@@ -38,10 +42,21 @@ void Whale::Male() {
 	this->lock->Acquire();
 
 	(*male)++;
-	this->match->Signal(lock);
-	while (!isMatch()) {
+	if (isMatch()) {
+		(*male)--;
+        (*female)--;
+        (*matcher)--;
+        (*readyMale)++;
+        (*readyFemale)++;
+        (*readyMatcher)++;
+        this->match->Broadcast(lock);
+	}
+
+	while ((*readyMale) > 0) {
 		this->match->Wait(lock);
 	}
+
+	(*readyMale)--;
 
 	this->lock->Release();
 }
@@ -49,21 +64,45 @@ void Whale::Male() {
 void Whale::Female() {
 	this->lock->Acquire();
 
-	(*female)++;
-	this->match->Signal(lock);
-	while (!isMatch()) {
+	(*male)++;
+	if (isMatch()) {
+		(*male)--;
+        (*female)--;
+        (*matcher)--;
+        (*readyMale)++;
+        (*readyFemale)++;
+        (*readyMatcher)++;
+        this->match->Broadcast(lock);
+	}
+
+	while ((*readyFemale) > 0) {
 		this->match->Wait(lock);
 	}
+
+	(*readyFemale)--;
+
 	this->lock->Release();
 }
 
 void Whale::Matchmaker() {
 	this->lock->Acquire();
 
-	(*matcher)++;
-	this->match->Signal(lock);
-	while (!isMatch()) {
+	(*male)++;
+	if (isMatch()) {
+		(*male)--;
+        (*female)--;
+        (*matcher)--;
+        (*readyMale)++;
+        (*readyFemale)++;
+        (*readyMatcher)++;
+        this->match->Broadcast(lock);
+	}
+
+	while ((*readyMatcher) > 0) {
 		this->match->Wait(lock);
 	}
+
+	(*readyMatcher)--;
+
 	this->lock->Release();
 }

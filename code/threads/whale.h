@@ -29,6 +29,10 @@ private:
     int* female;
     int* matcher;
 
+    int* readyMale;
+    int* readyFemale;
+    int* readyMatcher;
+
     Lock* lock;
 
 };
