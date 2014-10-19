@@ -200,5 +200,12 @@ void Condition::Signal(Lock* conditionLock) {
 }
 
 void Condition::Broadcast(Lock* conditionLock) {
-
+	ASSERT (conditionLock->isHeldByCurrentThread());
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+	Thread* thread;
+	while (!this->queue->IsEmpty()) {
+        thread = (Thread*)this->queue->Remove();
+        scheduler->ReadyToRun(thread);
+	}
+    (void) interrupt->SetLevel(oldLevel);
 }
