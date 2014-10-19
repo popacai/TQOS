@@ -4,21 +4,21 @@ void male(int arg) {
 	Whale* whale = (Whale*)arg;
 	whale->Male();
 	currentThread->Yield();
-	printf("matched\n");
+	printf("male matched\n");
 }
 
 void female(int arg) {
 	Whale* whale = (Whale*)arg;
 	whale->Female();
 	currentThread->Yield();
-	printf("matched\n");
+	printf("female matched\n");
 }
 
 void matcher(int arg) {
 	Whale* whale = (Whale*)arg;
 	whale->Matchmaker();
 	currentThread->Yield();
-	printf("matched\n");
+	printf("matcher matched\n");
 }
 
 int test_simple_whale() {
