@@ -31,7 +31,7 @@ Whale::~Whale() {
 bool Whale::isMatch() {
 	// Whether there is a match happened now.
 	ASSERT(lock->isHeldByCurrentThread());
-	if (*male > 0 && *female > 0 && *matcher > 0) {
+	if ((*male) > 0 && (*female) > 0 && (*matcher) > 0) {
 		return true;
 	} else {
 		return false;
@@ -52,7 +52,7 @@ void Whale::Male() {
         this->match->Broadcast(lock);
 	}
 
-	while ((*readyMale) > 0) {
+	while (!((*readyMale) > 0)) {
 		this->match->Wait(lock);
 	}
 
@@ -64,7 +64,7 @@ void Whale::Male() {
 void Whale::Female() {
 	this->lock->Acquire();
 
-	(*male)++;
+	(*female)++;
 	if (isMatch()) {
 		(*male)--;
         (*female)--;
@@ -75,7 +75,7 @@ void Whale::Female() {
         this->match->Broadcast(lock);
 	}
 
-	while ((*readyFemale) > 0) {
+	while (!((*readyFemale) > 0)) {
 		this->match->Wait(lock);
 	}
 
@@ -87,7 +87,7 @@ void Whale::Female() {
 void Whale::Matchmaker() {
 	this->lock->Acquire();
 
-	(*male)++;
+	(*matcher)++;
 	if (isMatch()) {
 		(*male)--;
         (*female)--;
@@ -98,7 +98,7 @@ void Whale::Matchmaker() {
         this->match->Broadcast(lock);
 	}
 
-	while ((*readyMatcher) > 0) {
+	while (!((*readyMatcher) > 0)) {
 		this->match->Wait(lock);
 	}
 

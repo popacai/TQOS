@@ -31,9 +31,13 @@ int test_simple_whale() {
 	int args = (int)whale;
 
 	t_male->Fork(male, args);
-	t_female->Fork(male, args);
-	t_matcher->Fork(male, args);
+	t_female->Fork(female, args);
+	t_matcher->Fork(matcher, args);
 
+	currentThread->Yield();
+	currentThread->Yield();
+	currentThread->Yield();
+	currentThread->Yield();
 	currentThread->Yield();
 	return 0;
 }
