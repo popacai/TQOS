@@ -101,6 +101,21 @@ ThreadTest()
     case 100:
     	test_simple_whale();
     	break;
+    case 101:
+        test_no_whale();
+        break;
+    case 102:
+        test_more_males();
+        break;
+    case 103:
+        test_more_males_and_females();
+        break;
+    case 104:
+        test_males_females_matchers();
+        break;
+    case 105:
+        test_random_whales();
+        break;
     default:
         printf("No test specified.\n");
         break;

@@ -172,7 +172,7 @@ Condition::~Condition() {
 	delete this->name;
 
 	//TODO: Do we need to empty the queue?
-	ASSERT (!this->queue->IsEmpty());
+	ASSERT (this->queue->IsEmpty());
 
 	delete this->queue;
 }
