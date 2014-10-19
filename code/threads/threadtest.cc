@@ -86,6 +86,9 @@ ThreadTest()
     case 22:
         test_release_not_held();
         break;
+    case 23:
+        test_broadcast_cond();
+        break;       
     case 31:
     	test_single_cond();
     	break;
