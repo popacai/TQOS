@@ -2,6 +2,7 @@
 
 void male(int arg) {
 	Whale* whale = (Whale*)arg;
+	currentThread->Yield();
 	whale->Male();
 	currentThread->Yield();
 	printf("male matched\n");
@@ -9,6 +10,7 @@ void male(int arg) {
 
 void female(int arg) {
 	Whale* whale = (Whale*)arg;
+	currentThread->Yield();
 	whale->Female();
 	currentThread->Yield();
 	printf("female matched\n");
@@ -16,7 +18,9 @@ void female(int arg) {
 
 void matcher(int arg) {
 	Whale* whale = (Whale*)arg;
+	currentThread->Yield();
 	whale->Matchmaker();
+	currentThread->Yield();
 	currentThread->Yield();
 	printf("matcher matched\n");
 }
