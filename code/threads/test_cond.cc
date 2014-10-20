@@ -102,3 +102,73 @@ int test_single_cond() {
 	currentThread->Yield();
 	return 1;
 }
+
+
+void broadcast_nowaiter(int _args) {
+    int* args = (int*) _args;
+    Lock* lock = (Lock*) args[0];
+    Condition* cond = (Condition*) args[1];
+    
+    lock->Acquire();
+    ASSERT (cond->waitqueue_isempty());
+    printf("Broadcast to all wait thread\n");
+    cond->Broadcast(lock);
+    lock->Release();
+}
+
+void signal_nowaiter(int _args) {
+	int* args = (int*) _args;
+	Lock* lock = (Lock*) args[0];
+	Condition* cond = (Condition*) args[1];
+
+	lock->Acquire();
+	printf("1\n");
+    ASSERT (cond->waitqueue_isempty());
+	cond->Signal(lock);
+	printf("2\n");
+	lock->Release();
+}
+
+int test_nowaiter(int signal_or_broadcast) {
+    /*
+     * Create 2 threads, 1 thread signal or broadcasting when there is no waiters,
+     * signal_or_broadcasting is 0 to test signal with no waiters
+     * signal_or_broadcasting is 1 to test broadcasting with no waiters
+     * Expect no-operation will be done,
+     * Then the other thread wait should be blocked
+     */
+    Lock *lock = new Lock("conditionlock");
+    Condition *cond = new Condition("condition");
+    int testchoice = signal_or_broadcast;
+    bool *resource_is_ready = new bool;
+    *resource_is_ready = false;
+
+    int* args = new int[3];
+    args[0] = (int)lock;
+    args[1] = (int)cond;
+    args[2] = (int)resource_is_ready;
+
+    Thread* t;
+    
+    if (testchoice==0) {
+        t = new Thread("signal");
+        t->Fork(signal_nowaiter, (int)args);
+        printf("signaling\n");
+    }else if (testchoice==1) {
+        t = new Thread("broadcast");
+        t->Fork(broadcast_nowaiter, (int)args);
+        printf("broadcasting\n");
+    }else
+    printf("Test number is invalid.\n");
+
+    currentThread->Yield();
+
+    t = new Thread("wait");
+    t->Fork(wait_thread, (int)args);
+    
+    currentThread->Yield();
+
+    ASSERT (!cond->waitqueue_isempty());
+    printf ("Success block wait.\n");
+    return 1;
+}
