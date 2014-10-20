@@ -9,7 +9,7 @@ void test_send(int _args) {
     
 void test_receive(int _args) {
     int* args = (int*) _args;
-    int* message = NULL;
+    int* message = new int;
     Mailbox* mailbox = (Mailbox*) args[0];
     mailbox->Receive(message);
     //ASSERT(message!=NULL);
@@ -19,7 +19,9 @@ int test_simple_sendreceive() {
     Lock* lock = new Lock("mailboxlock");
     //Lock* bufflock = new Lock("bufflock");
     Condition* cond = new Condition("mailboxcond");
-    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock);//, bufflock);
+    Condition* buffer_cond = new Condition("buffer_cond");
+    Lock* buffer_lock = new Lock("buffer_lock");
+    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock,buffer_cond,buffer_lock);//, bufflock);
     int message=1;
     int* args = new int[2];
     args[0] = (int)mailbox;
@@ -44,10 +46,13 @@ int test_simple_sendreceive() {
 }
 
 int test_simple_receivesend() {
-    Lock* lock = new Lock("mailboxlock");
+  //int* args = new int[2];
+  Lock* lock = new Lock("mailboxlock");
     //Lock* bufflock = new Lock("bufflock");
     Condition* cond = new Condition("mailboxcond");
-    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock);//, bufflock);
+    Condition* buffer_cond = new Condition("buffer_cond");
+    Lock* buffer_lock = new Lock("buffer_lock");
+    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock,buffer_cond,buffer_lock);//, bufflock);
     int message = 2;
     int* args = new int[2];
     args[0] = (int)mailbox;
@@ -94,7 +99,9 @@ void mult_sender_one_receiver_receiver(int _args) {
 void test_mult_sender_one_receiver() {
     Condition* mailbox_cond = new Condition("mailbox_cond");
     Lock* mailbox_lock = new Lock("mailbox_lock");
-    Mailbox* mailbox = new Mailbox("mailbox",mailbox_cond,mailbox_lock);
+    Condition* buffer_cond = new Condition("buffer_cond");
+    Lock* buffer_lock = new Lock("buffer_lock");
+    Mailbox* mailbox = new Mailbox("mailbox",mailbox_cond,mailbox_lock,buffer_cond,buffer_lock);
     
 
     int* args = new int[2];
