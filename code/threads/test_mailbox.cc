@@ -23,9 +23,7 @@ void mult_sender_one_receiver_receiver(int _args) {
 void test_mult_sender_one_receiver() {
     Condition* mailbox_cond = new Condition("mailbox_cond");
     Lock* mailbox_lock = new Lock("mailbox_lock");
-    //Lock* buf_lock = new Lock("buffernt* args = new int[2];
-_lock");
-    Mailbox* mailbox = new Mailbox("mailbox",mailbox_cond,mailbox_lock);//,buf_lock);
+    Mailbox* mailbox = new Mailbox("mailbox",mailbox_cond,mailbox_lock);
     
 
     int* args = new int[2];
