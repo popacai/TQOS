@@ -15,6 +15,7 @@
 #include "test_cond.h"
 #include "test_semaphore.h"
 #include "test_whale.h"
+#include "test_mailbox.h"
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -120,6 +121,9 @@ ThreadTest()
         break;
     case 105:
         test_random_whales();
+        break;
+    case 203:
+        test_mult_sender_one_receiver();
         break;
     default:
         printf("No test specified.\n");
