@@ -32,7 +32,7 @@
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
-Thread::Thread(char* threadName)
+Thread::Thread(char* threadName, int join)
 {
     name = threadName;
     stackTop = NULL;
@@ -41,6 +41,13 @@ Thread::Thread(char* threadName)
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
+    this->join = join;
+    if(this->join) {
+        this->joinCondition= new Condition("joinCondition");
+        this->conditionLock = new Lock("conditionLock");
+        done = 0;
+        end = 0;
+    }
 }
 
 //----------------------------------------------------------------------
@@ -62,6 +69,10 @@ Thread::~Thread()
     ASSERT(this != currentThread);
     if (stack != NULL)
         DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
+    if(this->join) {
+        delete this->joinCondition;
+        delete this->conditionLock;
+    }
 }
 
 //----------------------------------------------------------------------
@@ -96,6 +107,16 @@ Thread::Fork(VoidFunctionPtr func, int arg)
     scheduler->ReadyToRun(this);	// ReadyToRun assumes that interrupts
     // are disabled!
     (void) interrupt->SetLevel(oldLevel);
+}
+
+void 
+Thread::Join() {
+   this->conditionLock->Acquire();
+   while(!done)
+       this->joinCondition->Wait(conditionLock); // Assume "currentThread" is parent.
+   this->end = 1;
+   this->joinCondition->Signal(conditionLock);
+   this->conditionLock->Release();
 }
 
 //----------------------------------------------------------------------
@@ -147,9 +168,21 @@ Thread::Finish ()
     ASSERT(this == currentThread);
 
     DEBUG('t', "Finishing thread \"%s\"\n", getName());
-
-    threadToBeDestroyed = currentThread;
-    Sleep();					// invokes SWITCH
+    if(this->join) {
+        this->conditionLock->Acquire();
+        this->done = 1;
+        this->joinCondition->Signal(conditionLock);
+        while (!this->end) {
+            this->joinCondition->Wait(conditionLock);
+        }
+        threadToBeDestroyed = currentThread;
+        this->conditionLock->Release();  // when will we reach here??
+        Sleep();					// invokes SWITCH
+    }
+    else {
+        threadToBeDestroyed = currentThread;
+        Sleep();					// invokes SWITCH
+    }
     // not reached
 }
 
