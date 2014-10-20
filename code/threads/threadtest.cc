@@ -128,6 +128,7 @@ ThreadTest()
         break;
     case 202:
         test_simple_receivesend();
+        break;
     case 203:
         test_mult_sender_one_receiver();
         break;
