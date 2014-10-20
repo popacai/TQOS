@@ -116,6 +116,12 @@ ThreadTest()
     case 105:
         test_random_whales();
         break;
+    case 200:
+        test_simple_sendreceive();
+        break;
+    case 201;
+        test_simple_receivesend();
+        break;
     default:
         printf("No test specified.\n");
         break;
