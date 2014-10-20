@@ -6,16 +6,18 @@
 
 class Mailbox {
 public:
-    Mailbox(char* debugName, Condition* cond, Lock* lock, Lock* buf_lock);
+    Mailbox(char* debugName, Condition* cond, Lock* lock);//, Lock* buf_lock);
     ~Mailbox();
     void Send(int message); // increase the resource
     void Receive(int* message);          // decrease the resource
+    //Lock* getBufferLock() {return buffer_lock;}
+    int* getBuffer() {return buffer;}
 private:
     int* buffer;
     char* name;
     Condition* mailbox_cond;
     Lock* mailbox_lock;
-    Lock* buffer_lock;
+    //Lock* buffer_lock;
     int resource;
 };    
 
