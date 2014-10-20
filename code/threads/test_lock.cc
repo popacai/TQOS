@@ -1,24 +1,19 @@
 #include "test_lock.h"
 
-
 void release_not_held_lock(int args) {
     Lock* lock = (Lock*) args;
     printf("Current lock name is %s\n",lock->getName());
     printf("Current thread name is %s\n",currentThread->getName());
-    if (!lock->isHeldByCurrentThread()){
-        printf("release a lock not acquire by both threads!\n");
-        lock->Release();
-    }
-    //currentThread->Yield();   
+    ASSERT(!lock->isHeldByCurrentThread());
+    printf("release a lock not acquire by itself!\n");
+    lock->Release();
 }
 
-void test_release_not_held() {
+void test_release_not_held_by_itself() {
     Lock* lock = new Lock("lock_not_held");
     Thread* t = new Thread("t3");
     printf("Current lock name is %s\n",lock->getName());
     printf("Current thread name is %s\n",currentThread->getName());    
-    release_not_held_lock((int)lock);
-    printf("Process B release a lock have never been held\n");
     lock->Acquire();
     printf("Process A has already aquire this lock\n");   // test for some thread first release the lock
     t->Fork(release_not_held_lock, (int)lock);
@@ -29,8 +24,35 @@ void test_release_not_held() {
     lock->Acquire();
     printf("Process A aquires the same lock twice\n");
     currentThread->Yield();
-}    
+}   
 
+void release_lock_twice(int args) {
+    Lock* lock = (Lock*) args;
+    ASSERT(lock->isHeld());
+    ASSERT(lock->isHeldByCurrentThread());
+    printf("Acquire the lock held by itself!\n");
+    lock->Acquire(); 
+}     
+
+void test_require_lock_twice() {
+    Lock* lock = new Lock("require_twice_lock");
+    int args = (int) lock;
+    lock->Acquire();
+    release_lock_twice(args);
+}
+
+void release_not_held_lock_by_allthreads(int args) {
+    Lock* lock = (Lock*) args;
+    ASSERT(!lock->isHeld());
+    printf("release a lock not be held by any threads\n");
+    lock->Release();
+}
+
+void test_release_not_held_by_allthreads() {
+    Lock* lock = new Lock("lock_not_held_by_allthreads");
+    int args = (int) lock; 
+    release_not_held_lock_by_allthreads(args);
+}
 
 void runThread(int args) {
     Lock* lock = (Lock*) args;

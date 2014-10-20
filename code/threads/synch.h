@@ -84,6 +84,9 @@ public:
     // holds this lock.  Useful for
     // checking in Release, and in
     // Condition variable ops below.
+    bool isHeld() {
+        return this->held;
+    }    
 
 private:
     char* name;				// for debugging
