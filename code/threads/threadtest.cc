@@ -14,6 +14,7 @@
 #include "test_lock.h"
 #include "test_cond.h"
 #include "test_semaphore.h"
+#include "test_join.h"
 #include "test_whale.h"
 #include "test_mailbox.h"
 
@@ -124,6 +125,9 @@ ThreadTest()
         break;
     case 203:
         test_mult_sender_one_receiver();
+        break;
+    case 200:
+        test_join();
         break;
     default:
         printf("No test specified.\n");
