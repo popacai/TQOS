@@ -16,8 +16,9 @@ void test_receive(int _args) {
 
 int test_simple_sendreceive() {
     Lock* lock = new Lock("mailboxlock");
+    Lock* bufflock = new Lock("bufflock");
     Condition* cond = new Condition("mailboxcond");
-    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock);
+    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock, bufflock);
     int message=1;
     int* args = new int[2];
     args[0] = (int)mailbox;
@@ -43,8 +44,9 @@ int test_simple_sendreceive() {
 
 int test_simple_receivesend() {
     Lock* lock = new Lock("mailboxlock");
+    Lock* bufflock = new Lock("bufflock");
     Condition* cond = new Condition("mailboxcond");
-    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock);
+    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock, bufflock);
     int message = 2;
     int* args = new int[2];
     args[0] = (int)mailbox;

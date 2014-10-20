@@ -53,11 +53,6 @@ void Mailbox::Receive(int* message){
     if (resource < 0) {
         mailbox_cond->Wait(mailbox_lock);
     }else {
-        mailbox_cond->Signal(mailbox_lock);
-        mailbox_lock->Release();
-        currentThread->Yield();
-    }
-    else{
         printf("Signal!\n");
         mailbox_cond->Broadcast(mailbox_lock);
         mailbox_lock->Release();
