@@ -85,17 +85,43 @@ ThreadTest()
         test_delete();
         break;
     case 22:
-        test_release_not_held();
+        test_release_not_held_by_itself();
         break;
     case 23:
         test_broadcast_cond();
         break;       
+    case 26:
+        test_release_not_held_by_allthreads();
+        break;
+    case 27:
+        test_require_lock_twice();
+    case 24:
+        test_nowaiter(0); //signal with no waiter
+        break;
+    case 25:
+        test_nowaiter(1); //broadcast with no waiter
+        break;
     case 31:
     	test_single_cond();
     	break;
     case 100:
     	test_simple_whale();
     	break;
+    case 101:
+        test_no_whale();
+        break;
+    case 102:
+        test_more_males();
+        break;
+    case 103:
+        test_more_males_and_females();
+        break;
+    case 104:
+        test_males_females_matchers();
+        break;
+    case 105:
+        test_random_whales();
+        break;
     case 200:
         test_join();
         break;
