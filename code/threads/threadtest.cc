@@ -123,11 +123,12 @@ ThreadTest()
     case 105:
         test_random_whales();
         break;
-    case 201:
+ /*   case 201:
         test_simple_sendreceive();
         break;
     case 202:
         test_simple_receivesend();
+        break;*/
     case 203:
         test_mult_sender_one_receiver();
         break;

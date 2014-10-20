@@ -124,6 +124,7 @@ Lock::~Lock() {
 void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     if (this->held) {
+        printf("lock name is=%s\n",this->name);
     	ASSERT (this->holder != currentThread);  //Single thread can't acquire twice
     	this->queue->Append(currentThread);
     	currentThread->Sleep();
@@ -170,8 +171,10 @@ Condition::Condition(char* debugName) {
 
 Condition::~Condition() {
 	delete this->name;
+
 	//TODO: Do we need to empty the queue?
 	ASSERT (this->queue->IsEmpty());
+
 	delete this->queue;
 }
 
