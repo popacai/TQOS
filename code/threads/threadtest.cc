@@ -84,11 +84,16 @@ ThreadTest()
         test_delete();
         break;
     case 22:
-        test_release_not_held();
+        test_release_not_held_by_itself();
         break;
     case 23:
         test_broadcast_cond();
         break;       
+    case 26:
+        test_release_not_held_by_allthreads();
+        break;
+    case 27:
+        test_require_lock_twice();
     case 24:
         test_nowaiter(0); //signal with no waiter
         break;
