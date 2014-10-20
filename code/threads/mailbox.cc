@@ -22,9 +22,12 @@ void Mailbox::Send(int message){
     resource++;
     if (resource > 0) {
         mailbox_cond->Wait(mailbox_lock);
+    }else {
+        mailbox_cond->Signal(mailbox_lock);
+        mailbox_lock->Release();
     }
     buffer = &message;
-    mailbox_cond->Signal(mailbox_lock);
+    printf("send buffer:%d\n", *buffer);
 }
 
 void Mailbox::Receive(int* message){
@@ -32,7 +35,12 @@ void Mailbox::Receive(int* message){
     resource--;
     if (resource < 0) {
         mailbox_cond->Wait(mailbox_lock);
+    }else {
+        mailbox_cond->Signal(mailbox_lock);
+        mailbox_lock->Release();
+        currentThread->Yield();
     }
     ASSERT(buffer!=NULL);
     message = buffer;
+    printf("receive buffer:%d\n", *message);
 }

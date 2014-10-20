@@ -2,34 +2,29 @@
 
 void test_send(int _args) {
     int* args = (int*) _args;
-    Lock* lock = (Lock*) args[0];
-    Condition* cond = (Condition*) args[1];
-    int message = (int) args[2];
-    Mailbox* mailbox = new Mailbox("simplesend", cond, lock);
+    int message = (int) args[1];
+    Mailbox* mailbox = (Mailbox*) args[0];
     mailbox->Send(message);
 }
     
-void test_receive(int* _args) {
+void test_receive(int _args) {
     int* args = (int*) _args;
-    Lock* lock = (Lock*) args[0];
-    Condition* cond = (Condition*) args[1];
-    int* message = (int) args[2];
-    Mailbox* mailbox = new Mailbox("simplereceive", cond, lock);
+    int* message = NULL;
+    Mailbox* mailbox = (Mailbox*) args[0];
     mailbox->Receive(message);
 }
 
 int test_simple_sendreceive() {
     Lock* lock = new Lock("mailboxlock");
     Condition* cond = new Condition("mailboxcond");
-    int message;
-    int* args = new int[3];
-    args[0] = (int)lock;
-    args[1] = (int)cond;
-    args[3] = message;
+    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock);
+    int message=1;
+    int* args = new int[2];
+    args[0] = (int)mailbox;
+    args[1] = message;
     
     Thread* t;
     t = new Thread("send");
-    message = 1;
     t->Fork(test_send, (int)args);
     currentThread->Yield();
     
@@ -49,15 +44,14 @@ int test_simple_sendreceive() {
 int test_simple_receivesend() {
     Lock* lock = new Lock("mailboxlock");
     Condition* cond = new Condition("mailboxcond");
-    int message;
-    int* args = new int[3];
-    args[0] = (int)lock;
-    args[1] = (int)cond;
-    args[3] = message;
+    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock);
+    int message = 2;
+    int* args = new int[2];
+    args[0] = (int)mailbox;
+    args[1] = message;
     
     Thread* t;
     t = new Thread("receive");
-    message = 1;
     t->Fork(test_receive, (int)args);
     currentThread->Yield();
     
