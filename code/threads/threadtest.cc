@@ -14,6 +14,7 @@
 #include "test_lock.h"
 #include "test_cond.h"
 #include "test_semaphore.h"
+#include "test_join.h"
 #include "test_whale.h"
 
 // testnum is set in main.cc
@@ -95,6 +96,9 @@ ThreadTest()
     case 100:
     	test_simple_whale();
     	break;
+    case 200:
+        test_join();
+        break;
     default:
         printf("No test specified.\n");
         break;

@@ -45,6 +45,9 @@
 #include "addrspace.h"
 #endif
 
+class Lock;
+class Condition;
+
 // CPU register state to be saved on context switch.
 // The SPARC and MIPS only need 10 registers, but the Snake needs 18.
 // For simplicity, this is just the max over all architectures.
@@ -81,7 +84,7 @@ private:
     int machineState[MachineStateSize];  // all registers except for stackTop
 
 public:
-    Thread(char* debugName);		// initialize a Thread
+    Thread(char* debugName, int join = 0);		// initialize a Thread
     ~Thread(); 				// deallocate a Thread
     // NOTE -- thread being deleted
     // must not be running when delete
@@ -90,6 +93,7 @@ public:
     // basic thread operations
 
     void Fork(VoidFunctionPtr func, int arg); 	// Make thread run (*func)(arg)
+    void Join();
     void Yield();  				// Relinquish the CPU if any
     // other thread is runnable
     void Sleep();  				// Put the thread to sleep and
@@ -116,6 +120,11 @@ private:
     // (If NULL, don't deallocate stack)
     ThreadStatus status;		// ready, running or blocked
     char* name;
+    Condition* joinCondition;
+    Lock* conditionLock;
+    int join;
+    int done;
+    int end;
 
     void StackAllocate(VoidFunctionPtr func, int arg);
     // Allocate a stack for thread.
