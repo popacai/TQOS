@@ -2,14 +2,16 @@
 #include "copyright.h"
 #include "system.h"
 
-Mailbox::Mailbox(char* debugName, Condition* condition, Lock* lock,Condition* buf_cond, Lock* buf_lock)
+Mailbox::Mailbox(char* debugName)
 {
     name = debugName;
+    buffer = new int;
     resource = 0;
-    mailbox_cond = condition; 
-    mailbox_lock = lock;
-    buffer_cond = buf_cond;
-    buffer_lock = buf_lock;
+    b_count = 0;
+    mailbox_cond = new Condition("mailbox_cond"); 
+    mailbox_lock = new Lock("mailbox_lock");
+    buffer_cond = new Condition("send_cond");
+    buffer_lock = new Lock("send_lock");
 }
 
 Mailbox::~Mailbox(){
@@ -17,44 +19,55 @@ Mailbox::~Mailbox(){
     delete buffer;
     delete mailbox_cond;
     delete mailbox_lock;
+    delete buffer_cond;
+    delete buffer_lock;
 }
 
 void Mailbox::Send(int message){
+    //printf("send is now!\n");
     mailbox_lock->Acquire();
     resource++;
-    printf("resource number = %d\n",resource);
+    //printf("resource number = %d\n",resource);
     if (resource > 0) {
         mailbox_cond->Wait(mailbox_lock);
-        printf("send is signaled!\n");
+        //printf("send is signaled!\n");
     }
     else{
         mailbox_cond->Signal(mailbox_lock);
-        mailbox_lock->Release();
     }
-    buffer = &message;
+    mailbox_lock->Release();
     buffer_lock->Acquire();
+    while (b_count == 1) {
+        buffer_cond->Wait(buffer_lock);
+    }
+    currentThread->Yield();
+    buffer = &message;
+    b_count = 1;
     buffer_cond->Signal(buffer_lock);
     buffer_lock->Release();
-    printf("buffer is=%d\n",*buffer);
+    printf("send message is=%d\n",*buffer);
 }
 
 void Mailbox::Receive(int* message){
     mailbox_lock->Acquire();
     resource--;
-    printf("resource number = %d\n",resource);
     if (resource < 0) {
         mailbox_cond->Wait(mailbox_lock);
     }
     else{
-        printf("Signal!\n");
         mailbox_cond->Signal(mailbox_lock);
-        mailbox_lock->Release();
     }
+    mailbox_lock->Release();
     // add another condition let the receiver to wait for sender to actually write the message to buffer after it has signaled the sender to send.
     // otherwise if the Yield is plugged between the sender Wait() and write message to buffer, the Receiver still get nothing new in the buffer.
+    currentThread->Yield();
     buffer_lock->Acquire();
-    buffer_cond->Wait(buffer_lock);
+    while (b_count == 0) {
+        buffer_cond->Wait(buffer_lock);
+    }
     ASSERT(buffer!=NULL);
     *message = *buffer;
-    printf("message is %d\n",*message);
+    b_count = 0;
+    buffer_cond->Signal(buffer_lock);
+    buffer_lock->Release();
 }

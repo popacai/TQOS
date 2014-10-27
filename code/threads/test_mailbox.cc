@@ -16,12 +16,12 @@ void test_receive(int _args) {
 }
 
 int test_simple_sendreceive() {
-    Lock* lock = new Lock("mailboxlock");
+    /*Lock* lock = new Lock("mailboxlock");
     //Lock* bufflock = new Lock("bufflock");
     Condition* cond = new Condition("mailboxcond");
     Condition* buffer_cond = new Condition("buffer_cond");
-    Lock* buffer_lock = new Lock("buffer_lock");
-    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock,buffer_cond,buffer_lock);//, bufflock);
+    Lock* buffer_lock = new Lock("buffer_lock");*/
+    Mailbox* mailbox = new Mailbox("simplemailbox");//, bufflock);
     int message=1;
     int* args = new int[2];
     args[0] = (int)mailbox;
@@ -32,14 +32,14 @@ int test_simple_sendreceive() {
     t->Fork(test_send, (int)args);
     currentThread->Yield();
     
-    ASSERT(!cond->waitqueue_isempty());
+    //ASSERT(!cond->waitqueue_isempty());
     printf("Send is wait.\n");
 
     t = new Thread("receive");
     t->Fork(test_receive, (int)args);
     currentThread->Yield();
 
-    ASSERT(cond->waitqueue_isempty());
+    //ASSERT(cond->waitqueue_isempty());
     printf("Send is received.\n");
 
     return 1;
@@ -47,12 +47,12 @@ int test_simple_sendreceive() {
 
 int test_simple_receivesend() {
   //int* args = new int[2];
-  Lock* lock = new Lock("mailboxlock");
+  /*Lock* lock = new Lock("mailboxlock");
     //Lock* bufflock = new Lock("bufflock");
     Condition* cond = new Condition("mailboxcond");
     Condition* buffer_cond = new Condition("buffer_cond");
-    Lock* buffer_lock = new Lock("buffer_lock");
-    Mailbox* mailbox = new Mailbox("simplemailbox", cond, lock,buffer_cond,buffer_lock);//, bufflock);
+    Lock* buffer_lock = new Lock("buffer_lock");*/
+    Mailbox* mailbox = new Mailbox("simplemailbox");//, bufflock);
     int message = 2;
     int* args = new int[2];
     args[0] = (int)mailbox;
@@ -63,14 +63,14 @@ int test_simple_receivesend() {
     t->Fork(test_receive, (int)args);
     currentThread->Yield();
     
-    ASSERT(!cond->waitqueue_isempty());
+    //ASSERT(!cond->waitqueue_isempty());
     printf("Receive is wait.\n");
 
     t = new Thread("send");
     t->Fork(test_send, (int)args);
     currentThread->Yield();
 
-    ASSERT(cond->waitqueue_isempty());
+    //ASSERT(cond->waitqueue_isempty());
     printf("Send is received.\n");
 
     return 1;
@@ -87,8 +87,6 @@ void mult_sender_one_receiver_receiver(int _args) {
     int* args = (int*)_args;
     Mailbox* mailbox = (Mailbox*)args[0];
     int* message=new int;
-    printf("Receive Begin!\n");
-    //printf("buffer lock is held? %d\n",mailbox->getBufferLock()->isHeldByCurrentThread());
     mailbox->Receive(message);
     ASSERT(mailbox->getBuffer()!=NULL);
     ASSERT(message!=NULL);
@@ -97,13 +95,8 @@ void mult_sender_one_receiver_receiver(int _args) {
     
 
 void test_mult_sender_one_receiver() {
-    Condition* mailbox_cond = new Condition("mailbox_cond");
-    Lock* mailbox_lock = new Lock("mailbox_lock");
-    Condition* buffer_cond = new Condition("buffer_cond");
-    Lock* buffer_lock = new Lock("buffer_lock");
-    Mailbox* mailbox = new Mailbox("mailbox",mailbox_cond,mailbox_lock,buffer_cond,buffer_lock);
+    Mailbox* mailbox = new Mailbox("mailbox");
     
-
     int* args = new int[2];
     args[0] = (int)mailbox;
     
@@ -112,21 +105,26 @@ void test_mult_sender_one_receiver() {
     t->Fork(mult_sender_one_receiver_sender,(int)args);   
     currentThread->Yield();
     
+
+    t = new Thread("receiver1");
+    t->Fork(mult_sender_one_receiver_receiver,(int)args);
+    currentThread->Yield();    
+
+    t = new Thread("receiver2");
+    t->Fork(mult_sender_one_receiver_receiver,(int)args);
+    currentThread->Yield();
+    
+    t = new Thread("receiver3");
+    t->Fork(mult_sender_one_receiver_receiver,(int)args);
+    currentThread->Yield();
+
+    /*args[1] = 3;
+    t = new Thread("sender2");
+    t->Fork(mult_sender_one_receiver_sender,(int)args);
+    currentThread->Yield();*/
+    
     args[1] = 2;
     t = new Thread("sender1");
     t->Fork(mult_sender_one_receiver_sender,(int)args);
     currentThread->Yield();
-    
-    args[1] = 3;
-    t = new Thread("sender2");
-    t->Fork(mult_sender_one_receiver_sender,(int)args);
-    currentThread->Yield();
-    
-    t = new Thread("receiver");
-    t->Fork(mult_sender_one_receiver_receiver,(int)args);
-    
-    //printf("buffer lock is held? %d\n",buf_lock->isHeldByCurrentThread());
-    
-    //currentThread->Yield();   
-    
 }
