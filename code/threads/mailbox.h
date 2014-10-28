@@ -20,6 +20,11 @@ private:
     Condition* buffer_cond;
     Lock* buffer_lock;
     int b_count;
+
+    Semaphore* empty;
+    Semaphore* full;
+
+
     int resource;
 };    
 

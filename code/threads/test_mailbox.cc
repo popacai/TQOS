@@ -100,7 +100,10 @@ void test_mult_sender_one_receiver() {
     int* args = new int[2];
     args[0] = (int)mailbox;
     
-    Thread* t = new Thread("mailbox_thread");
+    Thread* t;
+
+    
+    t = new Thread("sender1");
     args[1] = 1;
     t->Fork(mult_sender_one_receiver_sender,(int)args);   
     currentThread->Yield();
@@ -114,17 +117,18 @@ void test_mult_sender_one_receiver() {
     t->Fork(mult_sender_one_receiver_receiver,(int)args);
     currentThread->Yield();
     
-    t = new Thread("receiver3");
+/*    t = new Thread("receiver3");
     t->Fork(mult_sender_one_receiver_receiver,(int)args);
     currentThread->Yield();
-
-    /*args[1] = 3;
-    t = new Thread("sender2");
-    t->Fork(mult_sender_one_receiver_sender,(int)args);
-    currentThread->Yield();*/
-    
-    args[1] = 2;
-    t = new Thread("sender1");
+*/
+    args[1] = 3;
+    t = new Thread("sender3");
     t->Fork(mult_sender_one_receiver_sender,(int)args);
     currentThread->Yield();
+    
+    args[1] = 2;
+    t = new Thread("sender2");
+    t->Fork(mult_sender_one_receiver_sender,(int)args);
+    currentThread->Yield();
+
 }

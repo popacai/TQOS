@@ -154,8 +154,8 @@ int test_delete() {      //to test the case that delete a lock that is held
             currentThread->getName(), lock->isHeldByCurrentThread());
     printf("currentThread=%s, is going to delete the lock\n", currentThread->getName());
     delete lock;    //the lock is deleted by the main thread which used to held it
-    printf("Delete the lock which is held.\n");
-    ASSERT(false);
+    //printf("Delete the lock which is held.\n");
+    //ASSERT(false);
     printf("Test failure.\n");
     return 1;
 }
