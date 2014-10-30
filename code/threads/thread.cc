@@ -48,6 +48,7 @@ Thread::Thread(char* threadName, int join)
         done = 0;
         end = 0;
     }
+    priority = 0;
 }
 
 //----------------------------------------------------------------------
@@ -321,6 +322,16 @@ Thread::StackAllocate (VoidFunctionPtr func, int arg)
     machineState[InitialPCState] = (int) func;
     machineState[InitialArgState] = arg;
     machineState[WhenDonePCState] = (int) ThreadFinish;
+}
+
+void
+Thread::setPriority(int newPriority) {
+    this->priority = newPriority; 
+}
+
+int
+Thread::getPriority() {
+    return this->priority;
 }
 
 #ifdef USER_PROGRAM

@@ -56,6 +56,7 @@ THREAD_H =../threads/copyright.h\
     ../threads/test_schedule.h\
     ../threads/test_semaphore.h\
     ../threads/test_join.h\
+    ../threads/test_priority.h\
     ../threads/whale.h\
     ../threads/test_whale.h\
     ../threads/mailbox.h
@@ -80,6 +81,7 @@ THREAD_C =../threads/main.cc\
     ../threads/test_schedule.cc\
     ../threads/test_semaphore.cc\
     ../threads/test_join.cc\
+    ../threads/test_priority.cc\
     ../threads/whale.cc\
     ../threads/test_whale.cc\
     ../threads/mailbox.cc
@@ -88,6 +90,7 @@ THREAD_S = ../threads/switch.s
 
 THREAD_O =main.o list.o scheduler.o synch.o synchlist.o system.o thread.o \
 	utility.o threadtest.o interrupt.o stats.o sysdep.o timer.o \
+    test_priority.o \
     test_lock.o test_cond.o test_mailbox.o test_schedule.o test_semaphore.o test_join.o whale.o test_whale.o mailbox.o
 
 USERPROG_H = ../userprog/addrspace.h\

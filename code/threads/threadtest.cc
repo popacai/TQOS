@@ -15,6 +15,7 @@
 #include "test_cond.h"
 #include "test_semaphore.h"
 #include "test_join.h"
+#include "test_priority.h"
 #include "test_whale.h"
 #include "test_mailbox.h"
 
@@ -134,6 +135,9 @@ ThreadTest()
         break;
     case 200:
         test_join();
+        break;
+    case 400:
+        test_priority();
         break;
     default:
         printf("No test specified.\n");
