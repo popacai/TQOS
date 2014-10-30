@@ -112,6 +112,8 @@ public:
         printf("%s, ", name);
     }
     void setPriority(int newPriority);
+    void donatePriority(int newPriority);
+    void clearDonatedPriority(); 
     int getPriority();
 
 private:
@@ -128,6 +130,7 @@ private:
     int done;
     int end;
     int priority;
+    int originalPriority;;
 
     void StackAllocate(VoidFunctionPtr func, int arg);
     // Allocate a stack for thread.

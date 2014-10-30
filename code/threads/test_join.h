@@ -5,5 +5,6 @@
 #define TEST_JOIN_H
 
 int test_join();
+int test_destroy_after_join();
 
 #endif

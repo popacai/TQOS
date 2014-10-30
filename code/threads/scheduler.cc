@@ -21,7 +21,6 @@
 #include "copyright.h"
 #include "scheduler.h"
 #include "system.h"
-
 //----------------------------------------------------------------------
 // Scheduler::Scheduler
 // 	Initialize the list of ready but not running threads to empty.
@@ -58,7 +57,7 @@ Scheduler::ReadyToRun (Thread *thread)
     thread->setStatus(READY);
     // readyList->Append((void *)thread); // old scheduling
     // preemptive priority: insert thread to the end of the same priority threads
-    readyList->SortedInsert((void *)thread, 0-thread->getPriority()); 
+    readyList->SortedInsert((void *)thread, 0-thread->getPriority());
 }
 
 //----------------------------------------------------------------------
@@ -72,7 +71,39 @@ Scheduler::ReadyToRun (Thread *thread)
 Thread *
 Scheduler::FindNextToRun ()
 {
-    return (Thread *)readyList->Remove();
+    //return (Thread *)readyList->Remove();
+    // find the highest priority thread, not the first thread.
+    // because the priority may have donations or be changed for other reasons
+    if(readyList->IsEmpty()) return NULL;
+    Thread * frontThread = (Thread *)readyList->Remove();
+    int minimumKey = 0 - frontThread->getPriority();
+    Thread * iterator = frontThread;
+    // store a copy of the list
+    List *copy = new List();
+    copy->Append(frontThread);
+    while(!readyList->IsEmpty() ) {
+        iterator = (Thread *)readyList->Remove();
+        if(minimumKey > (0-iterator->getPriority())){
+            // if same priority, select the first one.
+            minimumKey = 0 - iterator->getPriority();
+        }
+        copy->Append(iterator);
+    }
+        // need to pop the max priority thread to the front
+        // use and only use the stupid list API
+    int found = 0;
+    while(!copy->IsEmpty()) {
+        iterator = (Thread*)copy->Remove();
+        if(!found && (0-iterator->getPriority()) == minimumKey) {
+            found = 1;
+            frontThread = iterator;
+        }
+        else {
+            readyList->Append(iterator);
+        }
+    }
+    delete copy;
+    return frontThread;
 }
 
 //----------------------------------------------------------------------

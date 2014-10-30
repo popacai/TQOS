@@ -113,6 +113,9 @@ Thread::Fork(VoidFunctionPtr func, int arg)
 void 
 Thread::Join() {
    this->conditionLock->Acquire();
+   if(currentThread->getPriority() > this->getPriority()) {
+       this->donatePriority(currentThread->getPriority());
+   }
    while(!done)
        this->joinCondition->Wait(conditionLock); // Assume "currentThread" is parent.
    this->end = 1;
@@ -327,6 +330,17 @@ Thread::StackAllocate (VoidFunctionPtr func, int arg)
 void
 Thread::setPriority(int newPriority) {
     this->priority = newPriority; 
+    this->originalPriority = newPriority;
+}
+
+void
+Thread::donatePriority(int newPriority) {
+    this->priority= newPriority; 
+}
+
+void
+Thread::clearDonatedPriority() {
+    this->priority = this->originalPriority; 
 }
 
 int

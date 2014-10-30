@@ -68,7 +68,8 @@ Semaphore::P()
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     while (value == 0) { 			// semaphore not available
-        queue->Append((void *)currentThread);	// so go to sleep
+        //queue->Append((void *)currentThread);	// so go to sleep
+    	this->queue->SortedInsert(currentThread, 0 - currentThread->getPriority());
         currentThread->Sleep();
     }
     value--; 					// semaphore available,
@@ -124,9 +125,11 @@ Lock::~Lock() {
 void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
     if (this->held) {
-//        printf("lock name is=%s\n",this->name);
     	ASSERT (this->holder != currentThread);  //Single thread can't acquire twice
-    	this->queue->Append(currentThread);
+    	this->queue->SortedInsert(currentThread, 0 - currentThread->getPriority());
+        if(this->holder->getPriority() < currentThread->getPriority()) {
+            this->holder->donatePriority(currentThread->getPriority());
+        }
     	currentThread->Sleep();
     }
     ASSERT(this->holder == NULL);
@@ -142,6 +145,7 @@ void Lock::Release() {
     ASSERT (this->held);  //This should be always true
     ASSERT (this->holder)
     ASSERT (this->holder == currentThread);  //Only the thread that acquire the lock may release it?
+    currentThread->clearDonatedPriority();
 
     if (!this->queue->IsEmpty()){
         thread = (Thread *)this->queue->Remove();
@@ -181,7 +185,7 @@ Condition::~Condition() {
 void Condition::Wait(Lock* conditionLock) {
 	ASSERT (conditionLock->isHeldByCurrentThread());
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-	this->queue->Append(currentThread);
+    	this->queue->SortedInsert(currentThread, 0 - currentThread->getPriority());
 	conditionLock->Release();
     currentThread->Sleep();
     conditionLock->Acquire();
