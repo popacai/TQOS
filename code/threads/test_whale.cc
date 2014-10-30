@@ -191,13 +191,5 @@ int test_males_females_matchers() {
 }
 
 int test_random_whales() {
-    Whale* whale = new Whale("whale");
-	Thread *t_male;
-	Thread *t_female;
-	Thread *t_matcher;
-	int args = (int)whale;
-
-	for (int i = 0; i < 100; i++) {
-
-	}
+    return 1;
 }
