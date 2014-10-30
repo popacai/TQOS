@@ -136,6 +136,24 @@ ThreadTest()
     case 200:
         test_join();
         break;
+    case 301:
+        test_destroy_after_join();
+        break;
+    case 302:
+        test_child_finish_before_join();
+        break;
+    case 303:
+        test_cannot_join_itself();
+        break;
+    case 304:
+        test_join_notjoinable_thread();
+        break;
+    case 305:
+        test_join_must_fork();
+        break;
+    case 306:
+        test_must_not_join_twice();
+        break;
     case 400:
         test_priority();
         break;
