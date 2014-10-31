@@ -197,28 +197,17 @@ int test_priority_cv() {
 void loop_10_times(int args) {
     Lock* lock = (Lock*) args;
     lock->Acquire();
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 5; i++) {
         printf("%s, %d\n", currentThread->getName(), i);
         printf("%s, %d\n", currentThread->getName(), currentThread->getPriority());
         currentThread->Yield();
     }
     lock->Release();
-    if (strcmp(currentThread->getName(), "high") == 0) {
-        high++;
-        ASSERT(medium == 0);
-        ASSERT(low == 1);
+    for (int i = 0; i < 5; i++) {
+        printf("%s, %d\n", currentThread->getName(), i);
+        printf("%s, %d\n", currentThread->getName(), currentThread->getPriority());
+        currentThread->Yield();
     }
-    if (strcmp(currentThread->getName(), "low") == 0) {
-        low++;
-        ASSERT(high == 0);
-        ASSERT(medium == 0);
-    }
-    if (strcmp(currentThread->getName(), "medium") == 0) {
-        medium++;
-        ASSERT(high == 1);
-        ASSERT(low == 1);
-    }
-
     printf("%s, exit\n", currentThread->getName());
 }
 
@@ -228,23 +217,6 @@ void loop_10_times_no_lock(int args) {
         printf("%s, %d\n", currentThread->getName(), currentThread->getPriority());
         currentThread->Yield();
     }
-
-    if (strcmp(currentThread->getName(), "medium") == 0) {
-        medium++;
-        ASSERT(high == 1);
-        ASSERT(low == 1);
-    }
-    if (strcmp(currentThread->getName(), "low") == 0) {
-        low++;
-        ASSERT(high == 0);
-        ASSERT(medium == 0);
-    }
-    if (strcmp(currentThread->getName(), "high") == 0) {
-        high++;
-        ASSERT(medium == 0);
-        ASSERT(low == 1);
-    }
-
     printf("%s, exit\n", currentThread->getName());
 }
 int test_inherient_lock() {
@@ -268,7 +240,7 @@ int test_inherient_lock() {
     t_low->Join();
     t_high->Join();
 
-    printf("SUCCESS\n");
+    //printf("SUCCESS\n");
     return 1;
 }
 
