@@ -165,12 +165,15 @@ ThreadTest()
         test_priority_cond();
         break;
     case 1002:
-        test_priority_cv();
+        test_priority_broadcast();
         break;
     case 1003:
-        test_inherient_lock();
+        test_priority_cv();
         break;
     case 1004:
+        test_inherient_lock();
+        break;
+    case 1005:
         test_complex_inherient_lock();
         break;
     default:
