@@ -49,6 +49,8 @@ Thread::Thread(char* threadName, int join)
         end = 0;
     }
     priority = 0;
+    forked = 0;
+    joined = 0;
 }
 
 //----------------------------------------------------------------------
@@ -105,6 +107,7 @@ Thread::Fork(VoidFunctionPtr func, int arg)
     StackAllocate(func, arg);
 
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
+    this->forked = 1;
     scheduler->ReadyToRun(this);	// ReadyToRun assumes that interrupts
     // are disabled!
     (void) interrupt->SetLevel(oldLevel);
@@ -112,7 +115,13 @@ Thread::Fork(VoidFunctionPtr func, int arg)
 
 void 
 Thread::Join() {
+   ASSERT(currentThread != this);
+   ASSERT(this->join && this->forked && !this->joined);
+   this->joined = 1;
    this->conditionLock->Acquire();
+   if(currentThread->getPriority() > this->getPriority()) {
+       this->donatePriority(currentThread->getPriority());
+   }
    while(!done)
        this->joinCondition->Wait(conditionLock); // Assume "currentThread" is parent.
    this->end = 1;
@@ -215,9 +224,9 @@ Thread::Yield ()
 
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
 
+    scheduler->ReadyToRun(this);
     nextThread = scheduler->FindNextToRun();
     if (nextThread != NULL) {
-        scheduler->ReadyToRun(this);
         scheduler->Run(nextThread);
     }
     (void) interrupt->SetLevel(oldLevel);
@@ -327,6 +336,17 @@ Thread::StackAllocate (VoidFunctionPtr func, int arg)
 void
 Thread::setPriority(int newPriority) {
     this->priority = newPriority; 
+    this->originalPriority = newPriority;
+}
+
+void
+Thread::donatePriority(int newPriority) {
+    this->priority= newPriority; 
+}
+
+void
+Thread::clearDonatedPriority() {
+    this->priority = this->originalPriority; 
 }
 
 int
