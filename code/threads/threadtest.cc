@@ -98,6 +98,7 @@ ThreadTest()
         break;
     case 27:
         test_require_lock_twice();
+        break;
     case 24:
         test_nowaiter(0); //signal with no waiter
         break;
