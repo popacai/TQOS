@@ -28,13 +28,10 @@ Mailbox::~Mailbox(){
 }
 
 void Mailbox::Send(int message){
-    //printf("send is now!\n");
     mailbox_lock->Acquire();
     resource++;
-    //printf("resource number = %d\n",resource);
     if (resource > 0) {
         mailbox_cond->Wait(mailbox_lock);
-        //printf("send is signaled!\n");
     }
     else{
         
@@ -43,23 +40,11 @@ void Mailbox::Send(int message){
     mailbox_lock->Release();
 
     empty->P();
-
-    buffer_lock->Acquire();
-    while (b_count == 1) {
-        buffer_cond->Wait(buffer_lock);
-        //buffer=&message;
-        //b_count=1;
-        //buffer_cond->Wait(mailbox_lock);
-    }
     currentThread->Yield();
-    buffer = &message;
+    *buffer = message;
     currentThread->Yield();
-    b_count = 1;
-    buffer_cond->Signal(buffer_lock);
-    //buffer_cond->Signal(mailbox_lock);
-    
-    buffer_lock->Release();
     printf("send message is=%d\n",*buffer);
+    currentThread->Yield();
     full->V();
 
 }
@@ -79,20 +64,10 @@ void Mailbox::Receive(int* message){
     currentThread->Yield();
 
     full->P();
-    buffer_lock->Acquire();
-    
-    while (b_count == 0) {
-        buffer_cond->Wait(buffer_lock);
-        //buffer_cond->Wait(mailbox_lock);
-    }
+
     ASSERT(buffer!=NULL);
     currentThread->Yield();
     *message = *buffer;
     currentThread->Yield();
-    b_count = 0;
-    //buffer_cond->Signal(mailbox_lock);
-    buffer_cond->Signal(buffer_lock);
-    buffer_lock->Release();
-    //mailbox_lock->Release();
     empty->V();
 }

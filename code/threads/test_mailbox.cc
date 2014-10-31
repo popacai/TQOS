@@ -1,5 +1,8 @@
 #include "test_mailbox.h"
 
+int sum = 0;
+int turn = 0;
+
 void test_send(int _args) {
     int* args = (int*) _args;
     int message = (int) args[1];
@@ -16,11 +19,6 @@ void test_receive(int _args) {
 }
 
 int test_simple_sendreceive() {
-    /*Lock* lock = new Lock("mailboxlock");
-    //Lock* bufflock = new Lock("bufflock");
-    Condition* cond = new Condition("mailboxcond");
-    Condition* buffer_cond = new Condition("buffer_cond");
-    Lock* buffer_lock = new Lock("buffer_lock");*/
     Mailbox* mailbox = new Mailbox("simplemailbox");//, bufflock);
     int message=1;
     int* args = new int[2];
@@ -32,26 +30,18 @@ int test_simple_sendreceive() {
     t->Fork(test_send, (int)args);
     currentThread->Yield();
     
-    //ASSERT(!cond->waitqueue_isempty());
     printf("Send is wait.\n");
 
     t = new Thread("receive");
     t->Fork(test_receive, (int)args);
     currentThread->Yield();
 
-    //ASSERT(cond->waitqueue_isempty());
     printf("Send is received.\n");
 
     return 1;
 }
 
 int test_simple_receivesend() {
-  //int* args = new int[2];
-  /*Lock* lock = new Lock("mailboxlock");
-    //Lock* bufflock = new Lock("bufflock");
-    Condition* cond = new Condition("mailboxcond");
-    Condition* buffer_cond = new Condition("buffer_cond");
-    Lock* buffer_lock = new Lock("buffer_lock");*/
     Mailbox* mailbox = new Mailbox("simplemailbox");//, bufflock);
     int message = 2;
     int* args = new int[2];
@@ -63,14 +53,12 @@ int test_simple_receivesend() {
     t->Fork(test_receive, (int)args);
     currentThread->Yield();
     
-    //ASSERT(!cond->waitqueue_isempty());
     printf("Receive is wait.\n");
 
     t = new Thread("send");
     t->Fork(test_send, (int)args);
     currentThread->Yield();
 
-    //ASSERT(cond->waitqueue_isempty());
     printf("Send is received.\n");
 
     return 1;
@@ -91,10 +79,24 @@ void mult_sender_one_receiver_receiver(int _args) {
     ASSERT(mailbox->getBuffer()!=NULL);
     ASSERT(message!=NULL);
     printf("Receive message is = %d\n",*message);
+    sum += *message;
+    turn ++;
+    if (turn == 3) {
+        ASSERT(sum == 6);
+        printf("SUCCESS\n");
+    }
 }   
+
+
+
     
 
 void test_mult_sender_one_receiver() {
+    /*
+    Mailbox can be tested based on fuzzy.sh
+    All the Yield instruction can be randomly ignored!
+    */
+
     Mailbox* mailbox = new Mailbox("mailbox");
     
     int* args = new int[2];
@@ -102,33 +104,48 @@ void test_mult_sender_one_receiver() {
     
     Thread* t;
 
-    
-    t = new Thread("sender1");
-    args[1] = 1;
-    t->Fork(mult_sender_one_receiver_sender,(int)args);   
-    currentThread->Yield();
-    
-
-    t = new Thread("receiver1");
-    t->Fork(mult_sender_one_receiver_receiver,(int)args);
-    currentThread->Yield();    
-
-    t = new Thread("receiver2");
-    t->Fork(mult_sender_one_receiver_receiver,(int)args);
-    currentThread->Yield();
-    
-/*    t = new Thread("receiver3");
-    t->Fork(mult_sender_one_receiver_receiver,(int)args);
-    currentThread->Yield();
-*/
     args[1] = 3;
     t = new Thread("sender3");
     t->Fork(mult_sender_one_receiver_sender,(int)args);
     currentThread->Yield();
+    currentThread->Yield();
+    currentThread->Yield();
     
+    t = new Thread("receiver2");
+    t->Fork(mult_sender_one_receiver_receiver,(int)args);
+    currentThread->Yield();
+    currentThread->Yield();
+    currentThread->Yield();
+
+    t = new Thread("receiver1");
+    t->Fork(mult_sender_one_receiver_receiver,(int)args);
+    currentThread->Yield();    
+    currentThread->Yield();
+    currentThread->Yield();
+
+    Thread* t1;
+    t1 = new Thread("receiver3");
+    t1->Fork(mult_sender_one_receiver_receiver,(int)args);
+    currentThread->Yield();
+    currentThread->Yield();
+    currentThread->Yield();
+
+    args = new int[2];
+    args[0] = (int)mailbox;
     args[1] = 2;
     t = new Thread("sender2");
     t->Fork(mult_sender_one_receiver_sender,(int)args);
+    currentThread->Yield();
+    currentThread->Yield();
+    currentThread->Yield();
+
+    t = new Thread("sender1");
+    args = new int[2];
+    args[0] = (int)mailbox;
+    args[1] = 1;
+    t->Fork(mult_sender_one_receiver_sender,(int)args);   
+    currentThread->Yield();
+    currentThread->Yield();
     currentThread->Yield();
 
 }
