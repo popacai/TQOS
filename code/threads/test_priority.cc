@@ -2,11 +2,11 @@
 
 void run_child(int args){
     int i;
-    for(i = 1; i > 0; i--) {
+    for(i = 10; i > 0; i--) {
         printf("In child thread execution %d .\n", args);
+    currentThread->Yield();
     }
     printf("Child Finish!\n");
-    currentThread->Yield();
 }
 
 int test_priority(){
