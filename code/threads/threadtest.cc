@@ -18,6 +18,7 @@
 #include "test_priority.h"
 #include "test_whale.h"
 #include "test_mailbox.h"
+#include "test_schedule.h"
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -138,6 +139,21 @@ ThreadTest()
         break;
     case 400:
         test_priority();
+        break;
+    case 1000:
+        test_priority_lock();
+        break;
+    case 1001:
+        test_priority_cond();
+        break;
+    case 1002:
+        test_priority_cv();
+        break;
+    case 1003:
+        test_inherient_lock();
+        break;
+    case 1004:
+        test_complex_inherient_lock();
         break;
     default:
         printf("No test specified.\n");
