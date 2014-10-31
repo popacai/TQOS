@@ -203,6 +203,22 @@ void loop_10_times(int args) {
         currentThread->Yield();
     }
     lock->Release();
+    if (strcmp(currentThread->getName(), "high") == 0) {
+        high++;
+        ASSERT(medium == 0);
+        ASSERT(low == 1);
+    }
+    if (strcmp(currentThread->getName(), "low") == 0) {
+        low++;
+        ASSERT(high == 0);
+        ASSERT(medium == 0);
+    }
+    if (strcmp(currentThread->getName(), "medium") == 0) {
+        medium++;
+        ASSERT(high == 1);
+        ASSERT(low == 1);
+    }
+
     printf("%s, exit\n", currentThread->getName());
 }
 
@@ -212,6 +228,23 @@ void loop_10_times_no_lock(int args) {
         printf("%s, %d\n", currentThread->getName(), currentThread->getPriority());
         currentThread->Yield();
     }
+
+    if (strcmp(currentThread->getName(), "medium") == 0) {
+        medium++;
+        ASSERT(high == 1);
+        ASSERT(low == 1);
+    }
+    if (strcmp(currentThread->getName(), "low") == 0) {
+        low++;
+        ASSERT(high == 0);
+        ASSERT(medium == 0);
+    }
+    if (strcmp(currentThread->getName(), "high") == 0) {
+        high++;
+        ASSERT(medium == 0);
+        ASSERT(low == 1);
+    }
+
     printf("%s, exit\n", currentThread->getName());
 }
 int test_inherient_lock() {
@@ -219,24 +252,27 @@ int test_inherient_lock() {
     int args = (int)lock;
 
     Thread* t_low = new Thread("low", 1);
-    t_low->setPriority(10);
-    t_low->Fork(loop_10_times_no_lock, args);
+    t_low->setPriority(0);
+    t_low->Fork(loop_10_times, args);
     currentThread->Yield();
 
     Thread* t_medium = new Thread("medium", 1);
     t_medium->setPriority(20);
     t_medium->Fork(loop_10_times_no_lock, args);
-    currentThread->Yield();
     
-    //medium should exit before low
+    Thread* t_high = new Thread("high", 1);
+    t_high->setPriority(30);
+    t_high->Fork(loop_10_times, args);
 
     t_medium->Join();
     t_low->Join();
+    t_high->Join();
+
     printf("SUCCESS\n");
     return 1;
 }
 
 
 int test_complex_inherient_lock() {
-    return 0;
+
 }
