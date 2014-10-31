@@ -44,22 +44,22 @@ void Mailbox::Send(int message){
 
     empty->P();
 
-    buffer_lock->Acquire();
+/*    buffer_lock->Acquire();
     while (b_count == 1) {
         buffer_cond->Wait(buffer_lock);
         //buffer=&message;
         //b_count=1;
         //buffer_cond->Wait(mailbox_lock);
     }
+*/    currentThread->Yield();
+    *buffer = message;
     currentThread->Yield();
-    buffer = &message;
-    currentThread->Yield();
-    b_count = 1;
+/*    b_count = 1;
     buffer_cond->Signal(buffer_lock);
     //buffer_cond->Signal(mailbox_lock);
     
     buffer_lock->Release();
-    printf("send message is=%d\n",*buffer);
+*/    printf("send message is=%d\n",*buffer);
     full->V();
 
 }
@@ -79,20 +79,20 @@ void Mailbox::Receive(int* message){
     currentThread->Yield();
 
     full->P();
-    buffer_lock->Acquire();
+/*    buffer_lock->Acquire();
     
     while (b_count == 0) {
         buffer_cond->Wait(buffer_lock);
         //buffer_cond->Wait(mailbox_lock);
     }
-    ASSERT(buffer!=NULL);
+*/    ASSERT(buffer!=NULL);
     currentThread->Yield();
     *message = *buffer;
     currentThread->Yield();
-    b_count = 0;
+/*    b_count = 0;
     //buffer_cond->Signal(mailbox_lock);
     buffer_cond->Signal(buffer_lock);
     buffer_lock->Release();
-    //mailbox_lock->Release();
+*/    //mailbox_lock->Release();
     empty->V();
 }

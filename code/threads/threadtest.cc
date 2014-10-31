@@ -105,6 +105,9 @@ ThreadTest()
         break;
     case 31:
     	test_single_cond();
+        break;
+    case 32:
+        test_signal_cond();
     	break;
     case 100:
     	test_simple_whale();

@@ -30,6 +30,30 @@ void broadcast_thread(int _args) {
     lock->Release();
 }
 
+void signaltest_thread(int _args) {
+    int* args = (int*) _args;
+    Lock* lock = (Lock*) args[0];
+    Condition* cond = (Condition*) args[1];
+    
+//    lock->Acquire();
+    cond->Signal(lock);
+//    lock->Release();
+}
+ 
+int test_signal_cond() {   
+    Lock* lock = new Lock("signallock");
+    Condition* cond = new Condition("signalcond");
+
+    int* args = new int[2];
+    args[0] = (int)lock;
+    args[1] = (int)cond;
+
+    Thread* t;
+    t  = new Thread("signal");
+    t->Fork(signaltest_thread,(int)args);
+}   
+     
+   
 int test_broadcast_cond() {
     /*
     create 3 threads, two for wait, one for broadcase
