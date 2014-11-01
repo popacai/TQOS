@@ -1,4 +1,3 @@
-
 #ifndef MAILBOX_H
 #define MAILBOX_H
 
@@ -16,11 +15,15 @@ private:
     int* buffer;
     char* name;
 
-    Semaphore* empty;
-    Semaphore* full;
-    Semaphore* sema_S;
-    Semaphore* sema_R;
+    Semaphore* p1_empty;
+    Semaphore* p1_full;
+    Semaphore* p2_empty;
+    Semaphore* p2_full;
+
+    int ack;
+
+
+    int resource;
 };    
 
 #endif
-

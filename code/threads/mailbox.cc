@@ -7,55 +7,63 @@ Mailbox::Mailbox(char* debugName)
     name = debugName;
     buffer = new int;
     
-    empty= new Semaphore("empty",1);
-    full =new Semaphore("full",0);
-    sema_R = new Semaphore("receiver",0);
-    sema_S = new Semaphore("sender",0);
+    p1_empty= new Semaphore("empty",1);
+    p1_full =new Semaphore("full",0);
+    p2_empty= new Semaphore("empty",1);
+    p2_full =new Semaphore("full",0);
+    ack = 0;
 
 }
 
 Mailbox::~Mailbox(){
-    delete name;
     delete buffer;
-    delete empty;
-    delete full;
-    delete sema_R;
-    delete sema_S;
+    delete p1_empty;
+    delete p1_full;
+    delete p2_empty;
+    delete p2_full;
 }
 
 void Mailbox::Send(int message){
-    sema_R->V();
+    printf("%d\n", message);
+    p1_empty->P();
     currentThread->Yield();
-    currentThread->Yield();
-    sema_S->P();
-    currentThread->Yield();
-    currentThread->Yield();
-
-    empty->P();
     currentThread->Yield();
     *buffer = message;
     currentThread->Yield();
     currentThread->Yield();
-    printf("send message is=%d\n",*buffer);
+    p1_full->V();
     currentThread->Yield();
-    currentThread->Yield();
-    full->V();
     currentThread->Yield();
 
+    p2_full->P();
+    currentThread->Yield();
+    currentThread->Yield();
+    ack = 0;
+    currentThread->Yield();
+    currentThread->Yield();
+    //p2_empty->V();
+    currentThread->Yield();
+    currentThread->Yield();
 }
 
 void Mailbox::Receive(int* message){
-    sema_S->V();
+    p1_full->P();
     currentThread->Yield();
-    currentThread->Yield();
-    sema_R->P();
-    currentThread->Yield();
-    currentThread->Yield();
-
-    full->P();
     currentThread->Yield();
     *message = *buffer;
     currentThread->Yield();
-    empty->V();
+    currentThread->Yield();
+    p1_empty->V();
+    currentThread->Yield();
+    currentThread->Yield();
+
+    //p2_empty->P();
+    currentThread->Yield();
+    currentThread->Yield();
+    ack = 1;
+    currentThread->Yield();
+    currentThread->Yield();
+    p2_full->V();
+    currentThread->Yield();
     currentThread->Yield();
 }

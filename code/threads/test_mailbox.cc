@@ -148,6 +148,8 @@ void test_mult_sender_one_receiver() {
     currentThread->Yield();
     currentThread->Yield();
 
+    args = new int[2];
+    args[0] = (int)mailbox;
     args[1] = 4;
     t = new Thread("sender4");
     t->Fork(mult_sender_one_receiver_sender,(int)args);   
@@ -155,9 +157,8 @@ void test_mult_sender_one_receiver() {
     
     t = new Thread("receiver4");
     t->Fork(mult_sender_one_receiver_receiver,(int)args);
-    currentThread->Yield();
+    for (int i = 0; i < 1000; i++){
+        currentThread->Yield();
 
-    currentThread->Yield();
-    currentThread->Yield();
-    currentThread->Yield();
+    }
 }
