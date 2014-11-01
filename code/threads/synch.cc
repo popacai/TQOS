@@ -128,6 +128,9 @@ void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     ASSERT(this->holder != currentThread);
+    if(this->holder != NULL && this->holder->getPriority() < currentThread->getPriority()) {
+            this->holder->donatePriority(currentThread->getPriority());
+    }
 
     s->P();
     ASSERT(this->held == false);

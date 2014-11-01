@@ -10,6 +10,7 @@ void run_child(int args){
 }
 
 int test_priority(){
+    currentThread->setPriority(100);
     Thread* child1= new Thread("child thread"); 
     child1->setPriority(10);
     child1->Fork(run_child, child1->getPriority()); 
