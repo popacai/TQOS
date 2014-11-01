@@ -6,45 +6,29 @@ Mailbox::Mailbox(char* debugName)
 {
     name = debugName;
     buffer = new int;
-    resource = 0;
-    b_count = 0;
     
     empty= new Semaphore("empty",1);
     full =new Semaphore("full",0);
+    sema_R = new Semaphore("receiver",0);
+    sema_S = new Semaphore("sender",0);
 
-    mailbox_cond = new Condition("mailbox_cond"); 
-    mailbox_lock = new Lock("mailbox_lock");
-    buffer_cond = new Condition("send_cond");
-    buffer_lock = new Lock("send_lock");
 }
 
 Mailbox::~Mailbox(){
     delete name;
     delete buffer;
-    delete mailbox_cond;
-    delete mailbox_lock;
-    delete buffer_cond;
-    delete buffer_lock;
+    delete empty;
+    delete full;
+    delete sema_R;
+    delete sema_S;
 }
 
 void Mailbox::Send(int message){
-    mailbox_lock->Acquire();
+    sema_R->V();
     currentThread->Yield();
-    resource++;
     currentThread->Yield();
-    if (resource > 0) {
+    sema_S->P();
     currentThread->Yield();
-        mailbox_cond->Wait(mailbox_lock);
-    currentThread->Yield();
-    }
-    else{
-    currentThread->Yield();
-        
-        mailbox_cond->Signal(mailbox_lock);
-    currentThread->Yield();
-    }
-    currentThread->Yield();
-    mailbox_lock->Release();
     currentThread->Yield();
 
     empty->P();
@@ -61,24 +45,11 @@ void Mailbox::Send(int message){
 }
 
 void Mailbox::Receive(int* message){
-    mailbox_lock->Acquire();
+    sema_S->V();
     currentThread->Yield();
-    resource--;
     currentThread->Yield();
-    if (resource < 0) {
+    sema_R->P();
     currentThread->Yield();
-        mailbox_cond->Wait(mailbox_lock);
-    currentThread->Yield();
-    }
-    else{
-    currentThread->Yield();
-        mailbox_cond->Signal(mailbox_lock);
-    currentThread->Yield();
-    }
-    mailbox_lock->Release();
-    currentThread->Yield();
-    // add another condition let the receiver to wait for sender to actually write the message to buffer after it has signaled the sender to send.
-    // otherwise if the Yield is plugged between the sender Wait() and write message to buffer, the Receiver still get nothing new in the buffer.
     currentThread->Yield();
 
     full->P();

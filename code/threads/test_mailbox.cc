@@ -81,8 +81,8 @@ void mult_sender_one_receiver_receiver(int _args) {
     printf("Receive message is = %d\n",*message);
     sum += *message;
     turn ++;
-    if (turn == 3) {
-        ASSERT(sum == 6);
+    if (turn == 4) {
+        ASSERT(sum == 10);
         printf("SUCCESS\n");
     }
 }   
