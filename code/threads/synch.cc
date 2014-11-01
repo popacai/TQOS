@@ -138,11 +138,10 @@ void Lock::Acquire() {
 }
 
 void Lock::Release() {
-    Thread *thread;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     ASSERT (this->held);  //This should be always true
-    ASSERT (this->holder)
+    ASSERT (this->holder);
     ASSERT (this->holder == currentThread);  //Only the thread that acquire the lock may release it?
     currentThread->clearDonatedPriority();
 
