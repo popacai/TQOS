@@ -159,6 +159,6 @@ void test_mult_sender_one_receiver() {
     t->Fork(mult_sender_one_receiver_receiver,(int)args);
     for (int i = 0; i < 1000; i++){
         currentThread->Yield();
-
     }
+    ASSERT(turn == 4);
 }

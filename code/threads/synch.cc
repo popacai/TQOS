@@ -124,7 +124,7 @@ Lock::~Lock() {
 
 void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-    if (this->held) {
+    while (this->held) {
     	ASSERT (this->holder != currentThread);  //Single thread can't acquire twice
     	this->queue->SortedInsert(currentThread, 0 - currentThread->getPriority());
         if(this->holder->getPriority() < currentThread->getPriority()) {
@@ -132,6 +132,7 @@ void Lock::Acquire() {
         }
     	currentThread->Sleep();
     }
+    ASSERT(this->held == false);
     ASSERT(this->holder == NULL);
     this->held = true;
     this->holder = currentThread;
