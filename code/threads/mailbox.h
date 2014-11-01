@@ -15,15 +15,19 @@ private:
     int* buffer;
     char* name;
 
-    Semaphore* p1_empty;
-    Semaphore* p1_full;
-    Semaphore* p2_empty;
-    Semaphore* p2_full;
-
-    int ack;
-
-
+    Semaphore* empty;
+    Semaphore* full;
+    Condition* buffer_cond;
+    Lock* buffer_lock;
+    Condition* mailbox_cond;
+    Lock* mailbox_lock;
+    
     int resource;
+    int b_count;
+    //Semaphore* sema_S;
+    //Semaphore* sema_R;
 };    
 
 #endif
+
+
