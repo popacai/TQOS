@@ -138,10 +138,12 @@ int test_more_males_and_females() {
 	t_matcher->Fork(matcher, args);
 	currentThread->Yield();
 
+    for(int i = 0; i < 1000; i++){
 	currentThread->Yield();
 	currentThread->Yield();
 	currentThread->Yield();
 	currentThread->Yield();
+    }
 	currentThread->Yield();
 	ASSERT(matcher_matched == 1);
 	ASSERT(female_matched == 1);
@@ -178,7 +180,9 @@ int test_males_females_matchers() {
     currentThread->Yield();
 	currentThread->Yield();
 
+    for (int i = 0; i < 1000; i++){
 	currentThread->Yield();
+    }
 	currentThread->Yield();
 	currentThread->Yield();
 	currentThread->Yield();

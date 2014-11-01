@@ -95,6 +95,7 @@ private:
     List *queue; //Queue to store the waiting threads >_<!!!!
     bool held;
     Thread* holder;
+    Semaphore* s;
 };
 
 // The following class defines a "condition variable".  A condition

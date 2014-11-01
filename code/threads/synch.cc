@@ -110,6 +110,8 @@ Lock::Lock(char* debugName) {
 	this->queue = new List();
 	this->held = false;
 	this->holder = NULL;
+
+    this->s = new Semaphore("semaphore in lock", 1);
 }
 
 Lock::~Lock() {
@@ -124,14 +126,10 @@ Lock::~Lock() {
 
 void Lock::Acquire() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-    while (this->held) {
-    	ASSERT (this->holder != currentThread);  //Single thread can't acquire twice
-    	this->queue->SortedInsert(currentThread, 0 - currentThread->getPriority());
-        if(this->holder->getPriority() < currentThread->getPriority()) {
-            this->holder->donatePriority(currentThread->getPriority());
-        }
-    	currentThread->Sleep();
-    }
+
+    ASSERT(this->holder != currentThread);
+
+    s->P();
     ASSERT(this->held == false);
     ASSERT(this->holder == NULL);
     this->held = true;
@@ -148,11 +146,7 @@ void Lock::Release() {
     ASSERT (this->holder == currentThread);  //Only the thread that acquire the lock may release it?
     currentThread->clearDonatedPriority();
 
-    if (!this->queue->IsEmpty()){
-        thread = (Thread *)this->queue->Remove();
-        scheduler->ReadyToRun(thread);
-    }
-
+    s->V();
     this->held = false;
     this->holder = NULL;
     (void) interrupt->SetLevel(oldLevel);
