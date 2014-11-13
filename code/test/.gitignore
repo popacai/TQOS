@@ -1,5 +1,8 @@
-/_
-/halt
-/matmult
-/shell
-/sort
+#ignore everything here
+*
+
+#except for *.c & *.cc
+!*.c
+!*.cc
+!mips-xgcc
+
