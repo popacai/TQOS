@@ -61,7 +61,12 @@ SwapHeader (NoffHeader *noffH)
 //	"executable" is the file containing the object code to load into memory
 //----------------------------------------------------------------------
 
-AddrSpace::AddrSpace(OpenFile *executable)
+AddrSpace::AddrSpace() {
+    pageTable = new TranslationEntry[numPages];
+}
+
+void
+AddrSpace::Initialize(OpenFile *executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
@@ -88,7 +93,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
     DEBUG('a', "Initializing address space, num pages %d, size %d\n",
           numPages, size);
 // first, set up the translation
-    pageTable = new TranslationEntry[numPages];
+    //pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
         // For Project 2, virtual page number should be i 
@@ -137,7 +142,6 @@ printf("writing phys page %d\n", ppn);
 printf("codesize: 0x%x\n", copySize);
         ASSERT(copyOffset == 0);
     }
-    // codeSize < PageSize - codeOffset
     if(copySize > 0) {
         ppn = pageTable[copyStart / PageSize].physicalPage;
 printf("writing phys page %d\n", ppn);
@@ -170,28 +174,12 @@ printf("memory: 0x%x\n", machine->mainMemory[ppn*PageSize + copyOffset]);
         copyInFileStart += (PageSize - copyOffset);
         copyOffset = copyStart & (PageSize - 1);
     }
-    // copySize < PageSize - copyOffset
     if(copySize > 0) {
         ppn = pageTable[copyStart / PageSize].physicalPage;
 printf("writing phys page %d\n", ppn);
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                              copySize, copyInFileStart);
     }
-
-
-  /*  if (noffH.code.size > 0) {
-        DEBUG('a', "Initializing code segment, at 0x%x, size %d\n",
-              noffH.code.virtualAddr, noffH.code.size);
-        executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr]),
-                           noffH.code.size, noffH.code.inFileAddr);
-    }
-    if (noffH.initData.size > 0) {
-        DEBUG('a', "Initializing data segment, at 0x%x, size %d\n",
-              noffH.initData.virtualAddr, noffH.initData.size);
-        executable->ReadAt(&(machine->mainMemory[noffH.initData.virtualAddr]),
-                           noffH.initData.size, noffH.initData.inFileAddr);
-    }
-*/
 }
 
 //----------------------------------------------------------------------
