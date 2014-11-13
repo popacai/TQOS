@@ -62,7 +62,15 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exit:
                 printf("exit\n");
-                interrupt->Halt();
+                int sp;
+                for (int i=0; i<10; i++) {
+                machine->ReadMem(machine->ReadRegister(StackReg)+4*i,4,&sp);
+                printf("%d %d\n",i,sp);
+                }
+                machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
+                machine->WriteRegister(PCReg, machine->ReadRegister(4) + 4);
+                machine->WriteRegister(NextPCReg, machine->ReadRegister(PCReg) + 8);
+                //interrupt->Halt();
                 break;
 
             case SC_Exec:
@@ -78,7 +86,7 @@ ExceptionHandler(ExceptionType which)
             case SC_Yield:
                 printf("yield\n");
                 machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
-                machine->WriteRegister(PCReg, machine->ReadRegister(4) + 4);
+                machine->WriteRegister(PCReg, machine->ReadRegister(PCReg) + 4);
                 machine->WriteRegister(NextPCReg, machine->ReadRegister(PCReg) + 8);
 
                 currentThread->Yield();
