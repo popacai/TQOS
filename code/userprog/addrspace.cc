@@ -161,8 +161,10 @@ printf("first offset = 0x%x\n", copyOffset);
         // start at non-boundry and is long enough to fill up the page
         // calculate physical page number using page table
         ppn = pageTable[copyStart / PageSize].physicalPage;
+printf("writing phys page %d\n", ppn);
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                            PageSize - copyOffset, copyInFileStart);
+printf("memory: 0x%x\n", machine->mainMemory[ppn*PageSize + copyOffset]);
         copySize -= (PageSize - copyOffset);
         copyStart += (PageSize - copyOffset);
         copyInFileStart += (PageSize - copyOffset);
@@ -171,6 +173,7 @@ printf("first offset = 0x%x\n", copyOffset);
     // copySize < PageSize - copyOffset
     if(copySize > 0) {
         ppn = pageTable[copyStart / PageSize].physicalPage;
+printf("writing phys page %d\n", ppn);
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                              copySize, copyInFileStart);
     }
