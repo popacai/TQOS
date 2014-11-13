@@ -13,18 +13,21 @@
 #include "console.h"
 #include "addrspace.h"
 #include "synch.h"
-
+#include "memorymanager.h"
 //----------------------------------------------------------------------
 // StartProcess
 // 	Run a user program.  Open the executable, load it into
 //	memory, and jump to it.
 //----------------------------------------------------------------------
 
+MemoryManager * memoryManager; 
+
 void
 StartProcess(char *filename)
 {
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
+    memoryManager = new MemoryManager(NumPhysPages);
 
     if (executable == NULL) {
         printf("Unable to open file %s\n", filename);
