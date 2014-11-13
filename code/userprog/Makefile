@@ -25,3 +25,6 @@ C_OFILES = $(THREAD_O) $(USERPROG_O)
 include ../Makefile.common
 include ../Makefile.dep
 -include deps.mk
+
+test:
+	python run_test.py
