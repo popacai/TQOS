@@ -2,9 +2,7 @@
 #define SYSCOMMON_H
 
 // Read from stack
-void read_argument(int* index);
-
-void read_argument(char* index);
+int  read_argument(int index);
 
 //push PC by adding 4 to prev, current, next PC
 void PushPC();
