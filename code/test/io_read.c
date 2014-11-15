@@ -1,6 +1,8 @@
 #include "syscall.h"
 
 int main() {
-    Read("123", 0, 0);
+    char a [5] = "123";
+
+    Read(a, 1, 0);
     Halt();
 }

@@ -106,7 +106,7 @@ void Write(char *buffer, int size, OpenFileId id);
 int Read(char *buffer, int size, OpenFileId id);
 
 // Implementation in the kernel mode
-int k_read(char* buffer, int size, OpenFileId id);
+int k_read(int buffer, int size, int a);
 
 /* Close the file, we're done reading and writing to it. */
 void Close(OpenFileId id);
