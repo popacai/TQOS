@@ -1,4 +1,5 @@
 #include "syscall.h"
+#include "syscommon.h"
 #include "system.h"
 
 void PushPC() {
@@ -7,6 +8,11 @@ void PushPC() {
     machine->WriteRegister(NextPCReg, machine->ReadRegister(PCReg) + 8); 
 }
 
+int read_argument(int index) {
+   int ret;
+   machine->ReadMem(machine->ReadRegister(StackReg) + 16 + (index - 1 ) * 4, 4, &ret);
+   return ret;
+} 
 
 int u2kmemcpy(unsigned char* dst, int src, int n) {
     int value;
@@ -19,3 +25,4 @@ int u2kmemcpy(unsigned char* dst, int src, int n) {
     }
     return i;
 }
+
