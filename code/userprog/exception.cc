@@ -23,6 +23,7 @@
 
 #include "copyright.h"
 #include "system.h"
+#include "syscommon.h"
 #include "syscall.h"
 
 //----------------------------------------------------------------------
@@ -67,9 +68,7 @@ ExceptionHandler(ExceptionType which)
                 machine->ReadMem(machine->ReadRegister(StackReg)+4*i,4,&sp);
                 printf("%d %d\n",i,sp);
                 }
-                machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
-                machine->WriteRegister(PCReg, machine->ReadRegister(4) + 4);
-                machine->WriteRegister(NextPCReg, machine->ReadRegister(PCReg) + 8);
+                PushPC();
                 //interrupt->Halt();
                 break;
 
@@ -85,14 +84,21 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Yield:
                 printf("yield\n");
-                machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
-                machine->WriteRegister(PCReg, machine->ReadRegister(PCReg) + 4);
-                machine->WriteRegister(NextPCReg, machine->ReadRegister(PCReg) + 8);
-
                 currentThread->Yield();
+                PushPC();
                 //machine->Run();
                 
                 //interrupt->Halt();
+                break;
+            
+            case SC_Read:
+                printf("read\n");
+                PushPC();
+                break;
+
+            case SC_Write:
+                printf("write\n");
+                PushPC();
                 break;
 
             default:
