@@ -1,4 +1,5 @@
 #include "syscall.h"
+#include "system.h"
 
 void PushPC() {
     machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
