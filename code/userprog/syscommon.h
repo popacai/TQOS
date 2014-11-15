@@ -2,7 +2,12 @@
 #define SYSCOMMON_H
 
 // Read from stack
-int read_argument(int index);
+void read_argument(int* index);
+
+void read_argument(char* index);
+
+//push PC by adding 4 to prev, current, next PC
+void PushPC();
 
 /* ustrlen()
  * while(*str != NUL)
@@ -22,5 +27,8 @@ int u2kmemcpy(unsigned char* dst, int src, int n);
  * return value
  */
 int u2kmemread(int src);
+
+
+
 
 #endif
