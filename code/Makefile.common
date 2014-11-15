@@ -116,12 +116,13 @@ USERPROG_C = ../userprog/progtest.cc\
 	../userprog/sysexit.cc \
 	../userprog/sysfork.cc \
 	../userprog/sysexec.cc \
-	../userprog/syscommon.cc 
+	../userprog/syscommon.cc \
+	../userprog/sysio.cc
 
 USERPROG_O = progtest.o addrspace.o bitmap.o exception.o console.o machine.o \
         memorymanager.o \
 	mipssim.o translate.o \
-	sysexit.o sysexec.o sysfork.o syscommon.o 
+	sysexit.o sysexec.o sysfork.o syscommon.o sysio.o
 
 VM_H = 
 VM_C = 
