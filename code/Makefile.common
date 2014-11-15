@@ -102,9 +102,6 @@ USERPROG_H = ../userprog/addrspace.h\
 	../machine/machine.h\
 	../machine/mipssim.h\
 	../machine/translate.h\
-	../userprog/sysexit.h \
-	../userprog/sysexec.h\
-	../userprog/sysfork.h\
 	../userprog/syscommon.h
 
 USERPROG_C = ../userprog/progtest.cc\
