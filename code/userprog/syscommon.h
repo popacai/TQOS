@@ -28,7 +28,10 @@ int u2kmemcpy(unsigned char* dst, int src, int n);
 //ASSERT FALSE if the read operation is fail
 int u2kmemread(int src);
 
-
+/* u2kmatrixcpy()
+ * copy one char[] after another int dst
+ */
+int u2kmatrixcpy(unsigned char** dst, int src, int n);
 
 
 #endif
