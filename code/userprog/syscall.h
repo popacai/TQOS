@@ -15,6 +15,8 @@
 
 #include "copyright.h"
 
+#define MAX_KERNEL_BUFFER 128
+
 /* system call codes -- used by the stubs to tell the kernel which system call
  * is being asked for
  */
@@ -106,7 +108,7 @@ void Write(char *buffer, int size, OpenFileId id);
 int Read(char *buffer, int size, OpenFileId id);
 
 // Implementation in the kernel mode
-int k_read(int buffer, int size, int a);
+int c_read(char* buffer, int size, int a);
 
 /* Close the file, we're done reading and writing to it. */
 void Close(OpenFileId id);

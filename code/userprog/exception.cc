@@ -53,7 +53,7 @@ void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-    int buffer;
+    int buffer, size, id;
 
     if (which == SyscallException) {
         switch (type) {
@@ -93,14 +93,18 @@ ExceptionHandler(ExceptionType which)
                 break;
             
             case SC_Read:
-                //buffer = read_argument(2);
-                buffer = machine->ReadRegister(4);
-                k_read(buffer, 0, 0);
                 PushPC();
                 break;
 
             case SC_Write:
                 printf("write\n");
+                buffer = machine->ReadRegister(4);
+                size = machine->ReadRegister(5);
+                id = machine->ReadRegister(6);
+
+                //TODO: Checker!
+
+                Write((char*)buffer, size, id);
                 PushPC();
                 break;
 

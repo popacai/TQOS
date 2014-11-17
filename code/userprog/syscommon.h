@@ -33,5 +33,12 @@ int u2kmemread(int src);
  */
 int u2kmatrixcpy(unsigned char** dst, int src, int n);
 
+/* k2umemcpy()
+ * copy one char after another into the dst
+ */
+// fail if n != return value
+int k2umemcpy(int dst, unsigned char* src, int n);
+
+
 
 #endif
