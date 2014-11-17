@@ -39,3 +39,15 @@ int u2kmemread(int src) {
     }
     return value;
 }
+
+int k2umemcpy(int dst, unsigned char* src, int n) {
+    int value;
+    int i;
+    for (i = 0; i < n; i++) {
+        value = *(src + i);
+        if (!(machine->WriteMem(dst + i, 1, value))){
+            return i;
+        }
+    }
+    return i;
+}
