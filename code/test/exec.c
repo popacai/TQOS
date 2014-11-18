@@ -28,7 +28,13 @@ int main() {
             Exec((char*)(nonull_addr),argc,argv,0);
             break;
         case 2:
-            Exec("/home/linux/ieng6/cs120f/jic023/last/TQOS/code/test/no",argc,argv,0);
+          /*  Exec("/home/linux/ieng6/cs120f/jic023/last/TQOS/code/test/no",argc,argv,0);
+          */
+
+            invalid_addr = 2000;
+            Write((char*)(invalid_addr),3,1);
+
+
             break;
         default:
             Exec("/home/linux/ieng6/cs120f/jic023/last/TQOS/code/test/test_exec",argc,argv,0);
