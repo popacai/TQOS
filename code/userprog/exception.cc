@@ -84,7 +84,7 @@ void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-    int buffer;
+    int buffer, size, id;
     int arg_vaddr[4] = {0};
 
     if (which == SyscallException) {
@@ -141,6 +141,13 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Write:
                 printf("write\n");
+                buffer = machine->ReadRegister(4);
+                size = machine->ReadRegister(5);
+                id = machine->ReadRegister(6);
+
+                //TODO: Checker!
+
+                Write((char*)buffer, size, id);
                 PushPC();
                 break;
 
@@ -149,6 +156,26 @@ ExceptionHandler(ExceptionType which)
                 interrupt->Halt();
                 ASSERT(FALSE);
         }
+    }
+    else if (which == NumExceptionTypes) {
+        //TODO handle arithematic exception
+        printf("number exception\n");
+        ASSERT(false);
+    }
+    else if (which == IllegalInstrException) {
+        //TODO handle illegal instruction
+        printf("illegal instruction exception\n");
+        ASSERT(false);
+    } 
+    else if (which == OverflowException) {
+        //TODO handle interger overflow
+        printf("Unexpected user mode exception %d %d\n", which, type);
+        ASSERT(false);
+    }
+    else if (which == AddressErrorException) {
+        //TODO handle address error 
+        printf("Unexpected user mode exception %d %d\n", which, type);
+        ASSERT(false);
     } else {
         printf("Unexpected user mode exception %d %d\n", which, type);
         ASSERT(FALSE);
