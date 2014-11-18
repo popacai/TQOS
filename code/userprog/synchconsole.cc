@@ -13,7 +13,7 @@ write_done (int arg){
 }
 
 SynchConsole::SynchConsole(char* input, char* output) {
-    console = new Console(0, 0, (VoidFunctionPtr)read_done, (VoidFunctionPtr)write_done, (int)this);
+    console = new Console(input, output, (VoidFunctionPtr)read_done, (VoidFunctionPtr)write_done, (int)this);
     read_lock = new Lock("synch console lock");
     read_semaphore = new Semaphore("synch console semaphore", 0);
     write_lock = new Lock("synch console lock");
