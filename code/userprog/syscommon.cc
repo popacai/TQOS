@@ -1,5 +1,76 @@
 #include "syscall.h"
 #include "system.h"
+#include "directory.h"
+#include "filesys.h"
+#include "openfile.h"
+
+int fexist_ck(unsigned char* name) {
+    int ret = 1;
+    int i = 0;
+    char* name_signed = new char[64];
+    while (*(name + i) != 0) {
+        *(name_signed + i) = *(name + i);
+        i++;
+    }
+    *(name_signed + i) = 0;
+    printf("file name is %s\n",name_signed);
+    //printf("%d\n",(*name)==(*name_signed));
+    OpenFile* openFile;
+    openFile = fileSystem->Open(name_signed);
+    if (openFile == NULL) {
+        printf("file cannot be found\n");
+        return -1;
+    } 
+    return ret;
+}
+
+int fname_addrck(char* name) {
+    int num_pages;
+    unsigned long task_size;
+    unsigned long path_max = 64;
+    int len = path_max;
+    int n = 0;
+    int value;
+    num_pages = machine->pageTableSize;
+    task_size = num_pages * PageSize;
+    printf("user address space size = %ld\n",task_size);
+    if ((unsigned long)name > task_size) {
+        printf("name address = %ld\n",(unsigned long)name);
+        printf("name pointer address excess user address space\n");
+        return 0;
+    }
+    if (task_size - (unsigned long)name < path_max) {
+        len = task_size - (unsigned long)name;
+    }
+
+    do {
+        if (!(machine->ReadMem((unsigned long)name + n, 1, &value))) {
+            printf("physical address cannot be accessed\n");
+            return -1;
+        }
+        n++;
+    } while (value && n < len);
+    
+    if (value) {
+        printf("filename string is not end up with a null\n");
+        return -4;
+    }
+    
+    if (n > 0) {
+        if (n < len || (n == len && !value)) {
+            return n;
+        }
+        else {
+            printf("name is too long\n");
+            return -2; // name too long
+        }
+    }
+    else {
+        printf("name is empty\n");
+        return -3; // no name
+    }
+          
+}
 
 void PushPC() {
     machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));

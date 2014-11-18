@@ -39,6 +39,16 @@ int u2kmatrixcpy(unsigned char** dst, int src, int n);
 // fail if n != return value
 int k2umemcpy(int dst, unsigned char* src, int n);
 
+/* fname_addrck()
+ * check the file name exists in the address
+ * return 0 if invalid name is attempted to access
+ */
+int fname_addrck(char* name);
 
+/* fexist_ck()
+ * check whether this file is exist
+ * return -1 if it is not exist in the disk
+ */
+int fexist_ck(unsigned char* name);
 
 #endif
