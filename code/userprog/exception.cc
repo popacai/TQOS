@@ -49,11 +49,43 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
+void k_exec(int arg_vaddr[]) {
+    unsigned char* name;
+    int len, k_argc, k_opt;
+    unsigned char** k_argv;
+    int errno;
+
+    // first check the location of filename is valid
+    errno = fname_addrck((char*)arg_vaddr[0]);
+    //printf("errno = %d\n",errno);
+    if (errno <= 0) {    
+        ASSERT(false);
+    }
+    len = ustrlen(arg_vaddr[0]);
+    name = new unsigned char[len];
+    u2kmemcpy(name,arg_vaddr[0],len);
+    printf("name = %s\n",name);
+    if (fexist_ck(name) == -1) {
+        ASSERT(false);
+    }
+    k_argc = arg_vaddr[1];
+    printf("argc value=%d\n",k_argc);
+    k_opt = arg_vaddr[3];
+    printf("opt value=%d\n",k_opt);
+
+    k_argv = new unsigned char*[k_argc];
+    u2kmatrixcpy(k_argv,arg_vaddr[2],k_argc);
+    for (int i = 0; i< k_argc; i++) {
+        printf("argv[%d] value = %s\n",i,k_argv[i]);
+    }
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-    int buffer, size, id;
+    int buffer;
+    int arg_vaddr[4] = {0};
 
     if (which == SyscallException) {
         switch (type) {
@@ -65,7 +97,7 @@ ExceptionHandler(ExceptionType which)
             case SC_Exit:
                 printf("exit\n");
                 int sp;
-                for (int i=0; i<10; i++) {
+                for (int i=0; i<5; i++) {
                 machine->ReadMem(machine->ReadRegister(StackReg)+4*i,4,&sp);
                 printf("%d %d\n",i,sp);
                 }
@@ -75,6 +107,10 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exec:
                 printf("exec\n");
+                for (int i = 0; i < 4; i++) {
+                    arg_vaddr[i] = machine->ReadRegister(4+i);
+                }
+                k_exec(arg_vaddr);
                 interrupt->Halt();
                 break;
 
@@ -93,18 +129,18 @@ ExceptionHandler(ExceptionType which)
                 break;
             
             case SC_Read:
+                //buffer = machine->ReadRegister(4);
+                //k_read(buffer, 0, 0);
+                /*buffer = machine->ReadRegister(4);
+                arg2_vaddr= machine->ReadRegister(5);
+                printf("arg1 addr=%d\n",buffer);
+                printf("arg2 addr=%d\n",arg2_vaddr);
+                k_read(buffer, arg2_vaddr, 0);*/
                 PushPC();
                 break;
 
             case SC_Write:
                 printf("write\n");
-                buffer = machine->ReadRegister(4);
-                size = machine->ReadRegister(5);
-                id = machine->ReadRegister(6);
-
-                //TODO: Checker!
-
-                Write((char*)buffer, size, id);
                 PushPC();
                 break;
 
