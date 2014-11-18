@@ -38,7 +38,8 @@ StartProcess(char *filename)
         return;
     }
     space = new AddrSpace();
-    space->Initialize(executable);
+    // TODO: Initialize should return error
+    space->Initialize(executable, 0); // 0 means no lock
     currentThread->space = space;
 
     delete executable;			// close file

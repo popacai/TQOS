@@ -18,8 +18,6 @@
 #include "memorymanager.h"
 
 #define UserStackSize		1024 	// increase this as necessary!
-class MemoryManager;
-extern MemoryManager * memoryManager;
 
 class AddrSpace {
 public:
@@ -28,6 +26,7 @@ public:
     // stored in the file "executable"
     ~AddrSpace();			// De-allocate an address space
 
+    void Initialize(OpenFile *executable, int flag);
     void Initialize(OpenFile *executable);
 
     void InitRegisters();		// Initialize user-level CPU registers,
