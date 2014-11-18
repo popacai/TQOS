@@ -14,17 +14,21 @@
 #include "addrspace.h"
 #include "synch.h"
 #include "memorymanager.h"
+#include "synchconsole.h"
 //----------------------------------------------------------------------
 // StartProcess
 // 	Run a user program.  Open the executable, load it into
 //	memory, and jump to it.
 //----------------------------------------------------------------------
 
-MemoryManager * memoryManager; 
+MemoryManager* memoryManager; 
 
 void
 StartProcess(char *filename)
 {
+    //test_synchconsole();
+
+    //Init console
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
     memoryManager = new MemoryManager(NumPhysPages);
