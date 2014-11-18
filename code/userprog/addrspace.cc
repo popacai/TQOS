@@ -65,8 +65,15 @@ AddrSpace::AddrSpace() {
     pageTable = new TranslationEntry[numPages];
 }
 
+
 void
 AddrSpace::Initialize(OpenFile *executable)
+{
+    Initialize(executable, 1); // default has lock
+}
+
+void
+AddrSpace::Initialize(OpenFile *executable, int flag)
 {
     NoffHeader noffH;
     unsigned int i, size;
@@ -98,7 +105,7 @@ AddrSpace::Initialize(OpenFile *executable)
         pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
         // For Project 2, virtual page number should be i 
         // There is no real virtual memory, just assign a physical memory page
-        pageTable[i].physicalPage = memoryManager->AllocPage();
+        pageTable[i].physicalPage = memoryManager->AllocPage(flag);
         bzero(&machine->mainMemory[pageTable[i].physicalPage * PageSize], PageSize);
         pageTable[i].valid = TRUE;
         pageTable[i].use = FALSE;
