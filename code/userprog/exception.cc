@@ -162,19 +162,15 @@ ExceptionHandler(ExceptionType which)
                 buffer = machine->ReadRegister(4);
                 size = machine->ReadRegister(5);
                 id = machine->ReadRegister(6);
+                
+                //TODO: Checker!
+
                 kread((char*)buffer, size, id);
+
                 PushPC();
-                //buffer = machine->ReadRegister(4);
-                //k_read(buffer, 0, 0);
-                /*buffer = machine->ReadRegister(4);
-                arg2_vaddr= machine->ReadRegister(5);
-                printf("arg1 addr=%d\n",buffer);
-                printf("arg2 addr=%d\n",arg2_vaddr);
-                k_read(buffer, arg2_vaddr, 0);*/
                 break;
 
             case SC_Write:
-                printf("write\n");
                 buffer = machine->ReadRegister(4);
                 size = machine->ReadRegister(5);
                 id = machine->ReadRegister(6);
@@ -182,6 +178,7 @@ ExceptionHandler(ExceptionType which)
                 //TODO: Checker!
 
                 kwrite((char*)buffer, size, id);
+
                 PushPC();
                 break;
 

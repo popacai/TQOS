@@ -27,4 +27,4 @@ include ../Makefile.dep
 -include deps.mk
 
 test:
-	./nachos -rs 1 -x ../test/halt
+	./nachos -rs 1 -x ../test/echo
