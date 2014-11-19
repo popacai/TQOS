@@ -50,6 +50,33 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
+void
+StartUserProcess(int argv)
+{
+    // TODO: use test file path, should pass in filename
+    char * filename = "../test/thread_yield";
+    OpenFile *executable = fileSystem->Open(filename);
+    AddrSpace *space;
+
+    if (executable == NULL) {
+        printf("Unable to open file %s\n", filename);
+        return;
+    }
+    space = new AddrSpace();
+    space->Initialize(executable); // use locks
+    currentThread->space = space;
+
+    delete executable;			// close file
+
+    space->InitRegisters();		// set the initial register values
+    space->RestoreState();		// load page table register
+
+    machine->Run();			// jump to the user progam
+    ASSERT(FALSE);			// machine->Run never returns;
+    // the address space exits
+    // by doing the syscall "exit"
+}
+
 void k_exec(int arg_vaddr[]) {
     unsigned char* name;
     int len, k_argc, k_opt;
@@ -82,35 +109,6 @@ void k_exec(int arg_vaddr[]) {
 }
 
 void
-StartUserProcess(int argv)
-{
-    // TODO: use test file path, should pass in filename
-    char * filename = "../test/thread_yield";
-    OpenFile *executable = fileSystem->Open(filename);
-    AddrSpace *space;
-
-    if (executable == NULL) {
-        printf("Unable to open file %s\n", filename);
-        return;
-    }
-    space = new AddrSpace();
-    space->Initialize(executable); // use locks
-    currentThread->space = space;
-
-    delete executable;			// close file
-
-    space->InitRegisters();		// set the initial register values
-    space->RestoreState();		// load page table register
-
-    machine->Run();			// jump to the user progam
-    ASSERT(FALSE);			// machine->Run never returns;
-    // the address space exits
-    // by doing the syscall "exit"
-}
-
-
-
-void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
@@ -137,12 +135,11 @@ ExceptionHandler(ExceptionType which)
                 break;
 
             case SC_Exec:
-                printf("exec\n"); // notice: current implementation is still buggy
+                // TODO: pass args & return SPID
+                printf("exec\n"); 
                 t = new Thread("exec new thread");
                 t -> Fork(StartUserProcess, 1); // use fake arg
-                machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
-                machine->WriteRegister(PCReg, machine->ReadRegister(PCReg) + 4);
-                machine->WriteRegister(NextPCReg, machine->ReadRegister(PCReg) + 8);
+                PushPC();
                 currentThread->Yield(); 
                 break;
 
