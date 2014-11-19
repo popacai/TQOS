@@ -26,6 +26,7 @@
 #include "syscommon.h"
 #include "syscall.h"
 #include "thread.h"
+#include "ksyscall.h"
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -115,7 +116,7 @@ ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
     int buffer, size, id;
-    int arg_vaddr[4] = {0};
+    //int arg_vaddr[4] = {0};
 
     Thread * t;
     if (which == SyscallException) {
@@ -161,6 +162,11 @@ ExceptionHandler(ExceptionType which)
                 break;
             
             case SC_Read:
+                buffer = machine->ReadRegister(4);
+                size = machine->ReadRegister(5);
+                id = machine->ReadRegister(6);
+                kread((char*)buffer, size, id);
+                PushPC();
                 //buffer = machine->ReadRegister(4);
                 //k_read(buffer, 0, 0);
                 /*buffer = machine->ReadRegister(4);
@@ -168,7 +174,6 @@ ExceptionHandler(ExceptionType which)
                 printf("arg1 addr=%d\n",buffer);
                 printf("arg2 addr=%d\n",arg2_vaddr);
                 k_read(buffer, arg2_vaddr, 0);*/
-                PushPC();
                 break;
 
             case SC_Write:
@@ -179,7 +184,7 @@ ExceptionHandler(ExceptionType which)
 
                 //TODO: Checker!
 
-                Write((char*)buffer, size, id);
+                kwrite((char*)buffer, size, id);
                 PushPC();
                 break;
 

@@ -103,7 +103,8 @@ USERPROG_H = ../userprog/addrspace.h\
 	../machine/translate.h\
 	../userprog/syscommon.h\
 	../userprog/synchconsole.h\
-        ../userprog/memorymanager.h
+    ../userprog/memorymanager.h\
+	../userprog/ksyscall.h
 
 USERPROG_C = ../userprog/progtest.cc\
         ../userprog/addrspace.cc\
