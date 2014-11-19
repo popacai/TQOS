@@ -62,7 +62,7 @@ SwapHeader (NoffHeader *noffH)
 //----------------------------------------------------------------------
 
 AddrSpace::AddrSpace() {
-    pageTable = new TranslationEntry[numPages];
+    pageTable = NULL;
 }
 
 
@@ -92,6 +92,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     size = numPages * PageSize;
 
     ASSERT(numPages <= NumPhysPages);		// check we're not trying
+    pageTable = new TranslationEntry[numPages];
     printf("********************** NUM PHYS PAGES: %d, PAGE SIZE: 0x%x\n", NumPhysPages, PageSize);
     // to run anything too big --
     // at least until we have
@@ -196,7 +197,9 @@ printf("writing phys page %d\n", ppn);
 
 AddrSpace::~AddrSpace()
 {
-    delete [] pageTable;
+    if(pageTable != NULL) {
+        delete [] pageTable;
+    }
 }
 
 //----------------------------------------------------------------------
