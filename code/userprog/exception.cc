@@ -145,15 +145,20 @@ ExceptionHandler(ExceptionType which)
         switch (type) {
             case SC_Halt:
                 DEBUG('a', "Shutdown, initiated by user program.\n");
+                printf("%s\n", currentThread->getName());
                 printf("halt\n");
                 interrupt->Halt();
                 break;
 
             case SC_Exit:
+                printf("%s\n", currentThread->getName());
                 printf("exit\n");
                 int sp;
-                PushPC();
+
+                //currentThread->Yield();
+                currentThread->Finish();
                 //interrupt->Halt();
+                return;
                 break;
 
             case SC_Exec:
@@ -199,11 +204,11 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Fork:
                 printf("fork\n");
-                interrupt->Halt();
+                // interrupt->Halt();
                 break;
 
             case SC_Yield:
-                printf("yield\n");
+                //printf("yield\n");
                 currentThread->Yield();
                 PushPC();
                 //machine->Run();
@@ -237,7 +242,7 @@ ExceptionHandler(ExceptionType which)
 
             default:
                 printf("Unexpected user mode exception %d %d\n", which, type);
-                interrupt->Halt();
+                //interrupt->Halt();
                 ASSERT(FALSE);
         }
     }
