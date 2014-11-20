@@ -145,6 +145,7 @@ ExceptionHandler(ExceptionType which)
         switch (type) {
             case SC_Halt:
                 DEBUG('a', "Shutdown, initiated by user program.\n");
+                printf("halt\n");
                 interrupt->Halt();
                 break;
 
@@ -167,7 +168,7 @@ ExceptionHandler(ExceptionType which)
                 }
                 len = ustrlen((int)srcPath);
                 path = new unsigned char[len+1];
-                u2kmemcpy(path, srcPath, len);
+                u2kmemcpy(path, srcPath, len + 1);
                 if (fexist_ck(path) == -1) {
                 //    ASSERT(false);
                 }
