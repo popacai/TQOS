@@ -10,7 +10,6 @@
 int kread(char *buffer, int size, OpenFileId id) {
     int i;
     unsigned char kernel_char;
-    SynchConsole* synchconsole = new SynchConsole(0, 0);
     if (id == ConsoleInput) {
         //reading from the buffer char by char
         for (i = 0; i < size; i++) {
@@ -21,7 +20,6 @@ int kread(char *buffer, int size, OpenFileId id) {
         ASSERT(false);
         //TODO: call OS filesys/openfile.h
     }
-    delete synchconsole;
     return size;
 }
 
@@ -30,7 +28,6 @@ void kwrite(char *buffer, int size, OpenFileId id) {
     int i;
     int copied_size;
     unsigned char kernel_char;
-    SynchConsole* synchconsole = new SynchConsole(0, 0);
     if (id == ConsoleOutput) {
         //reading from the buffer char by char
         for (i = 0; i < size; i++) {
@@ -44,6 +41,5 @@ void kwrite(char *buffer, int size, OpenFileId id) {
         ASSERT(false);
         //TODO: call OS filesys/openfile.h
     }
-    delete synchconsole;
 }
 

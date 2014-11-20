@@ -34,9 +34,11 @@ extern Timer *timer;				// the hardware alarm clock
 #include "machine.h"
 #include "memorymanager.h"
 #include "processmanager.h"
+#include "synchconsole.h"
 extern Machine* machine;	// user program memory and registers
 extern MemoryManager * memoryManager;
 extern ProcessManager * processManager;
+extern SynchConsole* synchconsole;
 #endif
 
 #ifdef FILESYS_NEEDED 		// FILESYS or FILESYS_STUB 

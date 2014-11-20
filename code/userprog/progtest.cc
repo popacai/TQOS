@@ -24,6 +24,7 @@
 
 MemoryManager* memoryManager; 
 ProcessManager* processManager;
+SynchConsole* synchconsole;
 
 void
 StartProcess(char *filename)
@@ -35,6 +36,7 @@ StartProcess(char *filename)
     AddrSpace *space;
     memoryManager = new MemoryManager(NumPhysPages);
     processManager = new ProcessManager(PROCESS_MAX_NUM);
+    synchconsole = new SynchConsole(0, 0);
 
     if (executable == NULL) {
         printf("Unable to open file %s\n", filename);
