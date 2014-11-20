@@ -24,6 +24,7 @@
 #include <strings.h>
 #endif
 
+//#define PDEBUG
 //----------------------------------------------------------------------
 // SwapHeader
 // 	Do little endian to big endian conversion on the bytes in the
@@ -65,14 +66,13 @@ AddrSpace::AddrSpace() {
     pageTable = NULL;
 }
 
-
-void
+int
 AddrSpace::Initialize(OpenFile *executable)
 {
-    Initialize(executable, 1); // default has lock
+    return Initialize(executable, 1); // default has lock
 }
 
-void
+int 
 AddrSpace::Initialize(OpenFile *executable, int flag)
 {
     NoffHeader noffH;
@@ -91,7 +91,10 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
-    ASSERT(numPages <= NumPhysPages);		// check we're not trying
+    // ASSERT(numPages <= NumPhysPages);		// check we're not trying
+    if(numPages > NumPhysPages) {
+        return -1; // fail
+    }
     pageTable = new TranslationEntry[numPages];
     printf("********************** NUM PHYS PAGES: %d, PAGE SIZE: 0x%x\n", NumPhysPages, PageSize);
     // to run anything too big --
@@ -127,56 +130,49 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     unsigned int copyInFileStart = noffH.code.inFileAddr;
     unsigned int copyOffset;
     unsigned int ppn;
+#ifdef PDBUG
 printf("code: \n");
 printf("virtual addr: 0x%x\n", noffH.code.virtualAddr);
 printf("in file addr: 0x%x\n", noffH.code.inFileAddr);
 printf("code size: 0x%x\n", noffH.code.size);
-
 printf("begin copying....\n");
 printf("page size: 0x%x\n", PageSize);
+#endif
     copyOffset = copyStart & (PageSize - 1);
-printf("first offset = 0x%x\n", copyOffset);
     while(copySize >= PageSize - copyOffset) {
         // start at non-boundry and is long enough to fill up the page
         // calculate physical page number using page table
         ppn = pageTable[copyStart / PageSize].physicalPage;
+#ifdef PDBUG
 printf("writing phys page %d\n", ppn);
+#endif
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                            PageSize - copyOffset, copyInFileStart);
         copySize -= (PageSize - copyOffset);
         copyStart += (PageSize - copyOffset);
         copyInFileStart += (PageSize - copyOffset);
         copyOffset = copyStart & (PageSize - 1);
-printf("codesize: 0x%x\n", copySize);
         ASSERT(copyOffset == 0);
     }
     if(copySize > 0) {
         ppn = pageTable[copyStart / PageSize].physicalPage;
+#ifdef PDBUG
 printf("writing phys page %d\n", ppn);
+#endif
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                              copySize, copyInFileStart);
     }
 
-printf("data: \n");
-printf("virtual addr: 0x%x\n", noffH.initData.virtualAddr);
-printf("in file addr: 0x%x\n", noffH.initData.inFileAddr);
-printf("data size: 0x%x\n", noffH.initData.size);
-
-printf("copying data\n");
-printf("codesize: 0x%x\n", copySize);
     copySize = noffH.initData.size;
     copyStart = noffH.initData.virtualAddr;
     copyInFileStart= noffH.initData.inFileAddr;
     copyOffset = copyStart & (PageSize - 1);
-printf("first offset = 0x%x\n", copyOffset);
     while(copySize >= PageSize - copyOffset) {
         // start at non-boundry and is long enough to fill up the page
         // calculate physical page number using page table
         ppn = pageTable[copyStart / PageSize].physicalPage;
-printf("writing phys page %d\n", ppn);
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                            PageSize - copyOffset, copyInFileStart);
-printf("memory: 0x%x\n", machine->mainMemory[ppn*PageSize + copyOffset]);
         copySize -= (PageSize - copyOffset);
         copyStart += (PageSize - copyOffset);
         copyInFileStart += (PageSize - copyOffset);
@@ -184,10 +180,10 @@ printf("memory: 0x%x\n", machine->mainMemory[ppn*PageSize + copyOffset]);
     }
     if(copySize > 0) {
         ppn = pageTable[copyStart / PageSize].physicalPage;
-printf("writing phys page %d\n", ppn);
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                              copySize, copyInFileStart);
     }
+    return 1; // success
 }
 
 //----------------------------------------------------------------------

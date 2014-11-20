@@ -30,10 +30,13 @@ extern Statistics *stats;			// performance metrics
 extern Timer *timer;				// the hardware alarm clock
 
 #ifdef USER_PROGRAM
+#define PROCESS_MAX_NUM 256
 #include "machine.h"
 #include "memorymanager.h"
+#include "processmanager.h"
 extern Machine* machine;	// user program memory and registers
 extern MemoryManager * memoryManager;
+extern ProcessManager * processManager;
 #endif
 
 #ifdef FILESYS_NEEDED 		// FILESYS or FILESYS_STUB 

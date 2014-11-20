@@ -15,6 +15,7 @@
 #include "synch.h"
 #include "memorymanager.h"
 #include "synchconsole.h"
+#include "processmanager.h"
 //----------------------------------------------------------------------
 // StartProcess
 // 	Run a user program.  Open the executable, load it into
@@ -22,6 +23,7 @@
 //----------------------------------------------------------------------
 
 MemoryManager* memoryManager; 
+ProcessManager* processManager;
 
 void
 StartProcess(char *filename)
@@ -32,6 +34,7 @@ StartProcess(char *filename)
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
     memoryManager = new MemoryManager(NumPhysPages);
+    processManager = new ProcessManager(PROCESS_MAX_NUM);
 
     if (executable == NULL) {
         printf("Unable to open file %s\n", filename);
@@ -39,14 +42,20 @@ StartProcess(char *filename)
     }
     space = new AddrSpace();
     // TODO: Initialize should return error
-    space->Initialize(executable, 0); // 0 means no lock
-    currentThread->space = space;
+    if(space->Initialize(executable, 0)) { // 0 means no lock
+        currentThread->space = space;
+    }
+    else {
+        ASSERT(FALSE);
+    }
 
     delete executable;			// close file
 
     space->InitRegisters();		// set the initial register values
     space->RestoreState();		// load page table register
-
+    
+    int spid = processManager->Alloc((void*)currentThread);
+    ASSERT(spid == 1);
     machine->Run();			// jump to the user progam
     ASSERT(FALSE);			// machine->Run never returns;
     // the address space exits
