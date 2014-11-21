@@ -123,8 +123,6 @@ Scheduler::FindNextToRun ()
 void
 Scheduler::Run (Thread *nextThread)
 {
-    int num_pages,i,ppn;
-    AddrSpace *space;
     Thread *oldThread = currentThread;
 
 #ifdef USER_PROGRAM			// ignore until running user programs 
@@ -157,18 +155,6 @@ Scheduler::Run (Thread *nextThread)
     // before now (for example, in Thread::Finish()), because up to this
     // point, we were still running on the old thread's stack!
     if (threadToBeDestroyed != NULL) {
-#ifdef USER_PROGRAM
-        if (threadToBeDestroyed->space != NULL) {
-            space = threadToBeDestroyed->space;
-            num_pages = space->getNumPages();
-            for (i = 0; i < num_pages; i++) {
-                ppn = (space->getPageTable())[i].physicalPage;
-                memoryManager->FreePage(ppn);
-            }
-       delete threadToBeDestroyed->space;
-       threadToBeDestroyed->space = NULL;
-       }
-#endif
        delete threadToBeDestroyed;
        threadToBeDestroyed = NULL;
    }
