@@ -51,10 +51,6 @@
 //	"which" is the kind of exception.  The list of possible exceptions
 //	are in machine.h.
 //----------------------------------------------------------------------
-void kill_process() {
-    ASSERT(false);
-}
-
 void
 StartUserProcess(int argv)
 {
