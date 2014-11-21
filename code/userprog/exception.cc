@@ -129,6 +129,20 @@ void k_exec(int arg_vaddr[]) {
     }
 }
 
+int kill_process() {
+     unsigned int num_pages;
+     char* thread_name;
+     AddrSpace *space;
+     space = currentThread->space;
+     thread_name = currentThread->getName();
+     printf("kernel level thread name = %s\n",thread_name);
+     num_pages = space->getNumPages();
+     printf("numPages = %d\n",num_pages);
+     currentThread->Finish();
+     printf("after finish\n");
+     return 1;
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
