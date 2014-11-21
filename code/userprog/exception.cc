@@ -235,17 +235,9 @@ ExceptionHandler(ExceptionType which)
                 size = machine->ReadRegister(5);
                 id = machine->ReadRegister(6);
 
-                errno = RW_bufck(buffer, size);
-                if (errno <= 0) {    
-                    printf("read buffer error.\n");
-                    kill_process();
-                }
-                if (size < 0) {
-                    printf("read size error.\n");
-                    kill_process();
-                }
-                if (id != ConsoleInput) {
-                    printf("read id error.\n");
+                errno = RW_bufck(buffer, size, id);
+                if (errno < 0) {    
+                    printf("error.\n");
                     kill_process();
                 }
 
@@ -259,17 +251,9 @@ ExceptionHandler(ExceptionType which)
                 size = machine->ReadRegister(5);
                 id = machine->ReadRegister(6);
 
-                errno = RW_bufck(buffer, size);
-                if (errno <= 0) {    
-                    printf("write buffer error.\n");
-                    kill_process();
-                }
-                if (size < 0) {
-                    printf("write size error.\n");
-                    kill_process();
-                }
-                if (id != ConsoleOutput) {
-                    printf("write id error.\n");
+                errno = RW_bufck(buffer, size, id);
+                if (errno < 0) {    
+                    printf("error.\n");
                     kill_process();
                 }
 
