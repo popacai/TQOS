@@ -24,6 +24,26 @@ int fexist_ck(unsigned char* name) {
     return ret;
 }
 
+int RW_bufck(int buffer, int size) {
+    int num_pages;
+    unsigned long task_size, buffsize;
+    unsigned long path_max = 64;
+    num_pages = machine->pageTableSize;
+    task_size = num_pages * PageSize;
+    buffsize = (unsigned long)buffer + (unsigned long)size;
+    printf("user address space size = %ld\n",task_size);
+    if (buffsize > task_size) {
+        printf("buffer start address = %ld\n",(unsigned long)buffer);
+        printf("buffer end address = %ld\n", buffsize);
+        printf("buffer last excess user address space\n");
+        return -1;
+    }else {
+        return size;
+    }
+}
+
+
+
 int fname_addrck(char* name) {
     int num_pages;
     unsigned long task_size;

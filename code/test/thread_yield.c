@@ -4,6 +4,6 @@ int
 main()
 {
     Yield();
-    Halt();
+    return 0;
     /* not reached */
 }

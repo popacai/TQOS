@@ -51,4 +51,6 @@ int fname_addrck(char* name);
  */
 int fexist_ck(unsigned char* name);
 
+int RW_bufck(int buffer, int size);
+
 #endif

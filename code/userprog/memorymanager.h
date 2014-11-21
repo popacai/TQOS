@@ -12,7 +12,7 @@ class MemoryManager{
 public:
     MemoryManager(int numPages);	
     ~MemoryManager();	
-    int AllocPage();
+    int AllocPage(int flag);
     void FreePage(int physPageNum);
     bool PageIsAllocated(int physPageNum);
 private:

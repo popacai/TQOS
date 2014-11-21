@@ -27,4 +27,4 @@ include ../Makefile.dep
 -include deps.mk
 
 test:
-	python run_test.py
+	./nachos -rs 1 -x ../test/console

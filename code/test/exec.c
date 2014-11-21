@@ -26,7 +26,7 @@ int main() {
      case 4: test for arithmatic overflow and underflow
      case 5: test for AddressErrorException (initialize a pointer to a bogus value and try to dereference it)
     */
-    int test_num = 6;
+    int test_num = 11;
     
     switch(test_num) {
         case 0:
@@ -40,13 +40,7 @@ int main() {
             Exec((char*)(nonull_addr),argc,argv,0);
             break;
         case 2:
-          /*  Exec("/home/linux/ieng6/cs120f/jic023/last/TQOS/code/test/no",argc,argv,0);
-          */
-
-            invalid_addr = 2000;
-            Write((char*)(invalid_addr),3,1);
-
-
+            Exec("/home/linux/ieng6/cs120f/jic023/last/TQOS/code/test/no",argc,argv,0);
             break;
         case 3:
             a = 1;
@@ -64,6 +58,14 @@ int main() {
         case 6:
             foo = 3000;
             foo(2);
+            break;
+        case 10:
+            invalid_addr = 2000;
+            Write((char*)(invalid_addr),1000,1);
+            break;
+        case 11:
+            invalid_addr = 2000;
+            Read((char*)(invalid_addr),1000,0);
             break;
         default:
             Exec("/home/linux/ieng6/cs120f/jic023/last/TQOS/code/test/test_exec",argc,argv,0);

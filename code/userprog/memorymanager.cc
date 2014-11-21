@@ -1,4 +1,6 @@
 #include "memorymanager.h"
+#include "system.h"
+
 #include "bitmap.h"
 
 MemoryManager::MemoryManager(int numPages) 
@@ -15,11 +17,17 @@ MemoryManager::~MemoryManager()
 }
 
 int 
-MemoryManager::AllocPage()
+MemoryManager::AllocPage(int flag)
 {
-    memoryLock->Acquire();
-    int pagenum = this->bitmap->Find(); 
-    memoryLock->Release();
+    int pagenum;
+    if(flag) {
+        memoryLock->Acquire();
+        pagenum = this->bitmap->Find(); 
+        memoryLock->Release();
+    }
+    else {
+        pagenum = this->bitmap->Find();
+    }
     return pagenum;
 }
 

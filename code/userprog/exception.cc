@@ -25,6 +25,9 @@
 #include "system.h"
 #include "syscommon.h"
 #include "syscall.h"
+#include "thread.h"
+#include "ksyscall.h"
+#include "processmanager.h"
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -48,6 +51,55 @@
 //	"which" is the kind of exception.  The list of possible exceptions
 //	are in machine.h.
 //----------------------------------------------------------------------
+void kill_process() {
+    ASSERT(false);
+}
+
+void
+StartUserProcess(int argv)
+{
+    // TODO: use test file path, should pass in filename
+    char * filename;
+    int * _argv = (int *) argv;
+    int argc = _argv[0];
+    if(argc < 1) {
+        ASSERT(false);
+    }
+    if(argc == 1) {
+        // shallow copy because no need to keep the value
+        filename = (char*)_argv[1];
+        printf("pass in file path: %s\n", filename);
+    }
+    if(argc > 1) {
+        // for now
+        ASSERT(false);
+        // TODO: add more argv without checking, checked before passed here
+    }
+    OpenFile *executable = fileSystem->Open(filename);
+    AddrSpace *space;
+
+    if (executable == NULL) {
+        printf("Unable to open file %s\n", filename);
+        return;
+    }
+    space = new AddrSpace();
+    if(space->Initialize(executable)) { // use locks
+        currentThread->space = space;
+    }
+    else {
+        // TODO: return error code & handle error
+    }
+
+    delete executable;			// close file
+
+    space->InitRegisters();		// set the initial register values
+    space->RestoreState();		// load page table register
+
+    machine->Run();			// jump to the user progam
+    ASSERT(FALSE);			// machine->Run never returns;
+    // the address space exits
+    // by doing the syscall "exit"
+}
 
 void k_exec(int arg_vaddr[]) {
     unsigned char* name;
@@ -85,42 +137,82 @@ ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
     int buffer, size, id;
-    int arg_vaddr[4] = {0};
+    int errno;
+    unsigned char * path;
+    int srcPath, len, argc, argv, opt;
+    int * passArgv;
+    //int arg_vaddr[4] = {0};
 
+    Thread * t;
+    int spid;
     if (which == SyscallException) {
         switch (type) {
             case SC_Halt:
                 DEBUG('a', "Shutdown, initiated by user program.\n");
+                printf("%s\n", currentThread->getName());
+                printf("halt\n");
                 interrupt->Halt();
                 break;
 
             case SC_Exit:
+                printf("%s\n", currentThread->getName());
                 printf("exit\n");
                 int sp;
-                for (int i=0; i<5; i++) {
-                machine->ReadMem(machine->ReadRegister(StackReg)+4*i,4,&sp);
-                printf("%d %d\n",i,sp);
-                }
-                PushPC();
+
+                //currentThread->Yield();
+                currentThread->Finish();
                 //interrupt->Halt();
+                return;
                 break;
 
             case SC_Exec:
-                printf("exec\n");
-                for (int i = 0; i < 4; i++) {
-                    arg_vaddr[i] = machine->ReadRegister(4+i);
+                printf("exec\n"); 
+                srcPath = machine->ReadRegister(4);
+                argc = machine->ReadRegister(5);
+                argv = machine->ReadRegister(6);
+                opt = machine->ReadRegister(7);
+                // first check the location of filename is valid
+                if(!fname_addrck((char*)srcPath)){
+                    ASSERT(false);
                 }
-                k_exec(arg_vaddr);
-                interrupt->Halt();
+                len = ustrlen((int)srcPath);
+                path = new unsigned char[len+1];
+                u2kmemcpy(path, srcPath, len + 1);
+                if (fexist_ck(path) == -1) {
+                //    ASSERT(false);
+                }
+                printf("user str : %s, len: %d  %c\n", path, len, path[len]);
+                if(argc < 1) {
+                    ASSERT(false);
+                }
+                if(argc == 1) {
+                    // only file path
+                    passArgv = new int[2];
+                    passArgv[0] = argc;
+                    passArgv[1] = (int)path;
+                }
+                else {
+                    // for now
+                    ASSERT(false);
+                    // TODO: check argv
+                }
+                t = new Thread("exec new thread");
+                t -> Fork(StartUserProcess, (int)passArgv); // use fake arg
+                spid = processManager->Alloc((void*)t);
+                // TODO: handle when there is no spid
+                PushPC();
+                machine->WriteRegister(2, spid);
+                printf("new spid: %d\n", spid);
+                currentThread->Yield(); 
                 break;
 
             case SC_Fork:
                 printf("fork\n");
-                interrupt->Halt();
+                // interrupt->Halt();
                 break;
 
             case SC_Yield:
-                printf("yield\n");
+                //printf("yield\n");
                 currentThread->Yield();
                 PushPC();
                 //machine->Run();
@@ -130,46 +222,55 @@ ExceptionHandler(ExceptionType which)
             
             case SC_Read:
                 buffer = machine->ReadRegister(4);
-                k_read(buffer, 0, 0);
-                buffer = machine->ReadRegister(4);
-                arg2_vaddr= machine->ReadRegister(5);
-                printf("arg1 addr=%d\n",buffer);
-                printf("arg2 addr=%d\n",arg2_vaddr);
-                k_read(buffer, arg2_vaddr, 0);
+                size = machine->ReadRegister(5);
+                id = machine->ReadRegister(6);
+
+                errno = RW_bufck(buffer, size);
+                if (errno <= 0) {    
+                    printf("read buffer error.\n");
+                    kill_process();
+                }
+                if (size < 0) {
+                    printf("read size error.\n");
+                    kill_process();
+                }
+                if (id != ConsoleInput) {
+                    printf("read id error.\n");
+                    kill_process();
+                }
+
+                kread((char*)buffer, size, id);
+
                 PushPC();
                 break;
 
             case SC_Write:
-                printf("write\n");
-//                int buffer, size, id;
                 buffer = machine->ReadRegister(4);
                 size = machine->ReadRegister(5);
                 id = machine->ReadRegister(6);
-                
-                int errno;
-                errno = fname_addrck((char*)buffer);
+
+                errno = RW_bufck(buffer, size);
                 if (errno <= 0) {    
                     printf("write buffer error.\n");
-                    ASSERT(false);
+                    kill_process();
                 }
-
                 if (size < 0) {
                     printf("write size error.\n");
-                    ASSERT(false);
+                    kill_process();
                 }
-
                 if (id != ConsoleOutput) {
                     printf("write id error.\n");
-                    ASSERT(false);
+                    kill_process();
                 }
 
-                Write((char*)buffer, size, id);
+                kwrite((char*)buffer, size, id);
+
                 PushPC();
                 break;
 
             default:
                 printf("Unexpected user mode exception %d %d\n", which, type);
-                interrupt->Halt();
+                //interrupt->Halt();
                 ASSERT(FALSE);
         }
     }

@@ -186,6 +186,9 @@ Cleanup()
 
 #ifdef FILESYS
     delete synchDisk;
+    delete memoryManager;
+    delete synchconsole;
+    delete processManager;
 #endif
 
     delete timer;
