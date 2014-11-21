@@ -151,6 +151,7 @@ public:
     void RestoreUserState();		// restore user-level register state
 
     AddrSpace *space;			// User code this thread is running.
+    int spid;
 #endif
 };
 

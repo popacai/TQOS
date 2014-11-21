@@ -5,7 +5,7 @@
 
 MemoryManager::MemoryManager(int numPages) 
 {
-    this->pageCount = numPages;
+    this->freePageCount = numPages;
     this->bitmap = new BitMap(numPages);
     this->memoryLock = new Lock("memory lock");
 }
@@ -28,6 +28,9 @@ MemoryManager::AllocPage(int flag)
     else {
         pagenum = this->bitmap->Find();
     }
+    if(pagenum != -1) {
+        freePageCount--;
+    }
     return pagenum;
 }
 
@@ -36,8 +39,17 @@ void
 MemoryManager::FreePage(int physPageNum)
 {
     memoryLock->Acquire();
+    if(this->bitmap->Test(physPageNum)) {
+        freePageCount++;
+    }
     this->bitmap->Clear(physPageNum);
     memoryLock->Release();
+}
+
+int
+MemoryManager::GetFreePageCount()
+{
+    return this->freePageCount;
 }
 
 bool 

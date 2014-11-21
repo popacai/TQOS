@@ -24,7 +24,7 @@
 #include <strings.h>
 #endif
 
-//#define PDEBUG
+#define PDEBUG
 //----------------------------------------------------------------------
 // SwapHeader
 // 	Do little endian to big endian conversion on the bytes in the
@@ -91,9 +91,9 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
-    // ASSERT(numPages <= NumPhysPages);		// check we're not trying
-    if(numPages > NumPhysPages) {
-        return -1; // fail
+    if(numPages > (unsigned int)memoryManager->GetFreePageCount() || numPages > NumPhysPages) {
+        ASSERT(false);
+        return -1; // TODO: handle fail
     }
     pageTable = new TranslationEntry[numPages];
     printf("********************** NUM PHYS PAGES: %d, PAGE SIZE: 0x%x\n", NumPhysPages, PageSize);
@@ -104,12 +104,13 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     DEBUG('a', "Initializing address space, num pages %d, size %d\n",
           numPages, size);
 // first, set up the translation
-    //pageTable = new TranslationEntry[numPages];
+    printf("num pages = %d\n",numPages);
     for (i = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
         // For Project 2, virtual page number should be i 
         // There is no real virtual memory, just assign a physical memory page
         pageTable[i].physicalPage = memoryManager->AllocPage(flag);
+        ASSERT(pageTable[i].physicalPage >= 0);
         bzero(&machine->mainMemory[pageTable[i].physicalPage * PageSize], PageSize);
         pageTable[i].valid = TRUE;
         pageTable[i].use = FALSE;
@@ -130,7 +131,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     unsigned int copyInFileStart = noffH.code.inFileAddr;
     unsigned int copyOffset;
     unsigned int ppn;
-#ifdef PDBUG
+#ifdef PDEBUG
 printf("code: \n");
 printf("virtual addr: 0x%x\n", noffH.code.virtualAddr);
 printf("in file addr: 0x%x\n", noffH.code.inFileAddr);
@@ -143,7 +144,7 @@ printf("page size: 0x%x\n", PageSize);
         // start at non-boundry and is long enough to fill up the page
         // calculate physical page number using page table
         ppn = pageTable[copyStart / PageSize].physicalPage;
-#ifdef PDBUG
+#ifdef PDEBUG
 printf("writing phys page %d\n", ppn);
 #endif
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
@@ -156,7 +157,7 @@ printf("writing phys page %d\n", ppn);
     }
     if(copySize > 0) {
         ppn = pageTable[copyStart / PageSize].physicalPage;
-#ifdef PDBUG
+#ifdef PEDBUG
 printf("writing phys page %d\n", ppn);
 #endif
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
@@ -193,6 +194,10 @@ printf("writing phys page %d\n", ppn);
 
 AddrSpace::~AddrSpace()
 {
+    unsigned int i;
+    for(i = 0; i < numPages; i++) {
+        memoryManager->FreePage(pageTable[i].physicalPage);
+    }
     if(pageTable != NULL) {
         delete [] pageTable;
     }
@@ -240,8 +245,9 @@ AddrSpace::InitRegisters()
 
 void AddrSpace::SaveState()
 {
-    pageTable = machine->pageTable;
-    numPages = machine->pageTableSize;
+    //why???????
+    //pageTable = machine->pageTable;
+    //numPages = machine->pageTableSize;
 }
 
 //----------------------------------------------------------------------

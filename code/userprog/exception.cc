@@ -52,52 +52,6 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
-void
-StartUserProcess(int argv)
-{
-    // TODO: use test file path, should pass in filename
-    char * filename;
-    int * _argv = (int *) argv;
-    int argc = _argv[0];
-    if(argc < 1) {
-        ASSERT(false);
-    }
-    if(argc == 1) {
-        // shallow copy because no need to keep the value
-        filename = (char*)_argv[1];
-        printf("pass in file path: %s\n", filename);
-    }
-    if(argc > 1) {
-        // for now
-        ASSERT(false);
-        // TODO: add more argv without checking, checked before passed here
-    }
-    OpenFile *executable = fileSystem->Open(filename);
-    AddrSpace *space;
-
-    if (executable == NULL) {
-        printf("Unable to open file %s\n", filename);
-        return;
-    }
-    space = new AddrSpace();
-    if(space->Initialize(executable)) { // use locks
-        currentThread->space = space;
-    }
-    else {
-        // TODO: return error code & handle error
-    }
-
-    delete executable;			// close file
-
-    space->InitRegisters();		// set the initial register values
-    space->RestoreState();		// load page table register
-
-    machine->Run();			// jump to the user progam
-    ASSERT(FALSE);			// machine->Run never returns;
-    // the address space exits
-    // by doing the syscall "exit"
-}
-
 void k_exec(int arg_vaddr[]) {
     unsigned char* name;
     int len, k_argc, k_opt;
@@ -134,72 +88,40 @@ ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
     int buffer, size, id;
-    unsigned char * path;
-    int srcPath, len, argc, argv, opt;
-    int * passArgv;
-    //int arg_vaddr[4] = {0};
-
-    Thread * t;
-    int spid;
     if (which == SyscallException) {
         switch (type) {
             case SC_Halt:
                 DEBUG('a', "Shutdown, initiated by user program.\n");
-                printf("%s\n", currentThread->getName());
                 printf("halt\n");
                 interrupt->Halt();
                 break;
 
             case SC_Exit:
-                printf("%s\n", currentThread->getName());
-                printf("exit\n");
-                int sp;
-
-                //currentThread->Yield();
-                currentThread->Finish();
-                //interrupt->Halt();
-                return;
+                // TODO: should be moved to sysexit.cc like Exec 
+                printf("Exit Thread Name %s\n", currentThread->getName());
+                printf("exit %d\n", currentThread->spid);
+                if(currentThread->spid != 1) {
+                    // if not main thread, just finish
+                    // free resource before finish
+                    delete currentThread->space; // memory manager
+                    processManager->Release(currentThread->spid); // process manager
+                    currentThread->Finish();
+                }
+                else {
+                    ASSERT(currentThread->spid == 1);
+                    while(1 != processManager->TestForExit()) {
+                        // if there are other threads running, yield
+                        currentThread->Yield();
+                    } 
+                    // when there's only me, halt
+                    // TODO: if not halt here, release resource? 
+                    printf("see you! \n");
+                    interrupt->Halt();
+                }
                 break;
 
             case SC_Exec:
-                printf("exec\n"); 
-                srcPath = machine->ReadRegister(4);
-                argc = machine->ReadRegister(5);
-                argv = machine->ReadRegister(6);
-                opt = machine->ReadRegister(7);
-                // first check the location of filename is valid
-                if(!fname_addrck((char*)srcPath)){
-                    ASSERT(false);
-                }
-                len = ustrlen((int)srcPath);
-                path = new unsigned char[len+1];
-                u2kmemcpy(path, srcPath, len + 1);
-                if (fexist_ck(path) == -1) {
-                //    ASSERT(false);
-                }
-                printf("user str : %s, len: %d  %c\n", path, len, path[len]);
-                if(argc < 1) {
-                    ASSERT(false);
-                }
-                if(argc == 1) {
-                    // only file path
-                    passArgv = new int[2];
-                    passArgv[0] = argc;
-                    passArgv[1] = (int)path;
-                }
-                else {
-                    // for now
-                    ASSERT(false);
-                    // TODO: check argv
-                }
-                t = new Thread("exec new thread");
-                t -> Fork(StartUserProcess, (int)passArgv); // use fake arg
-                spid = processManager->Alloc((void*)t);
-                // TODO: handle when there is no spid
-                PushPC();
-                machine->WriteRegister(2, spid);
-                printf("new spid: %d\n", spid);
-                currentThread->Yield(); 
+                kexec();
                 break;
 
             case SC_Fork:
@@ -211,9 +133,6 @@ ExceptionHandler(ExceptionType which)
                 //printf("yield\n");
                 currentThread->Yield();
                 PushPC();
-                //machine->Run();
-                
-                //interrupt->Halt();
                 break;
             
             case SC_Read:
