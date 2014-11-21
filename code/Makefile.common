@@ -59,7 +59,8 @@ THREAD_H =../threads/copyright.h\
     ../threads/test_priority.h\
     ../threads/whale.h\
     ../threads/test_whale.h\
-    ../threads/mailbox.h
+    ../threads/mailbox.h\
+    ../userprog/addrspace.h
 
 
 THREAD_C =../threads/main.cc\
