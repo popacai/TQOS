@@ -60,7 +60,7 @@ THREAD_H =../threads/copyright.h\
     ../threads/whale.h\
     ../threads/test_whale.h\
     ../threads/mailbox.h\
-    ../userprog/addrspace
+    ../userprog/addrspace.h
 
 
 THREAD_C =../threads/main.cc\
