@@ -35,6 +35,7 @@ StartProcess(char *filename)
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
     memoryManager = new MemoryManager(NumPhysPages);
+    //memoryManager -> RandomInitializationTest();
     processManager = new ProcessManager(PROCESS_MAX_NUM);
     synchconsole = new SynchConsole(0, 0);
 

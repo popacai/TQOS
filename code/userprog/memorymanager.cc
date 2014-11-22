@@ -1,6 +1,5 @@
 #include "memorymanager.h"
 #include "system.h"
-
 #include "bitmap.h"
 
 MemoryManager::MemoryManager(int numPages) 
@@ -59,4 +58,21 @@ MemoryManager::PageIsAllocated(int physPageNum)
     bool used = this->bitmap->Test(physPageNum);
     memoryLock->Release();
     return used;
+}
+
+void
+MemoryManager::RandomInitializationTest()
+{
+    // randomly disable 30 pages
+    int i;
+    int j;
+    for(i=0; i<30; i++) {
+        j = ((i+2) * 2) % 128;
+        // Test and Mark
+        if(!this->bitmap->Test(j)) {
+            this->bitmap->Mark(j);
+            this->freePageCount--;
+            printf("DEBUG RAMDOM INIT TEST: mark page %d\n", j);
+        }
+    } 
 }

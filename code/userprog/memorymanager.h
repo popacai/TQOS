@@ -16,6 +16,7 @@ public:
     void FreePage(int physPageNum);
     bool PageIsAllocated(int physPageNum);
     int GetFreePageCount();
+    void RandomInitializationTest();
 private:
     int freePageCount;
     BitMap * bitmap;
