@@ -24,7 +24,7 @@ int fexist_ck(unsigned char* name) {
     return ret;
 }
 
-int RW_bufck(int buffer, int size, int id) {
+int RW_bufck(int buffer, int size) {
     int num_pages;
     unsigned long task_size, buffsize;
     unsigned long path_max = 64;
@@ -39,8 +39,6 @@ int RW_bufck(int buffer, int size, int id) {
         return -1;
     }else if (size < 0) {
         return -2;
-    }else if (id != ConsoleInput) {
-        return -3;
     }else 
         {
         return 1;
