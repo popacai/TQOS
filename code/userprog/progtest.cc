@@ -35,6 +35,7 @@ StartProcess(char *filename)
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
     memoryManager = new MemoryManager(NumPhysPages);
+    //memoryManager -> RandomInitializationTest();
     processManager = new ProcessManager(PROCESS_MAX_NUM);
     synchconsole = new SynchConsole(0, 0);
 
@@ -58,6 +59,7 @@ StartProcess(char *filename)
     
     int spid = processManager->Alloc((void*)currentThread);
     ASSERT(spid == 1);
+    currentThread->spid = spid;
     machine->Run();			// jump to the user progam
     ASSERT(FALSE);			// machine->Run never returns;
     // the address space exits

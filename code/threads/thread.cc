@@ -219,7 +219,6 @@ Thread::Yield ()
 {
     Thread *nextThread;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
-
     ASSERT(this == currentThread);
 
     DEBUG('t', "Yielding thread \"%s\"\n", getName());

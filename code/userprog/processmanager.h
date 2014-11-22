@@ -13,6 +13,7 @@ public:
     int Alloc(void *object);
     void *Get(int index);
     void Release(int index);
+    int TestForExit();
 private:
     void **indexArray;
     Lock * lock;

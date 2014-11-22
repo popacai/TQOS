@@ -63,7 +63,22 @@ ProcessManager::Release(int index)
 {
     lock->Acquire();
     if(index >= 0 && index < arraySize) {
-        indexArray[index] = NULL;
+        indexArray[index-1] = NULL;
     }
     lock->Release();
+}
+
+// return 1 if we are the last to exit
+int
+ProcessManager::TestForExit()
+{
+    lock->Acquire();
+    int result = 0;
+    int i;
+    for(i = 0; i < arraySize; i++) {
+        if(indexArray[i] != NULL) result++;
+    }
+    if(result == 0) ASSERT(false); 
+    lock->Release();
+    return result;
 }
