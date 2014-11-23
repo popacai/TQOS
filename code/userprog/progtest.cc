@@ -16,6 +16,7 @@
 #include "memorymanager.h"
 #include "synchconsole.h"
 #include "processmanager.h"
+#include "bufferpipe.h"
 //----------------------------------------------------------------------
 // StartProcess
 // 	Run a user program.  Open the executable, load it into
@@ -30,6 +31,8 @@ void
 StartProcess(char *filename)
 {
     //test_synchconsole();
+    //test_buffer_pipe();
+    //return;
 
     //Init console
     OpenFile *executable = fileSystem->Open(filename);

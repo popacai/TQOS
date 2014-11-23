@@ -106,7 +106,8 @@ USERPROG_H = ../userprog/addrspace.h\
 	../userprog/synchconsole.h\
         ../userprog/processmanager.h\
     ../userprog/memorymanager.h\
-	../userprog/ksyscall.h
+	../userprog/ksyscall.h\
+	../userprog/bufferpipe.h
 
 USERPROG_C = ../userprog/progtest.cc\
         ../userprog/addrspace.cc\
@@ -123,12 +124,14 @@ USERPROG_C = ../userprog/progtest.cc\
 	../userprog/sysio.cc \
 	../userprog/synchconsole.cc \
         ../userprog/processmanager.cc \
-        ../userprog/memorymanager.cc
+        ../userprog/memorymanager.cc \
+	../userprog/bufferpipe.cc
 
 USERPROG_O = progtest.o addrspace.o bitmap.o exception.o console.o machine.o \
 	mipssim.o translate.o \
 	sysexit.o sysexec.o sysfork.o syscommon.o sysio.o synchconsole.o \
         memorymanager.o processmanager.o\
+		bufferpipe.o
 
 VM_H = 
 VM_C = 
