@@ -26,6 +26,7 @@
 MemoryManager* memoryManager; 
 ProcessManager* processManager;
 SynchConsole* synchconsole;
+BufferPipe* bufferpipe;
 
 void
 StartProcess(char *filename)
@@ -41,6 +42,7 @@ StartProcess(char *filename)
     //memoryManager -> RandomInitializationTest();
     processManager = new ProcessManager(PROCESS_MAX_NUM);
     synchconsole = new SynchConsole(0, 0);
+    bufferpipe = new BufferPipe();
 
     if (executable == NULL) {
         printf("Unable to open file %s\n", filename);

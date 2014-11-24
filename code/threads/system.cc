@@ -189,6 +189,7 @@ Cleanup()
     delete memoryManager;
     delete synchconsole;
     delete processManager;
+    delete bufferpipe;
 #endif
 
     delete timer;
