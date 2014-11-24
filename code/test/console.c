@@ -1,23 +1,14 @@
 #include "syscall.h"
 
 int main() {
-    char cmd[50];
-    char ch = 1;
-    int i = 0;
-    Write("$ ", 3, ConsoleOutput);
+    char ch;
     for (;;) {
         Read(&ch, 1, ConsoleInput);
-        if (ch == '\n') {
-            ch = '\0';
-            cmd[i++] = ch;
-            Write(cmd, i, ConsoleOutput);
-            Exec(cmd, 1, 0, 0);
-            i = 0;
-            Write("$ ", 3, ConsoleOutput);
-        } else {
-            cmd[i++] = ch;
+        Write(&ch, 1, ConsoleOutput);
+        if (ch == 'q'){
+            return 0;
         }
     }
-    Halt();
+
     return 0;
 }

@@ -113,8 +113,8 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exit:
                 // TODO: should be moved to sysexit.cc like Exec 
-                printf("Exit Thread Name %s\n", currentThread->getName());
-                printf("exit %d\n", currentThread->spid);
+                //printf("Exit Thread Name %s\n", currentThread->getName());
+                //printf("exit %d\n", currentThread->spid);
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
@@ -130,7 +130,7 @@ ExceptionHandler(ExceptionType which)
                     } 
                     // when there's only me, halt
                     // TODO: if not halt here, release resource? 
-                    printf("see you! \n");
+                    //printf("see you! \n");
                     interrupt->Halt();
                 }
                 break;

@@ -31,7 +31,7 @@ int RW_bufck(int buffer, int size) {
     num_pages = machine->pageTableSize;
     task_size = num_pages * PageSize;
     buffsize = (unsigned long)buffer + (unsigned long)size;
-    printf("user address space size = %ld\n",task_size);
+    //printf("user address space size = %ld\n",task_size);
     if (buffsize > task_size) {
         printf("buffer start address = %ld\n",(unsigned long)buffer);
         printf("buffer end address = %ld\n", buffsize);
@@ -56,7 +56,7 @@ int fname_addrck(char* name) {
     int value;
     num_pages = machine->pageTableSize;
     task_size = num_pages * PageSize;
-    printf("user address space size = %ld\n",task_size);
+    //printf("user address space size = %ld\n",task_size);
     if ((unsigned long)name > task_size) {
         printf("name address = %ld\n",(unsigned long)name);
         printf("name pointer address excess user address space\n");
