@@ -28,6 +28,8 @@ ProcessManager* processManager;
 SynchConsole* synchconsole;
 BufferPipe* bufferpipe;
 
+void ConsoleTest (char *in, char *out);
+
 void
 StartProcess(char *filename)
 {
@@ -99,6 +101,8 @@ static void WriteDone(int arg) {
 void
 ConsoleTest (char *in, char *out)
 {
+    test_synchconsole();
+    return;
     char ch;
 
     console = new Console(in, out, ReadAvail, WriteDone, 0);
