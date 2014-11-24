@@ -116,6 +116,7 @@ public:
     void donatePriority(int newPriority);
     void clearDonatedPriority(); 
     int getPriority();
+    int join;
 
 private:
     // some of the private data for this class is listed above
@@ -127,7 +128,6 @@ private:
     char* name;
     Condition* joinCondition;
     Lock* conditionLock;
-    int join;
     int done;
     int end;
     int priority;
