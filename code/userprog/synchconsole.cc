@@ -35,6 +35,7 @@ char SynchConsole::GetChar() {
     redirect_stdin = (currentThread->join & 0x4);
     if (redirect_stdin) {
         value = bufferpipe->pop();
+    //fprintf(stderr, "%x, %c\n", value, value);
     } else {
         read_lock->Acquire();
         read_semaphore->P();

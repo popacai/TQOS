@@ -101,7 +101,8 @@ static void WriteDone(int arg) {
 void
 ConsoleTest (char *in, char *out)
 {
-    test_synchconsole();
+    test_buffer_pipe();
+    //test_synchconsole();
     return;
     char ch;
 

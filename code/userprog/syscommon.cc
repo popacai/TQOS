@@ -13,7 +13,7 @@ int fexist_ck(unsigned char* name) {
         i++;
     }
     *(name_signed + i) = 0;
-    printf("file name is %s\n",name_signed);
+    //printf("file name is %s\n",name_signed);
     //printf("%d\n",(*name)==(*name_signed));
     OpenFile* openFile;
     openFile = fileSystem->Open(name_signed);

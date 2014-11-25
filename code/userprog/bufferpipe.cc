@@ -22,10 +22,10 @@ char BufferPipe::pop() {
 }
 
 int BufferPipe::push(char ch) {
-    semaphore->V();
     lock->Acquire(); 
     queue->Append((void*)(int)ch);
     lock->Release();
+    semaphore->V();
     return 1;
 }
 
