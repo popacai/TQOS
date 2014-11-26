@@ -15,6 +15,7 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
+#include "bufferpipe.h"
 
 // Initialization and cleanup routines
 extern void Initialize(int argc, char **argv); 	// Initialization,
@@ -39,6 +40,7 @@ extern Machine* machine;	// user program memory and registers
 extern MemoryManager * memoryManager;
 extern ProcessManager * processManager;
 extern SynchConsole* synchconsole;
+extern BufferPipe* bufferpipe;
 #endif
 
 #ifdef FILESYS_NEEDED 		// FILESYS or FILESYS_STUB 

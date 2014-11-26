@@ -24,7 +24,7 @@
 #include <strings.h>
 #endif
 
-#define PDEBUG
+//#define PDEBUG
 //----------------------------------------------------------------------
 // SwapHeader
 // 	Do little endian to big endian conversion on the bytes in the
@@ -96,7 +96,9 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         return -1; // TODO: handle fail
     }
     pageTable = new TranslationEntry[numPages];
+#ifdef PDEBUG
     printf("********************** NUM PHYS PAGES: %d, PAGE SIZE: 0x%x\n", NumPhysPages, PageSize);
+#endif
     // to run anything too big --
     // at least until we have
     // virtual memory
@@ -104,7 +106,9 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     DEBUG('a', "Initializing address space, num pages %d, size %d\n",
           numPages, size);
 // first, set up the translation
+#ifdef PDEBUG
     printf("num pages = %d\n",numPages);
+#endif
     for (i = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
         // For Project 2, virtual page number should be i 

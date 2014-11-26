@@ -16,6 +16,7 @@
 #include "memorymanager.h"
 #include "synchconsole.h"
 #include "processmanager.h"
+#include "bufferpipe.h"
 //----------------------------------------------------------------------
 // StartProcess
 // 	Run a user program.  Open the executable, load it into
@@ -25,11 +26,16 @@
 MemoryManager* memoryManager; 
 ProcessManager* processManager;
 SynchConsole* synchconsole;
+BufferPipe* bufferpipe;
+
+void ConsoleTest (char *in, char *out);
 
 void
 StartProcess(char *filename)
 {
     //test_synchconsole();
+    //test_buffer_pipe();
+    //return;
 
     //Init console
     OpenFile *executable = fileSystem->Open(filename);
@@ -38,6 +44,7 @@ StartProcess(char *filename)
     //memoryManager -> RandomInitializationTest();
     processManager = new ProcessManager(PROCESS_MAX_NUM);
     synchconsole = new SynchConsole(0, 0);
+    bufferpipe = new BufferPipe();
 
     if (executable == NULL) {
         printf("Unable to open file %s\n", filename);
@@ -94,6 +101,9 @@ static void WriteDone(int arg) {
 void
 ConsoleTest (char *in, char *out)
 {
+    test_buffer_pipe();
+    //test_synchconsole();
+    return;
     char ch;
 
     console = new Console(in, out, ReadAvail, WriteDone, 0);

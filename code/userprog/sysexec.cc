@@ -21,7 +21,7 @@ void kexec() {
     OpenFile * executable;
     AddrSpace * space;
     int spid;
-    printf("Thread name that call EXEC: %s\n", currentThread->getName()); 
+    //printf("Thread name that call EXEC: %s\n", currentThread->getName()); 
     srcPath = machine->ReadRegister(4);
     argc = machine->ReadRegister(5);
     argv = machine->ReadRegister(6);
@@ -36,7 +36,7 @@ void kexec() {
     if (fexist_ck(path) == -1) {
         ASSERT(false);
     }
-    printf("user str : %s, len: %d \n", path, len);
+    //printf("user str : %s, len: %d \n", path, len);
     if(argc == 0) {
         passArgv = NULL;
     }
@@ -45,7 +45,7 @@ void kexec() {
     }
     executable = fileSystem->Open((char*)path);
     space = new AddrSpace();
-    t = new Thread("exec new thread");
+    t = new Thread("exec new thread", opt);
     if(space->Initialize(executable)) {
         t -> space = space;
     }
@@ -57,7 +57,7 @@ void kexec() {
     spid = processManager->Alloc((void*)t);
     // TODO: handle when there is no spid
     machine->WriteRegister(2, spid);
-    printf("new spid: %d\n", spid);
+    //printf("new spid: %d\n", spid);
     t->spid = spid;
     t -> Fork(StartUserProcess, (int)passArgv); 
     currentThread->Yield(); 
