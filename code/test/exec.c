@@ -1,5 +1,13 @@
 #include "syscall.h"
 
+void func() {
+    int i;
+    for (i = 0; i < 5; i++) {
+        Write("ping\n",6,ConsoleOutput);
+        Yield();
+    }
+}
+
 int main() {
     int argc = 2;
     char** argv;
@@ -15,7 +23,9 @@ int main() {
     long cc;
     char* bogus_addr;
     char res;
-    void (*foo)(int);
+    void (*foo)();
+    int cpid;
+    int i;
     
     /* 
      case 0: test for excess address space, current space size is based on 
@@ -25,8 +35,10 @@ int main() {
      case 3: test divide by zero exception
      case 4: test for arithmatic overflow and underflow
      case 5: test for AddressErrorException (initialize a pointer to a bogus value and try to dereference it)
+     case 6: test for illegal funtion pointer
+     case 7: test for Exec exception, test from case 0-6 are all for single process. 
     */
-    int test_num = 11;
+    int test_num = 7; 
     
     switch(test_num) {
         case 0:
@@ -56,8 +68,29 @@ int main() {
             res = *bogus_addr;
             break;
         case 6:
-            foo = 3000;
+            foo = 1500;
             foo(2);
+            break;
+        case 7:
+            Write("exec1exec\n", 11, ConsoleOutput);
+            Exec("../test/thread_yield",0,0,0);
+            Write("exec2exec\n", 11, ConsoleOutput);
+            Exec("../test/thread_yield",0,0,0);
+            Write("exec3exec\n", 11, ConsoleOutput);
+            Exec("../test/user_exception",0,0,0);
+            Write("exec3exec\n", 11, ConsoleOutput);
+            Exec("../test/thread_yield",0,0,0);
+            break;
+        case 8: 
+            /*foo = &func;
+            if (foo == 208) {
+                Write("jjj\n",5,ConsoleOutput);
+            }*/
+            Fork(func);
+            for (i = 0; i < 5; i++) {
+                Write("aaapong\n",6,ConsoleOutput);
+                Yield();
+            }
             break;
         case 10:
             invalid_addr = 2000;

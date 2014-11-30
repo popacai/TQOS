@@ -84,16 +84,17 @@ void k_exec(int arg_vaddr[]) {
 }
 
 int kill_process() {
-     unsigned int num_pages;
+/*     unsigned int num_pages;
      char* thread_name;
      AddrSpace *space;
      space = currentThread->space;
      thread_name = currentThread->getName();
      printf("kernel level thread name = %s\n",thread_name);
      num_pages = space->getNumPages();
-     printf("numPages = %d\n",num_pages);
+     printf("numPages = %d\n",num_pages);*/
+     delete currentThread->space; // memory manager
+     processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
-     printf("after finish\n");
      return 1;
 }
 
@@ -101,7 +102,7 @@ void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-    int buffer, size, id;
+    int buffer, size, id, arg1;
     int errno;
     int read_return_value;
     int name, argc_, argv_, opt;    
@@ -126,9 +127,8 @@ ExceptionHandler(ExceptionType which)
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
-                    delete currentThread->space; // memory manager
-                    processManager->Release(currentThread->spid); // process manager
-                    currentThread->Finish();
+                    //printf("spid=%d\n",currentThread->spid);
+                    kill_process();
                 }
                 else {
                     ASSERT(currentThread->spid == 1);
@@ -224,6 +224,9 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Fork:
                 printf("fork\n");
+                arg1 = machine->ReadRegister(4);
+                kfork(arg1);
+                PushPC();
                 // interrupt->Halt();
                 break;
 
@@ -283,24 +286,24 @@ ExceptionHandler(ExceptionType which)
     else if (which == NumExceptionTypes) {
         //TODO handle arithematic exception
         printf("number exception\n");
-        ASSERT(false);
+        kill_process();
     }
     else if (which == IllegalInstrException) {
         //TODO handle illegal instruction
         printf("illegal instruction exception\n");
-        ASSERT(false);
+        kill_process();
     } 
     else if (which == OverflowException) {
         //TODO handle interger overflow
         printf("Unexpected user mode exception %d %d\n", which, type);
-        ASSERT(false);
+        kill_process();
     }
     else if (which == AddressErrorException) {
         //TODO handle address error 
         printf("Unexpected user mode exception %d %d\n", which, type);
-        ASSERT(false);
+        kill_process();
     } else {
         printf("Unexpected user mode exception %d %d\n", which, type);
-        ASSERT(FALSE);
+        kill_process();
     }
 }
