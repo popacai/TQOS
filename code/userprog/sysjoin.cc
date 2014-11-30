@@ -8,10 +8,8 @@
 void kjoin() {
     int joineeId;
     joineeId = machine->ReadRegister(4);
-    ASSERT(joineeId > 0);
     Thread * joineeThread;
     joineeThread = (Thread*)(processManager->Get(joineeId));
-    ASSERT(joineeThread->join > 0); // able to join
     joineeThread -> Join();
     PushPC();
 }

@@ -54,6 +54,7 @@ void kexec() {
         ASSERT(false);
     }
     delete executable;
+    delete path;
     spid = processManager->Alloc((void*)t);
     // TODO: handle when there is no spid
     machine->WriteRegister(2, spid);

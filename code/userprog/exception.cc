@@ -108,6 +108,8 @@ ExceptionHandler(ExceptionType which)
     int inargv;
     int i;
     unsigned char* path;
+    int joineeId;
+    Thread * joineeThread;
 
     if (which == SyscallException) {
         switch (type) {
@@ -185,6 +187,38 @@ ExceptionHandler(ExceptionType which)
                 break;
 
             case SC_Join:
+                joineeId = machine->ReadRegister(4);
+                if(joineeId <= 1) {
+                    printf("cannot join main or invalid process\n");
+                    PushPC();
+                    break;
+                }
+                joineeThread = (Thread*)(processManager->Get(joineeId));
+                if(joineeThread == NULL) {
+                    printf("joinee process is invalid\n");
+                    PushPC();
+                    break;
+                }
+                if(joineeThread == currentThread) {
+                    printf("a thread cannot join it self\n");
+                    PushPC();
+                    break;
+                }
+                if(!(joineeThread -> join & 1)) {
+                    printf("joinee is not able to be joined\n");
+                    PushPC();
+                    break;
+                }
+                if(joineeThread->joined) {
+                    printf("a thread cannot be join twice\n");
+                    PushPC();
+                    break;
+                }
+                if(!joineeThread->forked) {
+                    printf("cannot join unforked threads\n");
+                    PushPC();
+                    break;
+                }
                 kjoin();
                 break;
 

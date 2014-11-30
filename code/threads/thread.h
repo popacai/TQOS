@@ -117,6 +117,8 @@ public:
     void clearDonatedPriority(); 
     int getPriority();
     int join;
+    int forked;
+    int joined;
 
 private:
     // some of the private data for this class is listed above
@@ -132,8 +134,6 @@ private:
     int end;
     int priority;
     int originalPriority;;
-    int forked;
-    int joined;
 
     void StackAllocate(VoidFunctionPtr func, int arg);
     // Allocate a stack for thread.
