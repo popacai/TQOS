@@ -118,7 +118,7 @@ ExceptionHandler(ExceptionType which)
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
-                    //delete currentThread->space; // memory manager
+                    delete currentThread->space; // memory manager
                     processManager->Release(currentThread->spid); // process manager
                     currentThread->Finish();
                 }
@@ -137,6 +137,10 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exec:
                 kexec();
+                break;
+
+            case SC_Join:
+                kjoin();
                 break;
 
             case SC_Fork:
