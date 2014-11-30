@@ -48,8 +48,8 @@ ProcessManager::Get(int index)
 {
     lock->Acquire();
     void * process;
-    if(index >= 0 && index < arraySize) {
-    	process = indexArray[index];
+    if(index >= 1 && index <= arraySize) {
+    	process = indexArray[index-1];
     }
     else {
         process = NULL;

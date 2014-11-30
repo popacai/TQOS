@@ -12,4 +12,6 @@ void kwrite(char *buffer, int size, OpenFileId id);
 void kexec();
 void kfork(int arg1);
 
+void kjoin();
+
 #endif

@@ -58,7 +58,7 @@ void kexec() {
     // TODO: handle when there is no spid
     machine->WriteRegister(2, spid);
     //printf("new spid: %d\n", spid);
-    t->spid = spid;
+    t -> spid = spid;
     t -> Fork(StartUserProcess, (int)passArgv); 
     currentThread->Yield(); 
     PushPC();

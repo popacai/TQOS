@@ -15,7 +15,6 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
-#include "bufferpipe.h"
 
 // Initialization and cleanup routines
 extern void Initialize(int argc, char **argv); 	// Initialization,
@@ -36,6 +35,7 @@ extern Timer *timer;				// the hardware alarm clock
 #include "memorymanager.h"
 #include "processmanager.h"
 #include "synchconsole.h"
+#include "bufferpipe.h"
 extern Machine* machine;	// user program memory and registers
 extern MemoryManager * memoryManager;
 extern ProcessManager * processManager;
