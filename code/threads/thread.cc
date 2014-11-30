@@ -42,7 +42,7 @@ Thread::Thread(char* threadName, int join)
     space = NULL;
 #endif
     this->join = join;
-    if(this->join) {
+    if(this->join & 1) {
         this->joinCondition= new Condition("joinCondition");
         this->conditionLock = new Lock("conditionLock");
         done = 0;
@@ -72,7 +72,7 @@ Thread::~Thread()
     ASSERT(this != currentThread);
     if (stack != NULL)
         DeallocBoundedArray((char *) stack, StackSize * sizeof(int));
-    if(this->join) {
+    if(this->join & 1) {
         delete this->joinCondition;
         delete this->conditionLock;
     }
@@ -116,7 +116,7 @@ Thread::Fork(VoidFunctionPtr func, int arg)
 void 
 Thread::Join() {
    ASSERT(currentThread != this);
-   ASSERT(this->join && this->forked && !this->joined);
+   ASSERT((this->join & 1) && this->forked && !this->joined);
    this->joined = 1;
    this->conditionLock->Acquire();
    if(currentThread->getPriority() > this->getPriority()) {
@@ -178,7 +178,7 @@ Thread::Finish ()
     ASSERT(this == currentThread);
 
     DEBUG('t', "Finishing thread \"%s\"\n", getName());
-    if(this->join) {
+    if(this->join & 1) {
         this->conditionLock->Acquire();
         this->done = 1;
         this->joinCondition->Signal(conditionLock);

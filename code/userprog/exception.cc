@@ -157,7 +157,8 @@ ExceptionHandler(ExceptionType which)
                     PushPC();
                     break;
                     //kill_process();
-                }else if (opt != 1 && opt !=0) {
+                }
+                else if (opt < 0 || opt > 0x111b) {
                     printf("wrong opt\n");
                     PushPC();
                     break;
