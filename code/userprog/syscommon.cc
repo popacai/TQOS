@@ -98,7 +98,7 @@ int fname_addrck(char* name) {
 void PushPC() {
     machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
     machine->WriteRegister(PCReg, machine->ReadRegister(PCReg) + 4);
-    machine->WriteRegister(NextPCReg, machine->ReadRegister(PCReg) + 8); 
+    machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg) + 4); 
 }
 
 int ustrlen(int src) {
