@@ -103,6 +103,7 @@ ExceptionHandler(ExceptionType which)
     int type = machine->ReadRegister(2);
     int buffer, size, id;
     int errno;
+    int read_return_value;
     if (which == SyscallException) {
         switch (type) {
             case SC_Halt:
@@ -164,7 +165,8 @@ ExceptionHandler(ExceptionType which)
                     printf("error id.\n");
                     kill_process();
                 }
-                kread((char*)buffer, size, id);
+                read_return_value = kread((char*)buffer, size, id);
+                machine->WriteRegister(2, read_return_value);
 
                 PushPC();
                 break;
