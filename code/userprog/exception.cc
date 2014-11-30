@@ -102,7 +102,7 @@ void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
-    int buffer, size, id;
+    int buffer, size, id, arg1;
     int errno;
     if (which == SyscallException) {
         switch (type) {
@@ -119,6 +119,7 @@ ExceptionHandler(ExceptionType which)
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
+                    //printf("spid=%d\n",currentThread->spid);
                     kill_process();
                 }
                 else {
@@ -140,6 +141,9 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Fork:
                 printf("fork\n");
+                arg1 = machine->ReadRegister(4);
+                kfork(arg1);
+                PushPC();
                 // interrupt->Halt();
                 break;
 
