@@ -103,6 +103,10 @@ ExceptionHandler(ExceptionType which)
     int type = machine->ReadRegister(2);
     int buffer, size, id;
     int errno;
+    int name, argc_, argv_, opt;    
+    int inargv;
+    int i;
+    unsigned char* path;
     if (which == SyscallException) {
         switch (type) {
             case SC_Halt:
@@ -136,7 +140,45 @@ ExceptionHandler(ExceptionType which)
                 break;
 
             case SC_Exec:
-                kexec();
+                name = machine->ReadRegister(4);
+                argc_ = machine->ReadRegister(5);
+                argv_ = machine->ReadRegister(6);
+                opt = machine->ReadRegister(7);
+                if (fname_addrck((char*)name) <= 0) {
+                    printf("name error\n");
+                    PushPC();
+                    break;
+                    //kill_process();
+                }else if ((argc_ < 0) || (RW_bufck(argv_, argc_) <= 0) ) { 
+                    //here the RW_bufck is just used for check the argv_ address, no work with read/write
+                    printf("argc or argv error\n");
+                    PushPC();
+                    break;
+                    //kill_process();
+                }else if (opt != 1 && opt !=0) {
+                    printf("wrong opt\n");
+                    PushPC();
+                    break;
+                }
+                size = ustrlen(name);
+                path = new unsigned char[size+1];
+                u2kmemcpy(path, name, size+1);
+                if (fexist_ck(path) <= 0) {
+                    printf("name not exits\n");
+                    PushPC();
+                    break;
+                }
+/*                for (i = 0; i < argc_; i++) {
+                    machine->ReadMem(argv_ + i*4, 4, &inargv);
+                    errno = fname_addrck((char*) inargv);
+                    if (errno <= 0 ) {
+                        printf("inargv error\n");
+                        PushPC();
+                        break;
+                        //kill_process();
+                    }
+                } 
+*/                kexec();
                 break;
 
             case SC_Join:
