@@ -10,6 +10,7 @@ void start_child_thread(int func_ptr) {
     machine->WriteRegister(NextPCReg, func_ptr);
     currentThread->space->RestoreState();		// load page table register
     machine->Run();			// jump to the user progam
+    ASSERT(false);
 }
     
 int kfork(int func_ptr) {
@@ -30,4 +31,5 @@ int kfork(int func_ptr) {
 
     t->Fork(start_child_thread, func_ptr);
     currentThread->Yield();
+    return 0;
 }
