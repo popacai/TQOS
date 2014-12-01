@@ -97,7 +97,8 @@ int kill_process() {
      printf("kernel level thread name = %s\n",thread_name);
      num_pages = space->getNumPages();
      printf("numPages = %d\n",num_pages);*/
-     delete currentThread->space; // memory manager
+
+     //delete currentThread->space; // memory manager
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
      return 1;
@@ -128,6 +129,8 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exit:
                 // TODO: should be moved to sysexit.cc like Exec 
+                printf("%s exit\n", currentThread->getName());
+                //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
                 if(currentThread->spid != 1) {
@@ -238,8 +241,8 @@ ExceptionHandler(ExceptionType which)
             case SC_Fork:
                 printf("fork\n");
                 arg1 = machine->ReadRegister(4);
-                PushPC();
                 kfork(arg1);
+                PushPC();
                 // interrupt->Halt();
                 break;
 
@@ -316,12 +319,13 @@ ExceptionHandler(ExceptionType which)
     } 
     else if (which == OverflowException) {
         //TODO handle interger overflow
-        printf("Unexpected user mode exception %d %d\n", which, type);
+        printf("Overflow%d %d\n", which, type);
         kill_process();
     }
     else if (which == AddressErrorException) {
         //TODO handle address error 
-        printf("Unexpected user mode exception %d %d\n", which, type);
+        machine->DumpState();
+        printf("adderror %d %d\n", which, type);
         kill_process();
     } else {
         printf("Unexpected user mode exception %d %d\n", which, type);

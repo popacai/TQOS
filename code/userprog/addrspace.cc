@@ -253,9 +253,12 @@ int AddrSpace::CopyCurrentSpace() {
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
 
+        memset(&machine->mainMemory[pageTable[i].physicalPage * PageSize], 'A', PageSize);
+        /*
         memcpy((void*)(machine->mainMemory + newPhysicalPage * PageSize), 
                       (void*)(machine->mainMemory + oldPhysicalPage * PageSize), 
                       PageSize);
+        */
 
     }
 
@@ -270,7 +273,6 @@ int AddrSpace::CopyCurrentSpace() {
 AddrSpace::~AddrSpace()
 {
     //TODO: To be fixed in future
-    /*
     unsigned int i;
     for(i = 0; i < numPages; i++) {
         memoryManager->FreePage(pageTable[i].physicalPage);
@@ -278,7 +280,6 @@ AddrSpace::~AddrSpace()
     if(pageTable != NULL) {
         delete [] pageTable;
     }
-    */
 }
 
 //----------------------------------------------------------------------
