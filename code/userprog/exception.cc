@@ -152,15 +152,13 @@ ExceptionHandler(ExceptionType which)
                     printf("name error\n");
                     PushPC();
                     break;
-                    //kill_process();
-                }else if ((argc_ < 0) || (RW_bufck(argv_, argc_) <= 0) ) { 
-                    //here the RW_bufck is just used for check the argv_ address, no work with read/write
+                }
+                if ((argc_ < 0) || (bufck(argv_, argc_) <= 0) ) { 
                     printf("argc or argv error\n");
                     PushPC();
                     break;
-                    //kill_process();
                 }
-                else if (opt < 0 || opt > 0x111b) {
+                if (opt < 0 || opt > 0x111b) {
                     printf("wrong opt\n");
                     PushPC();
                     break;
@@ -173,17 +171,16 @@ ExceptionHandler(ExceptionType which)
                     PushPC();
                     break;
                 }
-/*                for (i = 0; i < argc_; i++) {
+                for (i = 0; i < argc_; i++) {
                     machine->ReadMem(argv_ + i*4, 4, &inargv);
                     errno = fname_addrck((char*) inargv);
                     if (errno <= 0 ) {
                         printf("inargv error\n");
                         PushPC();
                         break;
-                        //kill_process();
                     }
                 } 
-*/                kexec();
+                kexec();
                 break;
 
             case SC_Join:

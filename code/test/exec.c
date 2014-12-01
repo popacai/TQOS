@@ -38,7 +38,7 @@ int main() {
      case 6: test for illegal funtion pointer
      case 7: test for Exec exception, test from case 0-6 are all for single process. 
     */
-    int test_num = 7; 
+    int test_num = 10; 
     
     switch(test_num) {
         case 0:
