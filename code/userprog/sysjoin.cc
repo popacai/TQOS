@@ -7,9 +7,12 @@
 
 void kjoin() {
     int joineeId;
+    int exitStatus;
     joineeId = machine->ReadRegister(4);
     Thread * joineeThread;
     joineeThread = (Thread*)(processManager->Get(joineeId));
     joineeThread -> Join();
+    exitStatus = joineeThread->exitStatusCode;
+    machine->WriteRegister(2, exitStatus); // return exit code 
     PushPC();
 }
