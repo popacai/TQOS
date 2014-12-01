@@ -29,6 +29,9 @@ public:
     int Initialize(OpenFile *executable, int flag);
     int Initialize(OpenFile *executable);
 
+    // This function will copy all currentspace pages into this space pages
+    int CopyCurrentSpace();
+
     void InitRegisters();		// Initialize user-level CPU registers,
     // before jumping to user code
 

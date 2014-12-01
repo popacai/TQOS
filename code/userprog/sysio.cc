@@ -24,7 +24,7 @@ int kread(char *buffer, int size, OpenFileId id) {
 }
 
 // Buffer is the pointer in User-level memory
-void kwrite(char *buffer, int size, OpenFileId id) {
+int kwrite(char *buffer, int size, OpenFileId id) {
     int i;
     int copied_size;
     unsigned char kernel_char;
@@ -41,5 +41,6 @@ void kwrite(char *buffer, int size, OpenFileId id) {
         ASSERT(false);
         //TODO: call OS filesys/openfile.h
     }
+    return size;
 }
 

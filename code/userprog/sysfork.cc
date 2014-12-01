@@ -2,32 +2,29 @@
 #include "syscommon.h"
 #include "ksyscall.h"
 #include "machine.h"
-#include "translate.h"
 #include "addrspace.h"
 
-/*void StartChildProcess(int argv) {
-    int numPages;
-    numPages = currentThread->space->getNumPages();
-    PushPC();
-    machine->WriteRegister(StackReg, numPages*PageSize - 256);
-    machine->WriteRegister(2,0);
-    machine->Run();
-}*/
+void start_child_thread(int argv) {
+    //currentThread->space->InitRegisters();
+    currentThread->space->RestoreState();		// load page table register
+    machine->Run();			// jump to the user progam
+}
     
-void kfork(int arg_t) {
+int kfork(int func_ptr) {
     Thread* t;
-    //int foo_addr;
-    void (*foo)(int);  
-    //machine->ReadMem(arg_t,4,&foo_addr);
-    //machine->Translate(arg_t, &foo_addr, 4, 0);
-    AddrSpace *space = currentThread->space;
-    
-    printf("%d\n",arg_t);
-    //printf("%d\n",foo_addr);
-    foo = (void (*)(int))arg_t;
-    printf("%d\n",(int)foo);
+    AddrSpace* new_space;
+
+
+    new_space = new AddrSpace(); //a new space
     t = new Thread("child thread");
-    t->space = space;
-    t->Fork(foo,NULL);
+
+    new_space->CopyCurrentSpace();
+
+    //DEBUG for space
+    t->space = new_space;
+    t->SaveUserState();
+    
+    t->Fork(start_child_thread, NULL);
+    printf("done_copy\n");
     currentThread->Yield();
 }

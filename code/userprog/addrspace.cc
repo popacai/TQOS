@@ -115,7 +115,8 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         // There is no real virtual memory, just assign a physical memory page
         pageTable[i].physicalPage = memoryManager->AllocPage(flag);
         ASSERT(pageTable[i].physicalPage >= 0);
-        bzero(&machine->mainMemory[pageTable[i].physicalPage * PageSize], PageSize);
+        //bzero(&machine->mainMemory[pageTable[i].physicalPage * PageSize], PageSize);
+        memset(&machine->mainMemory[pageTable[i].physicalPage * PageSize], 'A', PageSize);
         pageTable[i].valid = TRUE;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
@@ -191,13 +192,85 @@ printf("writing phys page %d\n", ppn);
     return 1; // success
 }
 
+int SeekForPhysicalPage(TranslationEntry* vm, int vmSize,int virtualPage) {
+    int i;
+    for (i = 0; i < vmSize; i++) {
+        if (vm[i].virtualPage == virtualPage) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int AddrSpace::CopyCurrentSpace() {
+    int i, physicalPageIndex;
+    int temp;
+    int newPhysicalPage, oldPhysicalPage;
+    int sharedPages;
+    int stackPages;
+    TranslationEntry* currentThreadVM;
+
+    numPages = currentThread->space->getNumPages();
+    stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared 
+    sharedPages = numPages - stackPages;
+
+    if(stackPages > memoryManager->GetFreePageCount() || numPages > NumPhysPages) {
+        return 1; // TODO: handle fail
+    }
+
+    printf("numPages=%d\n", numPages);
+    printf("sharedPages=%d\n", sharedPages);
+    printf("stackPages=%d\n", stackPages); 
+
+    //init new Entries
+    pageTable = new TranslationEntry[numPages];
+    currentThreadVM = currentThread->space->getPageTable();
+
+    // redirect the shared memory
+    for (i = 0; i < sharedPages; i++) {
+        pageTable[i].virtualPage = i;
+        physicalPageIndex = SeekForPhysicalPage(currentThreadVM, numPages, i);
+        pageTable[i].physicalPage = physicalPageIndex;
+
+        pageTable[i].valid = TRUE;
+        pageTable[i].use = FALSE;
+        pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
+
+        ASSERT(physicalPageIndex >= 0);
+    }
+
+    // start a new memory space
+    for (i = sharedPages; i < numPages; i++) {
+        pageTable[i].virtualPage = i;
+        oldPhysicalPage = SeekForPhysicalPage(currentThreadVM, numPages, i);
+        //oldPhysicalPage = i;
+        newPhysicalPage = memoryManager->AllocPage(1); //has the lock?
+        pageTable[i].physicalPage = newPhysicalPage;
+
+        pageTable[i].valid = TRUE;
+        pageTable[i].use = FALSE;
+        pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
+
+        memcpy((void*)(machine->mainMemory + newPhysicalPage * PageSize), 
+                      (void*)(machine->mainMemory + oldPhysicalPage * PageSize), 
+                      PageSize);
+
+    }
+
+
+    return 0;
+}
+
 //----------------------------------------------------------------------
 // AddrSpace::~AddrSpace
 // 	Dealloate an address space.  Nothing for now!
 //----------------------------------------------------------------------
-
 AddrSpace::~AddrSpace()
 {
+    //TODO: To be fixed in future
+    /*
     unsigned int i;
     for(i = 0; i < numPages; i++) {
         memoryManager->FreePage(pageTable[i].physicalPage);
@@ -205,6 +278,7 @@ AddrSpace::~AddrSpace()
     if(pageTable != NULL) {
         delete [] pageTable;
     }
+    */
 }
 
 //----------------------------------------------------------------------

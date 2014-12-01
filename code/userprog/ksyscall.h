@@ -6,11 +6,13 @@
 
 // CAUTION: This is implementation of all system call functions
 int kread(char *buffer, int size, OpenFileId id);
-void kwrite(char *buffer, int size, OpenFileId id);
+int kwrite(char *buffer, int size, OpenFileId id);
+
+//thread fork
+int kfork(int func_ptr);
 
 //kexec, kexit, kfork, kjoin
 void kexec();
-void kfork(int arg1);
 
 void kjoin();
 

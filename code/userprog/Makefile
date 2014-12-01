@@ -27,4 +27,4 @@ include ../Makefile.dep
 -include deps.mk
 
 test:
-	./nachos -rs 1 -x ../test/console
+	./nachos -rs 1 -x ../test/test_fork

@@ -52,6 +52,11 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
+int write_return_value(int value) {
+    machine->WriteRegister(2, value); 
+    return 0;
+}
+
 void k_exec(int arg_vaddr[]) {
     unsigned char* name;
     int len, k_argc, k_opt;
@@ -104,7 +109,7 @@ ExceptionHandler(ExceptionType which)
     int type = machine->ReadRegister(2);
     int buffer, size, id, arg1;
     int errno;
-    int read_return_value;
+    int io_return_value;
     int name, argc_, argv_, opt;    
     int inargv;
     int i;
@@ -232,9 +237,9 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Fork:
                 printf("fork\n");
-                arg1 = machine->ReadRegister(4);
-                kfork(arg1);
+                //arg1 = machine->ReadRegister(4);
                 PushPC();
+                kfork(0);
                 // interrupt->Halt();
                 break;
 
@@ -252,14 +257,14 @@ ExceptionHandler(ExceptionType which)
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
                     printf("error.\n");
-                    kill_process();
+                    write_return_value(-1);
                 }
                 if (id != ConsoleInput) {
                     printf("error id.\n");
-                    kill_process();
+                    write_return_value(-1);
                 }
-                read_return_value = kread((char*)buffer, size, id);
-                machine->WriteRegister(2, read_return_value);
+                io_return_value = kread((char*)buffer, size, id);
+                write_return_value(io_return_value);
 
                 PushPC();
                 break;
@@ -273,14 +278,15 @@ ExceptionHandler(ExceptionType which)
                 if (errno < 0) {    
                     printf("%d\n",errno);
                     printf("error.\n");
-                    kill_process();
+                    write_return_value(-1);
                 }
                 if (id != ConsoleOutput) {
                     printf("error id.\n");
-                    kill_process();
+                    write_return_value(-1);
                 }
 
-                kwrite((char*)buffer, size, id);
+                io_return_value = kwrite((char*)buffer, size, id);
+                write_return_value(io_return_value);
 
                 PushPC();
                 break;
