@@ -19,10 +19,15 @@ int kfork(int func_ptr) {
     t = new Thread("child thread");
 
     new_space->CopyCurrentSpace();
+    currentThread->SaveUserState();
 
     //DEBUG for space
     t->space = new_space;
+
+    machine->WriteRegister(PCReg, func_ptr - 4);
+    machine->WriteRegister(NextPCReg, func_ptr);
     t->SaveUserState();
+    currentThread->RestoreUserState();
     
     t->Fork(start_child_thread, NULL);
     printf("done_copy\n");

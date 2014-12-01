@@ -237,9 +237,9 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Fork:
                 printf("fork\n");
-                //arg1 = machine->ReadRegister(4);
+                arg1 = machine->ReadRegister(4);
                 PushPC();
-                kfork(0);
+                kfork(arg1);
                 // interrupt->Halt();
                 break;
 
