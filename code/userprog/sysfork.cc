@@ -28,7 +28,9 @@ int kfork(int func_ptr) {
     new_space = new AddrSpace(); //a new space
     t = new Thread("child thread");
 
-    new_space->CopyCurrentSpace();
+    if (new_space->CopyCurrentSpace()) {
+        return -1;
+    }
 
     //DEBUG for space
     t->space = new_space;
