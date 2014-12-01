@@ -50,17 +50,23 @@ void kexec() {
         t -> space = space;
     }
     else {
-        //TODO: return error, not assert
-        ASSERT(false);
+        machine->WriteRegister(2, 0); // return err code 0
+        PushPC();
+        return;
+        ASSERT(false); // should not reach here
     }
     delete executable;
     delete path;
     spid = processManager->Alloc((void*)t);
-    // TODO: handle when there is no spid
     machine->WriteRegister(2, spid);
+    if(spid == 0) {// not enough spid in process manager
+        delete t;
+        PushPC();
+        return;
+    }
     //printf("new spid: %d\n", spid);
-    t -> spid = spid;
-    t -> Fork(StartUserProcess, (int)passArgv); 
+    t->spid = spid;
+    t->Fork(StartUserProcess, (int)passArgv); 
     currentThread->Yield(); 
     PushPC();
 }

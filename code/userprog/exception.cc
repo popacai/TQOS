@@ -111,6 +111,7 @@ ExceptionHandler(ExceptionType which)
     unsigned char* path;
     int joineeId;
     Thread * joineeThread;
+    int exitStatus;
 
     if (which == SyscallException) {
         switch (type) {
@@ -122,12 +123,11 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exit:
                 // TODO: should be moved to sysexit.cc like Exec 
-                //printf("Exit Thread Name %s\n", currentThread->getName());
-                //printf("exit %d\n", currentThread->spid);
+                exitStatus = machine->ReadRegister(4);
+                currentThread->exitStatusCode = exitStatus;
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
-                    //printf("spid=%d\n",currentThread->spid);
                     kill_process();
                 }
                 else {
@@ -150,16 +150,19 @@ ExceptionHandler(ExceptionType which)
                 opt = machine->ReadRegister(7);
                 if (fname_addrck((char*)name) <= 0) {
                     printf("name error\n");
+                    machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
                     break;
                 }
                 if ((argc_ < 0) || (bufck(argv_, argc_) <= 0) ) { 
                     printf("argc or argv error\n");
+                    machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
                     break;
                 }
                 if (opt < 0 || opt > 0x111b) {
                     printf("wrong opt\n");
+                    machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
                     break;
                 }
@@ -168,6 +171,7 @@ ExceptionHandler(ExceptionType which)
                 u2kmemcpy(path, name, size+1);
                 if (fexist_ck(path) <= 0) {
                     printf("name not exits\n");
+                    machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
                     break;
                 }
@@ -176,6 +180,7 @@ ExceptionHandler(ExceptionType which)
                     errno = fname_addrck((char*) inargv);
                     if (errno <= 0 ) {
                         printf("inargv error\n");
+                        machine->WriteRegister(2, 0); // return err code 0
                         PushPC();
                         break;
                     }
@@ -187,32 +192,38 @@ ExceptionHandler(ExceptionType which)
                 joineeId = machine->ReadRegister(4);
                 if(joineeId <= 1) {
                     printf("cannot join main or invalid process\n");
+                    machine->WriteRegister(2, -65535); // return err code 
                     PushPC();
                     break;
                 }
                 joineeThread = (Thread*)(processManager->Get(joineeId));
                 if(joineeThread == NULL) {
                     printf("joinee process is invalid\n");
+                    machine->WriteRegister(2, -65535); // return err code 
                     PushPC();
                     break;
                 }
                 if(joineeThread == currentThread) {
                     printf("a thread cannot join it self\n");
+                    machine->WriteRegister(2, -65535); // return err code 
                     PushPC();
                     break;
                 }
                 if(!(joineeThread -> join & 1)) {
                     printf("joinee is not able to be joined\n");
+                    machine->WriteRegister(2, -65535); // return err code 
                     PushPC();
                     break;
                 }
                 if(joineeThread->joined) {
                     printf("a thread cannot be join twice\n");
+                    machine->WriteRegister(2, -65535); // return err code 
                     PushPC();
                     break;
                 }
                 if(!joineeThread->forked) {
                     printf("cannot join unforked threads\n");
+                    machine->WriteRegister(2, -65535); // return err code 
                     PushPC();
                     break;
                 }
@@ -241,11 +252,15 @@ ExceptionHandler(ExceptionType which)
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
                     printf("error.\n");
-                    kill_process();
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
                 if (id != ConsoleInput) {
                     printf("error id.\n");
-                    kill_process();
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
                 read_return_value = kread((char*)buffer, size, id);
                 machine->WriteRegister(2, read_return_value);
@@ -260,13 +275,16 @@ ExceptionHandler(ExceptionType which)
 
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
-                    printf("%d\n",errno);
                     printf("error.\n");
-                    kill_process();
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
                 if (id != ConsoleOutput) {
                     printf("error id.\n");
-                    kill_process();
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
 
                 kwrite((char*)buffer, size, id);

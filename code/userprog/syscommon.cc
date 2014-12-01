@@ -37,11 +37,10 @@ int bufck(int buffer, int size) {
     if (buffsize > task_size) {
         printf("buffer last exceed user address space\n");
         return -1;
-    }else 
-        {
-        return 1;
-    }
+    } 
+    return 1;
 }
+
 int RW_bufck(int buffer, int size) {
     int num_pages;
     unsigned long task_size, buffsize;
@@ -52,10 +51,8 @@ int RW_bufck(int buffer, int size) {
     if (buffsize > task_size) {
         printf("buffer last exceed user address space\n");
         return -1;
-    }else 
-        {
-        return 1;
-    }
+    } 
+    return 1;
 }
 
 int fname_addrck(char* name) {
@@ -151,12 +148,13 @@ int u2kmemread(int src) {
 
 int u2kmatrixcpy(unsigned char** dst, int src, int n) {
    int i, len;
+   int addr;
+
    for (i = 0; i < n; i++) {
-        int addr;
         machine->ReadMem(src + i*4,4,&addr);
         len = ustrlen(addr);
-        dst[i] = new unsigned char[len];
-        u2kmemcpy(dst[i],addr,len);
+        dst[i] = new unsigned char[len + 1];
+        u2kmemcpy(dst[i],addr,len + 1);
    }
    return i;
 }
