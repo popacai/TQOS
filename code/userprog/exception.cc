@@ -158,14 +158,14 @@ ExceptionHandler(ExceptionType which)
                     machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
                     break;
-                }else if ((argc_ < 0) || (RW_bufck(argv_, argc_) <= 0) ) { 
-                    //here the RW_bufck is just used for check the argv_ address, no work with read/write
+                }
+                if ((argc_ < 0) || (bufck(argv_, argc_) <= 0) ) { 
                     printf("argc or argv error\n");
                     machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
                     break;
                 }
-                else if (opt < 0 || opt > 0x111b) {
+                if (opt < 0 || opt > 0x111b) {
                     printf("wrong opt\n");
                     machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
@@ -180,7 +180,7 @@ ExceptionHandler(ExceptionType which)
                     PushPC();
                     break;
                 }
-/*                for (i = 0; i < argc_; i++) {
+                for (i = 0; i < argc_; i++) {
                     machine->ReadMem(argv_ + i*4, 4, &inargv);
                     errno = fname_addrck((char*) inargv);
                     if (errno <= 0 ) {
@@ -190,7 +190,7 @@ ExceptionHandler(ExceptionType which)
                         break;
                     }
                 } 
-*/                kexec();
+                kexec();
                 break;
 
             case SC_Join:
@@ -257,11 +257,15 @@ ExceptionHandler(ExceptionType which)
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
                     printf("error.\n");
-                    write_return_value(-1);
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
                 if (id != ConsoleInput) {
                     printf("error id.\n");
-                    write_return_value(-1);
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
                 io_return_value = kread((char*)buffer, size, id);
                 write_return_value(io_return_value);
@@ -276,13 +280,16 @@ ExceptionHandler(ExceptionType which)
 
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
-                    printf("%d\n",errno);
                     printf("error.\n");
-                    write_return_value(-1);
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
                 if (id != ConsoleOutput) {
                     printf("error id.\n");
-                    write_return_value(-1);
+                    machine->WriteRegister(2, 0); // return err code 0
+                    PushPC();
+                    break;
                 }
 
                 io_return_value = kwrite((char*)buffer, size, id);

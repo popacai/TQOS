@@ -24,28 +24,36 @@ int fexist_ck(unsigned char* name) {
     return ret;
 }
 
+int bufck(int buffer, int size) {
+    int num_pages;
+    unsigned long task_size, buffsize;
+    num_pages = machine->pageTableSize;
+    task_size = num_pages * PageSize;
+    if (buffer < 0) {
+        return -1;
+    }
+    buffsize = (unsigned long)buffer + (unsigned long)size * 4 ;
+    //printf("user address space size = %ld\n",task_size);
+    if (buffsize > task_size) {
+        printf("buffer last exceed user address space\n");
+        return -1;
+    } 
+    return 1;
+}
+
 int RW_bufck(int buffer, int size) {
     int num_pages;
     unsigned long task_size, buffsize;
-    unsigned long path_max = 64;
     num_pages = machine->pageTableSize;
     task_size = num_pages * PageSize;
     buffsize = (unsigned long)buffer + (unsigned long)size;
     //printf("user address space size = %ld\n",task_size);
     if (buffsize > task_size) {
-        printf("buffer start address = %ld\n",(unsigned long)buffer);
-        printf("buffer end address = %ld\n", buffsize);
-        printf("buffer last excess user address space\n");
+        printf("buffer last exceed user address space\n");
         return -1;
-    }else if (size < 0) {
-        return -2;
-    }else 
-        {
-        return 1;
-    }
+    } 
+    return 1;
 }
-
-
 
 int fname_addrck(char* name) {
     int num_pages;
@@ -59,13 +67,13 @@ int fname_addrck(char* name) {
     //printf("user address space size = %ld\n",task_size);
     if ((unsigned long)name > task_size) {
         printf("name address = %ld\n",(unsigned long)name);
-        printf("name pointer address excess user address space\n");
+        printf("name pointer address exceed user address space\n");
         return 0;
     }
     if (task_size - (unsigned long)name < path_max) {
         len = task_size - (unsigned long)name;
     }
-
+    
     do {
         if (!(machine->ReadMem((unsigned long)name + n, 1, &value))) {
             printf("physical address cannot be accessed\n");
@@ -73,6 +81,10 @@ int fname_addrck(char* name) {
         }
         n++;
     } while (value && n < len);
+    if (n == 1) {
+        printf("null string\n");
+        return -1;
+    }
     
     if (value) {
         printf("filename string is not end up with a null\n");
