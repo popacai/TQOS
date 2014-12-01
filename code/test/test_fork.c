@@ -1,10 +1,15 @@
 #include "syscall.h"
 
+int share_value;
 void foo() {
-    //pass
+    int i;
+    share_value++;
+    share_value++;
+    for (i = 0; i < 10000; i++) {
+        Yield();
+    }
 }
 
-int share_value;
 
 int main() {
     char output_char;
@@ -12,9 +17,9 @@ int main() {
     share_value = 0;
     Fork(foo);
 
-    share_value++;
-    share_value++;
-
+    for (i = 0; i < 100; i++) {
+        Yield();
+    }
 
 
     output_char = share_value + '0';

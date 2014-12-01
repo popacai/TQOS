@@ -218,9 +218,9 @@ int AddrSpace::CopyCurrentSpace() {
         return 1; // TODO: handle fail
     }
 
-    printf("numPages=%d\n", numPages);
-    printf("sharedPages=%d\n", sharedPages);
-    printf("stackPages=%d\n", stackPages); 
+    //printf("numPages=%d\n", numPages);
+    //printf("sharedPages=%d\n", sharedPages);
+    //printf("stackPages=%d\n", stackPages); 
 
     //init new Entries
     pageTable = new TranslationEntry[numPages];
