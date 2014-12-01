@@ -119,6 +119,7 @@ public:
     int join;
     int forked;
     int joined;
+    int exitStatusCode;
 
 private:
     // some of the private data for this class is listed above

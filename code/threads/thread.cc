@@ -51,6 +51,7 @@ Thread::Thread(char* threadName, int join)
     priority = 0;
     forked = 0;
     joined = 0;
+    exitStatusCode = 0;
 }
 
 //----------------------------------------------------------------------
