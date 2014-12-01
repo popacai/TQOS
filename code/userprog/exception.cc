@@ -257,13 +257,13 @@ ExceptionHandler(ExceptionType which)
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
                     printf("error.\n");
-                    machine->WriteRegister(2, 0); // return err code 0
+                    machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
                 }
                 if (id != ConsoleInput) {
                     printf("error id.\n");
-                    machine->WriteRegister(2, 0); // return err code 0
+                    machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
                 }
@@ -281,13 +281,13 @@ ExceptionHandler(ExceptionType which)
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
                     printf("error.\n");
-                    machine->WriteRegister(2, 0); // return err code 0
+                    machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
                 }
                 if (id != ConsoleOutput) {
                     printf("error id.\n");
-                    machine->WriteRegister(2, 0); // return err code 0
+                    machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
                 }
