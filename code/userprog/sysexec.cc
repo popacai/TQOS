@@ -7,15 +7,20 @@
 
 void
 StartUserProcess(int argv) {
+    if(argv != 0) {
+        char** _argv = (char**)argv;
+        printf("argc = %d\n", (int)_argv[0]);
+    }
     currentThread->space->InitRegisters();
     currentThread->space->RestoreState();
     machine->Run();
+    // TODO: copy argv data to user space & set register
     ASSERT(false);
 }
 
 void kexec() {
     int srcPath, len, argc, argv, opt;
-    int * passArgv;
+    unsigned char ** passArgv;
     unsigned char * path;
     Thread * t;
     OpenFile * executable;
@@ -41,7 +46,10 @@ void kexec() {
         passArgv = NULL;
     }
     else {
-        passArgv = NULL; //TODO: handle passing argv
+        passArgv = new unsigned char*[argc + 1]; // store argc first
+        passArgv[0] = (unsigned char*)argc;
+        u2kmatrixcpy(passArgv+4, argv, argc);
+        // TODO: remember to free memory...
     }
     executable = fileSystem->Open((char*)path);
     space = new AddrSpace();
@@ -51,6 +59,7 @@ void kexec() {
     }
     else {
         machine->WriteRegister(2, 0); // return err code 0
+        delete t;
         PushPC();
         return;
         ASSERT(false); // should not reach here
@@ -60,6 +69,7 @@ void kexec() {
     spid = processManager->Alloc((void*)t);
     machine->WriteRegister(2, spid);
     if(spid == 0) {// not enough spid in process manager
+        machine->WriteRegister(2, 0); // return err code 0
         delete t;
         PushPC();
         return;
