@@ -254,7 +254,6 @@ ExceptionHandler(ExceptionType which)
                 kexec();
                 break;
 aaa:
-		printf("goto success\n");
 		break;
 
             case SC_Join:
