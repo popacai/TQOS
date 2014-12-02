@@ -98,6 +98,7 @@ int kill_process() {
      num_pages = space->getNumPages();
      printf("numPages = %d\n",num_pages);*/
 
+     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
      delete currentThread->space; // memory manager
      Thread* next;
      Thread* temp;
@@ -106,7 +107,7 @@ int kill_process() {
      if (next != currentThread) {
          //This is a user fork threads
          while (next != currentThread) {
-             printf("loop\n");
+             //printf("loop\n");
              next->userRegisters[PCReg] = 0x10 + 4 * 3 - 4;
              next->userRegisters[NextPCReg] = 0x10 + 4 * 3;
              //next->userRegisters[NextPCReg] = 4 * 2;
@@ -115,6 +116,7 @@ int kill_process() {
              temp->nextThread = temp;
          }
      }
+     (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
 
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
@@ -275,7 +277,7 @@ ExceptionHandler(ExceptionType which)
                 break;
 
             case SC_Fork:
-                printf("fork\n");
+                //printf("fork\n");
                 arg1 = machine->ReadRegister(4);
                 write_return_value(kfork(arg1));
                 PushPC();
