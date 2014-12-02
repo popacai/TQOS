@@ -17,11 +17,32 @@ void foo() {
 int main() {
     char output_char;
     int i;
+    int return_value;
     share_value = 0;
     Fork(foo);
     Fork(foo);
     Fork(foo);
     Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    Fork(foo);
+    return_value = Fork(foo);
+    output_char = return_value + '1';
+    Write(&output_char, 1, ConsoleOutput);
+    output_char = '\n';
+    Write(&output_char, 1, ConsoleOutput);
 
     for (i = 0; i < 1000; i++) {
         Yield();
