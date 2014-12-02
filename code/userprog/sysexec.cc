@@ -10,28 +10,34 @@ StartUserProcess(int argv) {
     int i;
     int argc = 0;
     int argvStartAddr;
+    int argvPtrAddr;
     int len;
     char** _argv;
     if(argv != 0) {
         _argv = (char**)argv;
         argc = (int)_argv[0]; 
-        printf("argc = %d\n", (int)_argv[0]);
-        printf("argv 1 = %s\n", _argv[1]);
     }
     currentThread->space->InitRegisters();
     currentThread->space->RestoreState();
     if(argv != 0) {
         argvStartAddr = machine->ReadRegister(StackReg) + 16 - UserStackSize;
+        argvPtrAddr = machine->ReadRegister(StackReg) + 16 - UserStackSize + ArgvSize; // used to store pointers
         for(i = 1; i <= argc; i++) {
             len = strlen(_argv[i]) + 1;
             k2umemcpy(argvStartAddr, (unsigned char*)_argv[i], len);
+            k2umemcpy(argvPtrAddr, (unsigned char*)(&argvStartAddr), 4);
             argvStartAddr += len;
+            argvPtrAddr += 4;
         }
-        argvStartAddr = machine->ReadRegister(StackReg) + 16 - UserStackSize;
+        argvPtrAddr = machine->ReadRegister(StackReg) + 16 - UserStackSize + ArgvSize;
         machine->WriteRegister(4, argc);
-        machine->WriteRegister(5, argvStartAddr);
+        machine->WriteRegister(5, argvPtrAddr);
+        // delete 
+        for(i = 1; i <= argc; i++) {
+            delete _argv[i];
+        }
+        delete _argv;
     }
-    // TODO: delete 
     machine->Run();
     
     ASSERT(false);
