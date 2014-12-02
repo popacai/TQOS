@@ -117,7 +117,6 @@ int kill_process() {
          }
      }
      (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
-
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
      return 1;
@@ -137,6 +136,9 @@ ExceptionHandler(ExceptionType which)
     int joineeId;
     Thread * joineeThread;
     int exitStatus;
+    int argv_len;
+    int j;
+    int value;
     Thread* th;
     
 
@@ -169,7 +171,6 @@ ExceptionHandler(ExceptionType which)
                 kill_process();
 
 
-                /*
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
@@ -186,7 +187,6 @@ ExceptionHandler(ExceptionType which)
                     //printf("see you! \n");
                     interrupt->Halt();
                 }
-                */
                 break;
 
             case SC_Exec:
@@ -221,9 +221,29 @@ ExceptionHandler(ExceptionType which)
                     PushPC();
                     break;
                 }
+                argv_len = 0;
                 for (i = 0; i < argc_; i++) {
-                    machine->ReadMem(argv_ + i*4, 4, &inargv);
+                    j = 0;
+                    if (!machine->ReadMem(argv_ + i*4, 4, &inargv)) {
+                        printf("read memory false\n");
+                        machine->WriteRegister(2, 0);
+                        PushPC();
+                        break;
+                    }
                     errno = fname_addrck((char*) inargv);
+                    while ((machine->ReadMem(inargv + j, 1, &value)) && value){
+                            argv_len++;
+                            j++;
+                    }
+
+                    printf("%d\n",argv_len);
+                    if (argv_len > ArgvSize) {
+                        printf("argv overflow\n");
+                        machine->WriteRegister(2, 0); // return err code 0
+                        PushPC();
+                        break;
+                    }
+                        
                     if (errno <= 0 ) {
                         printf("inargv error\n");
                         machine->WriteRegister(2, 0); // return err code 0
@@ -297,7 +317,7 @@ ExceptionHandler(ExceptionType which)
 
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
-                    printf("read error.\n");
+                    printf("error.\n");
                     machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
@@ -321,11 +341,11 @@ ExceptionHandler(ExceptionType which)
 
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
-                    printf("write error.\n");
+                    printf("error.\n");
                     machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
-                } 
+                }
                 if (id != ConsoleOutput) {
                     printf("error id.\n");
                     machine->WriteRegister(2, -1); // return err code -1
@@ -362,6 +382,7 @@ ExceptionHandler(ExceptionType which)
     }
     else if (which == AddressErrorException) {
         //TODO handle address error 
+        machine->DumpState();
         printf("adderror %d %d\n", which, type);
         kill_process();
     } else {
