@@ -52,7 +52,12 @@ int RW_bufck(int buffer, int size) {
     if (buffsize > task_size || buffer < 0) {
         printf("buffer last exceed user address space\n");
         return -1;
-    } 
+    }
+    if (size < 0) {
+        printf("size is less than zero\n");
+        return -1;
+    }
+ 
     return 1;
 }
 
@@ -88,7 +93,7 @@ int fname_addrck(char* name) {
     }
     
     if (value) {
-        printf("filename not end with a null or filename is too long\n");
+        printf("filename string is not end up with a null\n");
         return -1;
     }
     
