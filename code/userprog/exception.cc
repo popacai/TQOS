@@ -98,7 +98,25 @@ int kill_process() {
      num_pages = space->getNumPages();
      printf("numPages = %d\n",num_pages);*/
 
+     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
      delete currentThread->space; // memory manager
+     Thread* next;
+     Thread* temp;
+
+     next = currentThread->nextThread;
+     if (next != currentThread) {
+         //This is a user fork threads
+         while (next != currentThread) {
+             //printf("loop\n");
+             next->userRegisters[PCReg] = 0x10 + 4 * 3 - 4;
+             next->userRegisters[NextPCReg] = 0x10 + 4 * 3;
+             //next->userRegisters[NextPCReg] = 4 * 2;
+             temp = next;
+             next = next->nextThread;
+             temp->nextThread = temp;
+         }
+     }
+     (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
      return 1;
@@ -118,9 +136,14 @@ ExceptionHandler(ExceptionType which)
     int joineeId;
     Thread * joineeThread;
     int exitStatus;
+<<<<<<< HEAD
     int argv_len;
     int j;
     int value;
+=======
+    Thread* th;
+    
+>>>>>>> a9ce9d72d891fac80ee9d2ec03a0558e405ec896
 
     if (which == SyscallException) {
         switch (type) {
@@ -136,6 +159,25 @@ ExceptionHandler(ExceptionType which)
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
+<<<<<<< HEAD
+=======
+
+                //printf("rest=%d\n",processManager->TestForExit());
+
+                th = (Thread*)processManager->Get(currentThread->spid);
+                if (!th) {
+                    //user program
+                    kill_process();
+                }
+
+                if (1 == processManager->TestForExit()) {
+                    interrupt->Halt();
+                }
+                kill_process();
+
+
+                /*
+>>>>>>> a9ce9d72d891fac80ee9d2ec03a0558e405ec896
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
@@ -262,7 +304,7 @@ ExceptionHandler(ExceptionType which)
                 break;
 
             case SC_Fork:
-                printf("fork\n");
+                //printf("fork\n");
                 arg1 = machine->ReadRegister(4);
                 write_return_value(kfork(arg1));
                 PushPC();

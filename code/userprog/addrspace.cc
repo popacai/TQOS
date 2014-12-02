@@ -121,6 +121,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
+        pageTable[i].reference = 0;
         // a separate page, we could set its
         // pages to be read-only
     }
@@ -204,11 +205,13 @@ int SeekForPhysicalPage(TranslationEntry* vm, int vmSize,int virtualPage) {
 
 int AddrSpace::CopyCurrentSpace() {
     int i, physicalPageIndex;
+    int vmIndex;
     int temp;
     int newPhysicalPage, oldPhysicalPage;
     int sharedPages;
     int stackPages;
     TranslationEntry* currentThreadVM;
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     numPages = currentThread->space->getNumPages();
     stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared 
@@ -229,15 +232,23 @@ int AddrSpace::CopyCurrentSpace() {
     // redirect the shared memory
     for (i = 0; i < sharedPages; i++) {
         pageTable[i].virtualPage = i;
-        physicalPageIndex = SeekForPhysicalPage(currentThreadVM, numPages, i);
-        pageTable[i].physicalPage = physicalPageIndex;
+        vmIndex = SeekForPhysicalPage(currentThreadVM, numPages, i);
+        pageTable[i].physicalPage = currentThreadVM[vmIndex].physicalPage;
 
         pageTable[i].valid = TRUE;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
+        if (!(currentThreadVM[vmIndex].reference)) {
+            //This is the first thread
+            currentThreadVM[vmIndex].reference = new int;
+            *(currentThreadVM[vmIndex].reference) = 1;
+        }
 
-        ASSERT(physicalPageIndex >= 0);
+        pageTable[i].reference = currentThreadVM[vmIndex].reference;
+        *(pageTable[i].reference)++;
+
+        ASSERT(vmIndex >= 0);
     }
 
     // start a new memory space
@@ -261,6 +272,7 @@ int AddrSpace::CopyCurrentSpace() {
         */
 
     }
+    (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
 
 
     return 0;
@@ -275,7 +287,16 @@ AddrSpace::~AddrSpace()
     //TODO: To be fixed in future
     unsigned int i;
     for(i = 0; i < numPages; i++) {
-        memoryManager->FreePage(pageTable[i].physicalPage);
+        if ((pageTable[i].reference)) {
+            (*(pageTable[i].reference)) --;
+            if (*(pageTable[i].reference) == 0) {
+                memoryManager->FreePage(pageTable[i].physicalPage);
+            }
+        }
+        else
+        {
+            memoryManager->FreePage(pageTable[i].physicalPage);
+        }
     }
     if(pageTable != NULL) {
         delete [] pageTable;
