@@ -5,12 +5,9 @@ int share_value;
 void foo() {
     int i;
     share_value++;
-    Exit(0);
-    /*
     for (i = 0; i < 10000; i++) {
         Yield();
     }
-    */
     return;
 }
 
@@ -19,10 +16,12 @@ int main() {
     int i;
     int return_value;
     share_value = 0;
+    Exec("../test/dead_loop", 0, 0, 0);
     Fork(foo);
     Fork(foo);
     Fork(foo);
     Fork(foo);
+    /*
     Fork(foo);
     Fork(foo);
     Fork(foo);
@@ -44,6 +43,10 @@ int main() {
     output_char = '\n';
     Write(&output_char, 1, ConsoleOutput);
 
+    for (i = 0; i < 1000; i++) {
+        Yield();
+    }
+    */
     for (i = 0; i < 1000; i++) {
         Yield();
     }

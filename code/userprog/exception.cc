@@ -98,7 +98,7 @@ int kill_process() {
      num_pages = space->getNumPages();
      printf("numPages = %d\n",num_pages);*/
 
-     //delete currentThread->space; // memory manager
+     delete currentThread->space; // memory manager
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
      return 1;
@@ -129,7 +129,7 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exit:
                 // TODO: should be moved to sysexit.cc like Exec 
-                printf("%s exit\n", currentThread->getName());
+                //printf("%s exit\n", currentThread->getName());
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;

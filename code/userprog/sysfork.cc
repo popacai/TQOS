@@ -36,6 +36,7 @@ int kfork(int func_ptr) {
     t->space = new_space;
 
     //t->SaveUserState();
+    t->spid = currentThread->spid;
 
     t->Fork(start_child_thread, func_ptr);
 
