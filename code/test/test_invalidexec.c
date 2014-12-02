@@ -8,8 +8,8 @@ int main()
 //    char** ininvalid;
     
 //    ininvalid = 2000;
-    Exec(-10, 0, 0, 0);
-    Write("exec1exec\n", 11, ConsoleOutput);
+//    Exec(-10, 0, 0, 0);
+    Write(-1, 11, ConsoleOutput);
     Exec(nullst, 0, 0, 0);
         Yield();
     Write("exec2exec\n", 11, ConsoleOutput);

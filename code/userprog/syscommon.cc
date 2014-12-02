@@ -48,7 +48,8 @@ int RW_bufck(int buffer, int size) {
     task_size = num_pages * PageSize;
     buffsize = (unsigned long)buffer + (unsigned long)size;
     //printf("user address space size = %ld\n",task_size);
-    if (buffsize > task_size) {
+    
+    if (buffsize > task_size || buffer < 0) {
         printf("buffer last exceed user address space\n");
         return -1;
     } 
