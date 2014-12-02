@@ -118,6 +118,8 @@ ExceptionHandler(ExceptionType which)
     int joineeId;
     Thread * joineeThread;
     int exitStatus;
+    int argv_len;
+    int j;
 
     if (which == SyscallException) {
         switch (type) {
@@ -183,9 +185,23 @@ ExceptionHandler(ExceptionType which)
                     PushPC();
                     break;
                 }
+                argv_len = 0;
                 for (i = 0; i < argc_; i++) {
+                    j = 0;
                     machine->ReadMem(argv_ + i*4, 4, &inargv);
                     errno = fname_addrck((char*) inargv);
+                    while (*(inargv + j) != 0) {
+                            argv_len++;
+                            j++;
+                    }
+
+                    if (argv_len > 128) {
+                        printf("argv overflow\n");
+                        machine->WriteRegister(2, 0); // return err code 0
+                        PushPC();
+                        break;
+                    }
+                        
                     if (errno <= 0 ) {
                         printf("inargv error\n");
                         machine->WriteRegister(2, 0); // return err code 0

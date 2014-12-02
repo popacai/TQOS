@@ -87,7 +87,7 @@ int fname_addrck(char* name) {
     }
     
     if (value) {
-        printf("filename string is not end up with a null\n");
+        printf("filename not end with a null or filename is too long\n");
         return -1;
     }
     
