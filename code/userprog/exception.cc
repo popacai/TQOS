@@ -101,19 +101,26 @@ int kill_process() {
      delete currentThread->space; // memory manager
      printf("delete %s\n", currentThread->getName());
      Thread* next;
+     Thread* temp;
 
      next = currentThread->nextThread;
      if (next != currentThread) {
          //This is a user fork threads
          while (next != currentThread) {
+             printf("loop\n");
              next->userRegisters[PCReg] = 0x10 + 4 * 3 - 4;
              next->userRegisters[NextPCReg] = 0x10 + 4 * 3;
              //next->userRegisters[NextPCReg] = 4 * 2;
+             temp = next;
              next = next->nextThread;
+             temp->nextThread = temp;
          }
      }
 
+
+     printf("spid=%d\n", currentThread->spid);
      processManager->Release(currentThread->spid); // process manager
+     printf("done kill process\n");
      currentThread->Finish();
      return 1;
 }
@@ -147,11 +154,15 @@ ExceptionHandler(ExceptionType which)
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
-                kill_process();
 
-                if (0 == processManager->TestForExit()) {
+                printf("rest=%d\n",processManager->TestForExit());
+
+                if (1 == processManager->TestForExit()) {
                     interrupt->Halt();
                 }
+                kill_process();
+
+
                 /*
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
