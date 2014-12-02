@@ -136,14 +136,11 @@ ExceptionHandler(ExceptionType which)
     int joineeId;
     Thread * joineeThread;
     int exitStatus;
-<<<<<<< HEAD
     int argv_len;
     int j;
     int value;
-=======
     Thread* th;
     
->>>>>>> a9ce9d72d891fac80ee9d2ec03a0558e405ec896
 
     if (which == SyscallException) {
         switch (type) {
@@ -159,8 +156,6 @@ ExceptionHandler(ExceptionType which)
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
-<<<<<<< HEAD
-=======
 
                 //printf("rest=%d\n",processManager->TestForExit());
 
@@ -176,8 +171,6 @@ ExceptionHandler(ExceptionType which)
                 kill_process();
 
 
-                /*
->>>>>>> a9ce9d72d891fac80ee9d2ec03a0558e405ec896
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
