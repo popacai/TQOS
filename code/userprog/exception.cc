@@ -228,7 +228,7 @@ ExceptionHandler(ExceptionType which)
                         printf("read memory false\n");
                         machine->WriteRegister(2, 0);
                         PushPC();
-                        break;
+			goto aaa;
                     }
                     errno = fname_addrck((char*) inargv);
                     while ((machine->ReadMem(inargv + j, 1, &value)) && value){
@@ -241,18 +241,20 @@ ExceptionHandler(ExceptionType which)
                         printf("argv overflow\n");
                         machine->WriteRegister(2, 0); // return err code 0
                         PushPC();
-                        break;
+			goto aaa;
                     }
                         
                     if (errno <= 0 ) {
                         printf("inargv error\n");
                         machine->WriteRegister(2, 0); // return err code 0
                         PushPC();
-                        break;
+			goto aaa;
                     }
                 } 
                 kexec();
                 break;
+aaa:
+		break;
 
             case SC_Join:
                 joineeId = machine->ReadRegister(4);
