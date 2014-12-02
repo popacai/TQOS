@@ -5,10 +5,16 @@
 #include "addrspace.h"
 
 void start_child_thread(int func_ptr) {
-    //currentThread->space->InitRegisters();
+    currentThread->space->InitRegisters();
+    currentThread->space->RestoreState();		// load page table register
+
     machine->WriteRegister(PCReg, func_ptr - 4);
     machine->WriteRegister(NextPCReg, func_ptr);
-    currentThread->space->RestoreState();		// load page table register
+
+    //If the child thread return, jump back to Exit System Call
+    // machine->WriteRegister(RetAddrReg, 0x10 + 4 * 3);
+    // jump back to the main exit jal main. in start.cc
+    machine->WriteRegister(RetAddrReg, 4 * 2);
     machine->Run();			// jump to the user progam
     ASSERT(false);
 }
@@ -22,14 +28,18 @@ int kfork(int func_ptr) {
     new_space = new AddrSpace(); //a new space
     t = new Thread("child thread");
 
-    new_space->CopyCurrentSpace();
+    if (new_space->CopyCurrentSpace()) {
+        return -1;
+    }
 
     //DEBUG for space
     t->space = new_space;
 
-    t->SaveUserState();
+    //t->SaveUserState();
+    t->spid = currentThread->spid;
 
     t->Fork(start_child_thread, func_ptr);
+
     currentThread->Yield();
     return 0;
 }

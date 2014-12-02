@@ -58,6 +58,7 @@ enum ExceptionType { NoException,           // Everything ok!
 // delay slots, etc.)
 
 #define StackReg	29	// User's stack pointer
+#define FrameReg    30  // Base pointer
 #define RetAddrReg	31	// Holds return address for procedure calls
 #define NumGPRegs	32	// 32 general purpose registers on MIPS
 #define HiReg		32	// Double register to hold multiply result
