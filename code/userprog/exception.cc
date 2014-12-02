@@ -228,7 +228,7 @@ ExceptionHandler(ExceptionType which)
                         printf("read memory false\n");
                         machine->WriteRegister(2, 0);
                         PushPC();
-			goto aaa;
+                    goto aaa;
                     }
                     errno = fname_addrck((char*) inargv);
                     while ((machine->ReadMem(inargv + j, 1, &value)) && value){
@@ -241,14 +241,14 @@ ExceptionHandler(ExceptionType which)
                         printf("argv overflow\n");
                         machine->WriteRegister(2, 0); // return err code 0
                         PushPC();
-			goto aaa;
+			        goto aaa;
                     }
                         
                     if (errno <= 0 ) {
                         printf("inargv error\n");
                         machine->WriteRegister(2, 0); // return err code 0
                         PushPC();
-			goto aaa;
+			        goto aaa;
                     }
                 } 
                 kexec();
@@ -301,6 +301,12 @@ aaa:
             case SC_Fork:
                 //printf("fork\n");
                 arg1 = machine->ReadRegister(4);
+                errno = fname_addrck((char*)arg1); 
+                if (errno <= 0) {
+                   write_return_value(-1);
+                   PushPC();
+                   break;
+                }
                 write_return_value(kfork(arg1));
                 PushPC();
                 // interrupt->Halt();

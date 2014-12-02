@@ -7,7 +7,7 @@
 int fexist_ck(unsigned char* name) {
     int ret = 1;
     int i = 0;
-    char* name_signed = new char[64];
+    char name_signed [64];
     while (*(name + i) != 0) {
         *(name_signed + i) = *(name + i);
         i++;
