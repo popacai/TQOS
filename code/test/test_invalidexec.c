@@ -5,19 +5,10 @@ int main()
     int i;
     int invalid_addr = 3000;
     char* nullst = "";
-    char** ininvalid;
-//    **ininvalid = 3000;
-//    char outinvalid[1];
-//    outinvalid[0] = &ininvalid;
-//    char* outinvalid;
-//    outinvalid = &ininvalid[0];
-    *ininvalid = 2050;
-/*    for (i=0; i<8; i++) {
-
-    *(*ininvalid + i) = 'a';
-    }*/
-
-//    ininvalid = 1000;
+//    char** ininvalid;
+    
+//    ininvalid = 2000;
+    Exec(-10, 0, 0, 0);
     Write("exec1exec\n", 11, ConsoleOutput);
     Exec(nullst, 0, 0, 0);
         Yield();
@@ -36,9 +27,10 @@ int main()
     Write("exec6exec\n", 11, ConsoleOutput);
     Exec("../test/threa", 0, 0, 0);    
         Yield();
-    Write("exec7exec\n", 11, ConsoleOutput);
-    Exec("../test/thread_yield", 1, ininvalid, 0);    
-        Yield();
+//    Write("exec7exec\n", 11, ConsoleOutput);
+//    *ininvalid = 1000;
+//    Exec("../test/thread_yield", 1, ininvalid, 0);    
+//        Yield();
 
     for (i = 0; i < 100; i++){
         //Write("yield\n", 11, ConsoleOutput);

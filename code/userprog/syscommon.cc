@@ -66,7 +66,7 @@ int fname_addrck(char* name) {
     task_size = num_pages * PageSize;
     //printf("user address space size = %ld\n",task_size);
     if ((unsigned long)name > task_size) {
-        printf("name address = %ld\n",(unsigned long)name);
+        printf("name address = %u\n",(unsigned long)name);
         printf("name pointer address exceed user address space\n");
         return 0;
     }
