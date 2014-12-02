@@ -5,19 +5,6 @@ int main()
     int i;
     int invalid_addr = 3000;
     char* nullst = "";
-    //char** ininvalid;
-//    **ininvalid = 3000;
-//    char outinvalid[1];
-//    outinvalid[0] = &ininvalid;
-//    char* outinvalid;
-//    outinvalid = &ininvalid[0];
-    //*ininvalid = 2050;
-/*    for (i=0; i<8; i++) {
-
-    *(*ininvalid + i) = 'a';
-    }*/
-
-//    ininvalid = 1000;
     Write("exec1exec\n", 11, ConsoleOutput);
     Exec(nullst, 0, 0, 0);
         Yield();
