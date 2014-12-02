@@ -120,6 +120,7 @@ public:
     int forked;
     int joined;
     int exitStatusCode;
+    Thread* nextThread;
 
 private:
     // some of the private data for this class is listed above
@@ -145,9 +146,9 @@ private:
 // one for its state while executing user code, one for its state
 // while executing kernel code.
 
-    int userRegisters[NumTotalRegs];	// user-level CPU register state
 
 public:
+    int userRegisters[NumTotalRegs];	// user-level CPU register state
     void SaveUserState();		// save user-level register state
     void RestoreUserState();		// restore user-level register state
 

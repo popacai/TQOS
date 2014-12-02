@@ -98,7 +98,26 @@ int kill_process() {
      num_pages = space->getNumPages();
      printf("numPages = %d\n",num_pages);*/
 
+     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
      delete currentThread->space; // memory manager
+     Thread* next;
+     Thread* temp;
+
+     next = currentThread->nextThread;
+     if (next != currentThread) {
+         //This is a user fork threads
+         while (next != currentThread) {
+             //printf("loop\n");
+             next->userRegisters[PCReg] = 0x10 + 4 * 3 - 4;
+             next->userRegisters[NextPCReg] = 0x10 + 4 * 3;
+             //next->userRegisters[NextPCReg] = 4 * 2;
+             temp = next;
+             next = next->nextThread;
+             temp->nextThread = temp;
+         }
+     }
+     (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
+
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
      return 1;
@@ -118,6 +137,8 @@ ExceptionHandler(ExceptionType which)
     int joineeId;
     Thread * joineeThread;
     int exitStatus;
+    Thread* th;
+    
 
     if (which == SyscallException) {
         switch (type) {
@@ -133,6 +154,22 @@ ExceptionHandler(ExceptionType which)
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
+
+                //printf("rest=%d\n",processManager->TestForExit());
+
+                th = (Thread*)processManager->Get(currentThread->spid);
+                if (!th) {
+                    //user program
+                    kill_process();
+                }
+
+                if (1 == processManager->TestForExit()) {
+                    interrupt->Halt();
+                }
+                kill_process();
+
+
+                /*
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
@@ -149,6 +186,7 @@ ExceptionHandler(ExceptionType which)
                     //printf("see you! \n");
                     interrupt->Halt();
                 }
+                */
                 break;
 
             case SC_Exec:
@@ -239,7 +277,7 @@ ExceptionHandler(ExceptionType which)
                 break;
 
             case SC_Fork:
-                printf("fork\n");
+                //printf("fork\n");
                 arg1 = machine->ReadRegister(4);
                 write_return_value(kfork(arg1));
                 PushPC();
@@ -259,7 +297,7 @@ ExceptionHandler(ExceptionType which)
 
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
-                    printf("error.\n");
+                    printf("read error.\n");
                     machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
@@ -283,11 +321,11 @@ ExceptionHandler(ExceptionType which)
 
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
-                    printf("error.\n");
+                    printf("write error.\n");
                     machine->WriteRegister(2, -1); // return err code -1
                     PushPC();
                     break;
-                }
+                } 
                 if (id != ConsoleOutput) {
                     printf("error id.\n");
                     machine->WriteRegister(2, -1); // return err code -1
@@ -324,7 +362,6 @@ ExceptionHandler(ExceptionType which)
     }
     else if (which == AddressErrorException) {
         //TODO handle address error 
-        machine->DumpState();
         printf("adderror %d %d\n", which, type);
         kill_process();
     } else {

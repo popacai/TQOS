@@ -18,9 +18,20 @@ void start_child_thread(int func_ptr) {
     machine->Run();			// jump to the user progam
     ASSERT(false);
 }
+
+Thread* find_next_thread() {
+    Thread* previous = currentThread;
+    Thread* next = currentThread->nextThread;
+    while (next != currentThread) {
+        previous = next;
+        next = next->nextThread;
+    }
+    return previous;
+}
     
 int kfork(int func_ptr) {
     Thread* t;
+    Thread* the_end_of_currentThread;
     AddrSpace* new_space;
     int currentPC, currentNextPC;
 
@@ -34,6 +45,10 @@ int kfork(int func_ptr) {
 
     //DEBUG for space
     t->space = new_space;
+
+    the_end_of_currentThread = find_next_thread();
+    the_end_of_currentThread->nextThread = t;
+    t->nextThread = currentThread;
 
     //t->SaveUserState();
     t->spid = currentThread->spid;

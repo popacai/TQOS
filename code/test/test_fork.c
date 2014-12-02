@@ -16,37 +16,14 @@ int main() {
     int i;
     int return_value;
     share_value = 0;
-    Exec("../test/dead_loop", 0, 0, 0);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    /*
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    Fork(foo);
-    return_value = Fork(foo);
-    output_char = return_value + '1';
-    Write(&output_char, 1, ConsoleOutput);
-    output_char = '\n';
-    Write(&output_char, 1, ConsoleOutput);
+    Exec("../test/delay_quit", 0, 0, 0);
+    for (i = 0; i < 9; i++) {
+        Fork(foo);
+    }
 
     for (i = 0; i < 1000; i++) {
         Yield();
     }
-    */
     for (i = 0; i < 1000; i++) {
         Yield();
     }
@@ -56,8 +33,5 @@ int main() {
     Write(&output_char, 1, ConsoleOutput);
     output_char = '\n';
     Write(&output_char, 1, ConsoleOutput);
-    for (i = 0; i < 10000; i++) {
-        Yield();
-    }
     return 0;
 }
