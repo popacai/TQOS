@@ -99,6 +99,17 @@ int kill_process() {
      printf("numPages = %d\n",num_pages);*/
 
      delete currentThread->space; // memory manager
+     printf("delete %s\n", currentThread->getName());
+     Thread* next;
+
+     next = currentThread->nextThread;
+     while (next != currentThread) {
+         next->userRegisters[PCReg] = 0x10 + 4 * 3 - 4;
+         next->userRegisters[NextPCReg] = 0x10 + 4 * 3;
+         //next->userRegisters[NextPCReg] = 4 * 2;
+         next = next->nextThread;
+     }
+
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
      return 1;
@@ -129,10 +140,16 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exit:
                 // TODO: should be moved to sysexit.cc like Exec 
-                //printf("%s exit\n", currentThread->getName());
+                printf("%s exit\n", currentThread->getName());
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
+
+                if (1 == processManager->TestForExit()) {
+                    interrupt->Halt();
+                }
+                kill_process();
+                /*
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
                     // free resource before finish
@@ -149,6 +166,7 @@ ExceptionHandler(ExceptionType which)
                     //printf("see you! \n");
                     interrupt->Halt();
                 }
+                */
                 break;
 
             case SC_Exec:
@@ -324,7 +342,6 @@ ExceptionHandler(ExceptionType which)
     }
     else if (which == AddressErrorException) {
         //TODO handle address error 
-        machine->DumpState();
         printf("adderror %d %d\n", which, type);
         kill_process();
     } else {
