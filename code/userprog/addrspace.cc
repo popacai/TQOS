@@ -211,6 +211,7 @@ int AddrSpace::CopyCurrentSpace() {
     int sharedPages;
     int stackPages;
     TranslationEntry* currentThreadVM;
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     numPages = currentThread->space->getNumPages();
     stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared 
@@ -271,6 +272,7 @@ int AddrSpace::CopyCurrentSpace() {
         */
 
     }
+    (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
 
 
     return 0;
