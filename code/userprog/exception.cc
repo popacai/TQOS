@@ -103,11 +103,14 @@ int kill_process() {
      Thread* next;
 
      next = currentThread->nextThread;
-     while (next != currentThread) {
-         next->userRegisters[PCReg] = 0x10 + 4 * 3 - 4;
-         next->userRegisters[NextPCReg] = 0x10 + 4 * 3;
-         //next->userRegisters[NextPCReg] = 4 * 2;
-         next = next->nextThread;
+     if (next != currentThread) {
+         //This is a user fork threads
+         while (next != currentThread) {
+             next->userRegisters[PCReg] = 0x10 + 4 * 3 - 4;
+             next->userRegisters[NextPCReg] = 0x10 + 4 * 3;
+             //next->userRegisters[NextPCReg] = 4 * 2;
+             next = next->nextThread;
+         }
      }
 
      processManager->Release(currentThread->spid); // process manager
@@ -144,11 +147,11 @@ ExceptionHandler(ExceptionType which)
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
+                kill_process();
 
-                if (1 == processManager->TestForExit()) {
+                if (0 == processManager->TestForExit()) {
                     interrupt->Halt();
                 }
-                kill_process();
                 /*
                 if(currentThread->spid != 1) {
                     // if not main thread, just finish
