@@ -92,7 +92,6 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     size = numPages * PageSize;
 
     if(numPages > (unsigned int)memoryManager->GetFreePageCount() || numPages > NumPhysPages) {
-        ASSERT(false);
         return -1; // TODO: handle fail
     }
     pageTable = new TranslationEntry[numPages];
