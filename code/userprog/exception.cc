@@ -99,7 +99,6 @@ int kill_process() {
      printf("numPages = %d\n",num_pages);*/
 
      delete currentThread->space; // memory manager
-     printf("delete %s\n", currentThread->getName());
      Thread* next;
      Thread* temp;
 
@@ -117,10 +116,7 @@ int kill_process() {
          }
      }
 
-
-     printf("spid=%d\n", currentThread->spid);
      processManager->Release(currentThread->spid); // process manager
-     printf("done kill process\n");
      currentThread->Finish();
      return 1;
 }
@@ -139,6 +135,8 @@ ExceptionHandler(ExceptionType which)
     int joineeId;
     Thread * joineeThread;
     int exitStatus;
+    Thread* th;
+    
 
     if (which == SyscallException) {
         switch (type) {
@@ -150,12 +148,18 @@ ExceptionHandler(ExceptionType which)
 
             case SC_Exit:
                 // TODO: should be moved to sysexit.cc like Exec 
-                printf("%s exit\n", currentThread->getName());
+                //printf("%s exit\n", currentThread->getName());
                 //machine->DumpState();
                 exitStatus = machine->ReadRegister(4);
                 currentThread->exitStatusCode = exitStatus;
 
-                printf("rest=%d\n",processManager->TestForExit());
+                //printf("rest=%d\n",processManager->TestForExit());
+
+                th = (Thread*)processManager->Get(currentThread->spid);
+                if (!th) {
+                    //user program
+                    kill_process();
+                }
 
                 if (1 == processManager->TestForExit()) {
                     interrupt->Halt();
