@@ -7,14 +7,33 @@
 
 void
 StartUserProcess(int argv) {
+    int i;
+    int argc = 0;
+    int argvStartAddr;
+    int len;
+    char** _argv;
     if(argv != 0) {
-        char** _argv = (char**)argv;
+        _argv = (char**)argv;
+        argc = (int)_argv[0]; 
         printf("argc = %d\n", (int)_argv[0]);
+        printf("argv 1 = %s\n", _argv[1]);
     }
     currentThread->space->InitRegisters();
     currentThread->space->RestoreState();
+    if(argv != 0) {
+        argvStartAddr = machine->ReadRegister(StackReg) + 16 - UserStackSize;
+        for(i = 1; i <= argc; i++) {
+            len = strlen(_argv[i]) + 1;
+            k2umemcpy(argvStartAddr, (unsigned char*)_argv[i], len);
+            argvStartAddr += len;
+        }
+        argvStartAddr = machine->ReadRegister(StackReg) + 16 - UserStackSize;
+        machine->WriteRegister(4, argc);
+        machine->WriteRegister(5, argvStartAddr);
+    }
+    // TODO: delete 
     machine->Run();
-    // TODO: copy argv data to user space & set register
+    
     ASSERT(false);
 }
 
@@ -48,7 +67,7 @@ void kexec() {
     else {
         passArgv = new unsigned char*[argc + 1]; // store argc first
         passArgv[0] = (unsigned char*)argc;
-        u2kmatrixcpy(passArgv+4, argv, argc);
+        u2kmatrixcpy(&passArgv[1], argv, argc);
         // TODO: remember to free memory...
     }
     executable = fileSystem->Open((char*)path);
