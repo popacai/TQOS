@@ -317,6 +317,7 @@ AddrSpace::~AddrSpace()
     if(pageTable != NULL) {
         delete [] pageTable;
     }
+    delete executable;//close
 }
 
 //----------------------------------------------------------------------
@@ -392,17 +393,17 @@ void AddrSpace::PageIn(int badVirAddr)
     unsigned int dataSize = noffH.initData.size;
     unsigned int codeStart = noffH.code.inFileAddr;
     unsigned int codeVirtStart = noffH.code.virtualAddr;
-    printf("%u\n",codeVirtStart);
+    printf("codeVirtStart = %u\n",codeVirtStart);
     printf("pagein\n");
     
     vpn = divRoundDown(badVirAddr, PageSize);
-    printf("vpn = %d\n",vpn);
+    printf("vpn = %u\n",vpn);
     pageTable[vpn].physicalPage = memoryManager->AllocPage(1);
     ppn = pageTable[vpn].physicalPage;
     copySize = PageSize;
     copyStart = vpn * PageSize;
     copyInFileStart = noffH.code.inFileAddr + (copyStart - codeVirtStart);
-    printf("copyInFileStart = %d\n",copyInFileStart);
+    printf("copyInFileStart = %u\n",copyInFileStart);
     if (copyStart > codeVirtStart + codeSize + dataSize) {
         memset(&machine->mainMemory[ppn * PageSize], 0, PageSize);
     }
