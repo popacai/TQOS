@@ -16,4 +16,6 @@ void kexec();
 
 void kjoin();
 
+void kpg_fault();
+
 #endif

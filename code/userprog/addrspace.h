@@ -40,6 +40,8 @@ public:
     void RestoreState();		// info on a context switch
     unsigned int getNumPages() {return numPages;}
     TranslationEntry* getPageTable() {return pageTable;}
+    OpenFile* executable;
+    void PageIn(int badVirAddr);
 
 private:
     TranslationEntry *pageTable;	// Assume linear page table translation

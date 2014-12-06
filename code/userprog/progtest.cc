@@ -40,6 +40,7 @@ StartProcess(char *filename)
     //Init console
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
+    int pg_flag;
     memoryManager = new MemoryManager(NumPhysPages);
     //memoryManager -> RandomInitializationTest();
     processManager = new ProcessManager(PROCESS_MAX_NUM);
@@ -52,14 +53,20 @@ StartProcess(char *filename)
     }
     space = new AddrSpace();
     // TODO: Initialize should return error
-    if(space->Initialize(executable, 0)) { // 0 means no lock
+    pg_flag = 2;
+    if (pg_flag == 2) {
+        #define DEMANDPAGE
+    }
+    if(space->Initialize(executable, pg_flag)) { // 0 means no lock
         currentThread->space = space;
     }
     else {
         ASSERT(FALSE);
     }
 
+#ifndef DEMANDPAGE
     delete executable;			// close file
+#endif
 
     space->InitRegisters();		// set the initial register values
     space->RestoreState();		// load page table register

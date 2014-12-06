@@ -75,6 +75,12 @@ AddrSpace::Initialize(OpenFile *executable)
 int 
 AddrSpace::Initialize(OpenFile *executable, int flag)
 {
+
+    if (flag == 2) 
+        #define DEMANDPAGE
+    
+#ifdef DEMANDPAGE
+    printf("demand page\n");
     NoffHeader noffH;
     unsigned int i, size;
 
@@ -84,6 +90,8 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         SwapHeader(&noffH);
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
+    this->executable = executable;
+    printf("%d\n",(int)executable);
 // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size
            + UserStackSize + ArgvSize;	// we need to increase the size
@@ -91,9 +99,12 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
+#ifndef DEMANDPAGE
     if(numPages > (unsigned int)memoryManager->GetFreePageCount() || numPages > NumPhysPages) {
         return -1; // TODO: handle fail
     }
+#endif
+
     pageTable = new TranslationEntry[numPages];
 #ifdef PDEBUG
     printf("********************** NUM PHYS PAGES: %d, PAGE SIZE: 0x%x\n", NumPhysPages, PageSize);
@@ -115,8 +126,12 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         pageTable[i].physicalPage = memoryManager->AllocPage(flag);
         ASSERT(pageTable[i].physicalPage >= 0);
         //bzero(&machine->mainMemory[pageTable[i].physicalPage * PageSize], PageSize);
+#ifdef DEMANDPAGE
+        pageTable[i].valid = FALSE;
+#else
         memset(&machine->mainMemory[pageTable[i].physicalPage * PageSize], 'A', PageSize);
         pageTable[i].valid = TRUE;
+#endif
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
@@ -131,6 +146,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     // bzero(machine->mainMemory, size);
 
 // then, copy in the code and data segments into memory
+#else
     unsigned int copySize= noffH.code.size;
     unsigned int copyStart = noffH.code.virtualAddr; 
     unsigned int copyInFileStart = noffH.code.inFileAddr;
@@ -189,6 +205,7 @@ printf("writing phys page %d\n", ppn);
         executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
                              copySize, copyInFileStart);
     }
+#endif
     return 1; // success
 }
 
@@ -361,4 +378,42 @@ void AddrSpace::RestoreState()
 {
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
+}
+
+void AddrSpace::PageIn(int badVirAddr)
+{
+    NoffHeader noffH;
+    executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
+    unsigned int copySize;
+    unsigned int copyStart;
+    unsigned int copyInFileStart;
+    unsigned int vpn, ppn;
+    unsigned int codeSize = noffH.code.size;
+    unsigned int dataSize = noffH.initData.size;
+    unsigned int codeStart = noffH.code.inFileAddr;
+    unsigned int codeVirtStart = noffH.code.virtualAddr;
+    printf("%u\n",codeVirtStart);
+    printf("pagein\n");
+    
+    vpn = divRoundDown(badVirAddr, PageSize);
+    printf("vpn = %d\n",vpn);
+    pageTable[vpn].physicalPage = memoryManager->AllocPage(1);
+    ppn = pageTable[vpn].physicalPage;
+    copySize = PageSize;
+    copyStart = vpn * PageSize;
+    copyInFileStart = noffH.code.inFileAddr + (copyStart - codeVirtStart);
+    printf("copyInFileStart = %d\n",copyInFileStart);
+    if (copyStart > codeVirtStart + codeSize + dataSize) {
+        memset(&machine->mainMemory[ppn * PageSize], 0, PageSize);
+    }
+    this->executable->ReadAt(&(machine->mainMemory[ppn*PageSize]), PageSize, copyInFileStart);
+    pageTable[vpn].valid = TRUE;
+    
+    /*if (copyStart < codeSize) {
+        copyInFileStart = noffH.code.inFileAddr + copyStart;
+    } else if(copyStart >= codeSize && copyStart < (codeSize + dataSize)) {
+        copyInFileStart = noffH.iniData.inFileAddr + copyStart - codeSize;
+    } else {
+        //TODO stack page in
+    }*/
 }

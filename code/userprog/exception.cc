@@ -393,6 +393,9 @@ aaa:
         machine->DumpState();
         printf("adderror %d %d\n", which, type);
         kill_process();
+    } else if (which == PageFaultException) {
+        printf("page fault exception\n");
+        kpg_fault();
     } else {
         printf("Unexpected user mode exception %d %d\n", which, type);
         kill_process();
