@@ -14,4 +14,9 @@ public:
     //return 0 as success, return 1 if cannot found in swapfile(You don't need to set the mainmemory in this case), return -1 if fail(if there is a failure situation)
     int RestorePage(TranslationEntry* entry);
 };
+
+//Write you test case here
+//Call test_backstore in test_console
+//Call nachos -rs 1 -c
+int test_backstore();
 #endif 
