@@ -41,7 +41,19 @@ public:
     unsigned int getNumPages() {return numPages;}
     TranslationEntry* getPageTable() {return pageTable;}
     OpenFile* executable;
+
+    // TODO: We will rename PageIn as LoadExecFile
     void PageIn(int badVirAddr);
+
+    // TODO: call the backingstore
+    // return 0 as success, return -1 as fail
+    int SaveToSwap(int virtualPageIndex);
+
+    // return 0 as success, return -1 as fail, return 1 as not found
+    int RestoreFromSwap(int virtualPageIndex);
+
+    
+
 
 private:
     TranslationEntry *pageTable;	// Assume linear page table translation

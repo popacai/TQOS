@@ -27,8 +27,15 @@
 // In addition, there are some extra bits for access control (valid and
 // read-only) and some bits for usage information (use and dirty).
 
+#ifdef USER_PROGRAM
+class AddrSpace;
+#endif
+
 class TranslationEntry {
 public:
+#ifdef USER_PROGRAM
+    AddrSpace* addrspace;
+#endif
     int virtualPage;  	// The page number in virtual memory.
     int physicalPage;  	// The page number in real memory (relative to the
     //  start of "mainMemory"
