@@ -3,7 +3,7 @@
 int a(int level);
 
 int a(int level) {
-    if (level < 10) {
+    if (level < 20) {
         a(level + 1);
     }
 }

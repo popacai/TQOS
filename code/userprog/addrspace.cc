@@ -343,7 +343,7 @@ int AddrSpace::loadFromExecFile(TranslationEntry* entry)
     */
     this->executable->ReadAt(&(machine->mainMemory[ppn*PageSize]), PageSize, copyInFileStart);
 
-    entry->valid = TRUE;
+    //entry->valid = TRUE;
     //pageTable[vpn].valid = TRUE;
     
     /*if (copyStart < codeSize) {
@@ -360,8 +360,7 @@ int AddrSpace::AllocStackPage(TranslationEntry* entry) {
     int vpn, ppn;
     vpn = entry->virtualPage;
     ppn = entry->physicalPage;
-    memset(&machine->mainMemory[ppn * PageSize], 0, PageSize);
-    entry->valid = TRUE;
+    memset(&(machine->mainMemory[ppn * PageSize]), 0, PageSize);
 
     return 0;
 }

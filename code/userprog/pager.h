@@ -2,6 +2,7 @@
 #define PAGER_H
 
 #include "synch.h"
+#include "backstore.h"
 
 class Pager {
 public:
@@ -32,6 +33,8 @@ private:
           write to backstore
         free this page(memory manager)
     */
+
+    BackStore *backstore;
     
 
     Lock* pagerLock;
