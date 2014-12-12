@@ -105,10 +105,6 @@ int Pager::pageOut(TranslationEntry* entry) {
     free this page(memory manager)
 */
 
-int Pager::removeEntry(TranslationEntry* entry) {
-    return 0;
-}
-
 int Pager::addEntry(TranslationEntry* entry) {
     Tlist->Append((void*)entry);
     return 0;

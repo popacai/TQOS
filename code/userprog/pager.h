@@ -43,7 +43,6 @@ private:
 
     List* Tlist; //TranslationEntry list, All TranslationEntry in Memory
     //Use a vector instead
-    int removeEntry(TranslationEntry* entry);
     int addEntry(TranslationEntry* entry);
     TranslationEntry* findLRUEntry();
 };
