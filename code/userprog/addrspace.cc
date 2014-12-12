@@ -75,12 +75,6 @@ AddrSpace::Initialize(OpenFile *executable)
 int 
 AddrSpace::Initialize(OpenFile *executable, int flag)
 {
-
-    if (flag == 2) 
-        #define DEMANDPAGE
-    
-#ifdef DEMANDPAGE
-    printf("demand page\n");
     NoffHeader noffH;
     unsigned int i, size;
 
@@ -90,123 +84,48 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         SwapHeader(&noffH);
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
-    this->executable = executable;
-    printf("%d\n",(int)executable);
-// how big is address space?
+    // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size
            + UserStackSize + ArgvSize;	// we need to increase the size
     // to leave room for the stack
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
-#ifndef DEMANDPAGE
+    /*
     if(numPages > (unsigned int)memoryManager->GetFreePageCount() || numPages > NumPhysPages) {
         return -1; // TODO: handle fail
     }
-#endif
-
+    */
     pageTable = new TranslationEntry[numPages];
-#ifdef PDEBUG
-    printf("********************** NUM PHYS PAGES: %d, PAGE SIZE: 0x%x\n", NumPhysPages, PageSize);
-#endif
     // to run anything too big --
     // at least until we have
     // virtual memory
 
     DEBUG('a', "Initializing address space, num pages %d, size %d\n",
           numPages, size);
-// first, set up the translation
-#ifdef PDEBUG
-    printf("num pages = %d\n",numPages);
-#endif
+
+    // first, set up the translation
     for (i = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
         // For Project 2, virtual page number should be i 
         // There is no real virtual memory, just assign a physical memory page
-        pageTable[i].physicalPage = memoryManager->AllocPage(flag);
+        //pageTable[i].physicalPage = memoryManager->AllocPage(flag);
+        pageTable[i].physicalPage = 0;
         ASSERT(pageTable[i].physicalPage >= 0);
         //bzero(&machine->mainMemory[pageTable[i].physicalPage * PageSize], PageSize);
-#ifdef DEMANDPAGE
+        //memset(&machine->mainMemory[pageTable[i].physicalPage * PageSize], 'A', PageSize);
+
         pageTable[i].valid = FALSE;
-#else
-        memset(&machine->mainMemory[pageTable[i].physicalPage * PageSize], 'A', PageSize);
-        pageTable[i].valid = TRUE;
-#endif
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
         pageTable[i].reference = 0;
+        pageTable[i].addrspace = this;
         // a separate page, we could set its
         // pages to be read-only
     }
-
-// zero out the entire address space, to zero the unitialized data segment
-// and the stack segment
-    // For Project 2, we can no longer do this...
-    // bzero(machine->mainMemory, size);
-
-// then, copy in the code and data segments into memory
-#else
-    unsigned int copySize= noffH.code.size;
-    unsigned int copyStart = noffH.code.virtualAddr; 
-    unsigned int copyInFileStart = noffH.code.inFileAddr;
-    unsigned int copyOffset;
-    unsigned int ppn;
-#ifdef PDEBUG
-printf("code: \n");
-printf("virtual addr: 0x%x\n", noffH.code.virtualAddr);
-printf("in file addr: 0x%x\n", noffH.code.inFileAddr);
-printf("code size: 0x%x\n", noffH.code.size);
-printf("begin copying....\n");
-printf("page size: 0x%x\n", PageSize);
-#endif
-    copyOffset = copyStart & (PageSize - 1);
-    while(copySize >= PageSize - copyOffset) {
-        // start at non-boundry and is long enough to fill up the page
-        // calculate physical page number using page table
-        ppn = pageTable[copyStart / PageSize].physicalPage;
-#ifdef PDEBUG
-printf("writing phys page %d\n", ppn);
-#endif
-        executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
-                           PageSize - copyOffset, copyInFileStart);
-        copySize -= (PageSize - copyOffset);
-        copyStart += (PageSize - copyOffset);
-        copyInFileStart += (PageSize - copyOffset);
-        copyOffset = copyStart & (PageSize - 1);
-        ASSERT(copyOffset == 0);
-    }
-    if(copySize > 0) {
-        ppn = pageTable[copyStart / PageSize].physicalPage;
-#ifdef PEDBUG
-printf("writing phys page %d\n", ppn);
-#endif
-        executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
-                             copySize, copyInFileStart);
-    }
-
-    copySize = noffH.initData.size;
-    copyStart = noffH.initData.virtualAddr;
-    copyInFileStart= noffH.initData.inFileAddr;
-    copyOffset = copyStart & (PageSize - 1);
-    while(copySize >= PageSize - copyOffset) {
-        // start at non-boundry and is long enough to fill up the page
-        // calculate physical page number using page table
-        ppn = pageTable[copyStart / PageSize].physicalPage;
-        executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
-                           PageSize - copyOffset, copyInFileStart);
-        copySize -= (PageSize - copyOffset);
-        copyStart += (PageSize - copyOffset);
-        copyInFileStart += (PageSize - copyOffset);
-        copyOffset = copyStart & (PageSize - 1);
-    }
-    if(copySize > 0) {
-        ppn = pageTable[copyStart / PageSize].physicalPage;
-        executable->ReadAt(&(machine->mainMemory[ppn*PageSize + copyOffset]),
-                             copySize, copyInFileStart);
-    }
-#endif
     return 1; // success
+
 }
 
 int SeekForPhysicalPage(TranslationEntry* vm, int vmSize,int virtualPage) {
@@ -381,8 +300,9 @@ void AddrSpace::RestoreState()
     machine->pageTableSize = numPages;
 }
 
-void AddrSpace::PageIn(int badVirAddr)
+int AddrSpace::LocalExecFile(TranslationEntry* entry)
 {
+    /*
     NoffHeader noffH;
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     unsigned int copySize;
@@ -410,6 +330,7 @@ void AddrSpace::PageIn(int badVirAddr)
     this->executable->ReadAt(&(machine->mainMemory[ppn*PageSize]), PageSize, copyInFileStart);
     pageTable[vpn].valid = TRUE;
     
+    */
     /*if (copyStart < codeSize) {
         copyInFileStart = noffH.code.inFileAddr + copyStart;
     } else if(copyStart >= codeSize && copyStart < (codeSize + dataSize)) {

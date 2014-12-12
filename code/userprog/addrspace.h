@@ -42,15 +42,24 @@ public:
     TranslationEntry* getPageTable() {return pageTable;}
     OpenFile* executable;
 
-    // TODO: We will rename PageIn as LoadExecFile
-    void PageIn(int badVirAddr);
+    // Get the entry from the virtual addr
+    TranslationEntry* getTranslationEntry(int virtualAddr);
 
-    // TODO: call the backingstore
+    // Load in to the entry file
+    // Physical page has beed allocated
+    int LocalExecFile(TranslationEntry* entry);
+
+    // set the physical page as zero
+    int AllocStackPage(TranslationEntry* entry);
+
+    // call the backingstore instead of call addrspace
     // return 0 as success, return -1 as fail
-    int SaveToSwap(int virtualPageIndex);
+    // Call backstore directly
+    // int SaveToSwap(int virtualPageIndex);
 
     // return 0 as success, return -1 as fail, return 1 as not found
-    int RestoreFromSwap(int virtualPageIndex);
+    // Call backstore directly
+    // int RestoreFromSwap(int virtualPageIndex);
 
     
 
