@@ -1,8 +1,9 @@
 // This is a mock implementation
+#define mock_backstore
 #ifdef mock_backstore
-
 #include "backstore.h"
 #include "system.h"
+
 
 //qi
 
