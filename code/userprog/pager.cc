@@ -1,4 +1,4 @@
-#include "pager.h"
+#include "pager.h" 
 #include "system.h"
 #include "memorymanager.h"
 
@@ -13,7 +13,7 @@ Pager::~Pager() {
     delete Tlist;
 }
 
-int Pager::handlePageFault(int virtualPage) {
+int Pager::handlePageFault(int virtualAddr) {
     pagerLock->Acquire();
     TranslationEntry* pageToBePagedOut;
     TranslationEntry* faultPage;
@@ -23,21 +23,31 @@ int Pager::handlePageFault(int virtualPage) {
         this->pageOut(pageToBePagedOut);
     }
 
+    faultPage = currentThread->space->getTranslationEntry(virtualAddr);
     this->pageIn(faultPage);
+
     pagerLock->Release();
     return 0;
 }
 
-
-int Pager::pageIn(TranslationEntry* entry) {
-    return 0;
-}
  /*
    get a page from memory manager
    if  seach for backstore
    elif Load in data if in execute space
    elif in stack space, allocate free
 */
+int Pager::pageIn(TranslationEntry* entry) {
+    int freePhysicalPage;
+    freePhysicalPage = memoryManager->AllocPage();
+
+    entry->physicalPage = freePhysicalPage;
+    //TODO: search from backstore
+
+    //TODO:
+    entry->addrspace->loadFromExecFile(entry);
+
+    return 0;
+}
 
 int Pager::pageOut(TranslationEntry* entry) {
     return 0;

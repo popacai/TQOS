@@ -79,6 +79,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     unsigned int i, size;
 
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
+    this->executable = executable;
     if ((noffH.noffMagic != NOFFMAGIC) &&
             (WordToHost(noffH.noffMagic) == NOFFMAGIC))
         SwapHeader(&noffH);
@@ -230,6 +231,7 @@ AddrSpace::~AddrSpace()
         }
         else
         {
+            //TODO: important to fix in future
             memoryManager->FreePage(pageTable[i].physicalPage);
         }
     }
@@ -300,9 +302,19 @@ void AddrSpace::RestoreState()
     machine->pageTableSize = numPages;
 }
 
-int AddrSpace::LocalExecFile(TranslationEntry* entry)
+TranslationEntry* AddrSpace::getTranslationEntry(int virtualAddr)
 {
-    /*
+    int pageIndex;
+    TranslationEntry* targetPage;
+    pageIndex = divRoundDown(virtualAddr, PageSize);
+
+    targetPage = &(this->pageTable[pageIndex]);
+
+    return targetPage;
+}
+
+int AddrSpace::loadFromExecFile(TranslationEntry* entry)
+{
     NoffHeader noffH;
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     unsigned int copySize;
@@ -313,24 +325,27 @@ int AddrSpace::LocalExecFile(TranslationEntry* entry)
     unsigned int dataSize = noffH.initData.size;
     unsigned int codeStart = noffH.code.inFileAddr;
     unsigned int codeVirtStart = noffH.code.virtualAddr;
-    printf("codeVirtStart = %u\n",codeVirtStart);
-    printf("pagein\n");
+    //printf("codeVirtStart = %u\n",codeVirtStart);
+    //printf("pagein\n");
     
-    vpn = divRoundDown(badVirAddr, PageSize);
-    printf("vpn = %u\n",vpn);
-    pageTable[vpn].physicalPage = memoryManager->AllocPage(1);
-    ppn = pageTable[vpn].physicalPage;
+    vpn = entry->virtualPage;
+    ppn = entry->physicalPage;
+
     copySize = PageSize;
     copyStart = vpn * PageSize;
     copyInFileStart = noffH.code.inFileAddr + (copyStart - codeVirtStart);
-    printf("copyInFileStart = %u\n",copyInFileStart);
+    //printf("copyInFileStart = %u\n",copyInFileStart);
+
+    /*
     if (copyStart > codeVirtStart + codeSize + dataSize) {
         memset(&machine->mainMemory[ppn * PageSize], 0, PageSize);
     }
-    this->executable->ReadAt(&(machine->mainMemory[ppn*PageSize]), PageSize, copyInFileStart);
-    pageTable[vpn].valid = TRUE;
-    
     */
+    this->executable->ReadAt(&(machine->mainMemory[ppn*PageSize]), PageSize, copyInFileStart);
+
+    entry->valid = TRUE;
+    //pageTable[vpn].valid = TRUE;
+    
     /*if (copyStart < codeSize) {
         copyInFileStart = noffH.code.inFileAddr + copyStart;
     } else if(copyStart >= codeSize && copyStart < (codeSize + dataSize)) {
@@ -338,4 +353,16 @@ int AddrSpace::LocalExecFile(TranslationEntry* entry)
     } else {
         //TODO stack page in
     }*/
+}
+
+int test_addrspace_getTranslationEntry() {
+    AddrSpace* addr;
+    TranslationEntry* entry;
+    int b;
+    OpenFile *executable = fileSystem->Open("/home/tao/TQOS/code/test/halt");
+    addr = new AddrSpace();
+    b = addr->Initialize(executable);
+    printf("%d,hi\n", b);
+    entry = addr->getTranslationEntry(PageSize * 2);
+    printf("page_index = %d\n", entry->virtualPage);
 }

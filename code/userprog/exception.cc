@@ -140,6 +140,7 @@ ExceptionHandler(ExceptionType which)
     int j;
     int value;
     Thread* th;
+    int virtualAddr;
     
 
     if (which == SyscallException) {
@@ -395,7 +396,9 @@ aaa:
         kill_process();
     } else if (which == PageFaultException) {
         printf("page fault exception\n");
-        kpg_fault();
+        virtualAddr = machine->registers[BadVAddrReg];
+        pager->handlePageFault(virtualAddr);
+        //kpg_fault();
     } else {
         printf("Unexpected user mode exception %d %d\n", which, type);
         kill_process();

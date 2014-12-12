@@ -17,6 +17,7 @@
 #include "synchconsole.h"
 #include "processmanager.h"
 #include "bufferpipe.h"
+#include "pager.h"
 //----------------------------------------------------------------------
 // StartProcess
 // 	Run a user program.  Open the executable, load it into
@@ -27,6 +28,7 @@ MemoryManager* memoryManager;
 ProcessManager* processManager;
 SynchConsole* synchconsole;
 BufferPipe* bufferpipe;
+Pager* pager;
 
 void ConsoleTest (char *in, char *out);
 
@@ -40,10 +42,11 @@ StartProcess(char *filename)
     //Init console
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
-    int pg_flag;
     memoryManager = new MemoryManager(NumPhysPages);
     //memoryManager -> RandomInitializationTest();
     processManager = new ProcessManager(PROCESS_MAX_NUM);
+    pager = new Pager();
+
     synchconsole = new SynchConsole(0, 0);
     bufferpipe = new BufferPipe();
 
@@ -52,21 +55,13 @@ StartProcess(char *filename)
         return;
     }
     space = new AddrSpace();
-    // TODO: Initialize should return error
-    pg_flag = 2;
-    if (pg_flag == 2) {
-        #define DEMANDPAGE
-    }
-    if(space->Initialize(executable, pg_flag)) { // 0 means no lock
+
+    if(space->Initialize(executable, 1)) { // 0 means no lock
         currentThread->space = space;
     }
     else {
         ASSERT(FALSE);
     }
-
-#ifndef DEMANDPAGE
-    delete executable;			// close file
-#endif
 
     space->InitRegisters();		// set the initial register values
     space->RestoreState();		// load page table register
@@ -108,7 +103,8 @@ static void WriteDone(int arg) {
 void
 ConsoleTest (char *in, char *out)
 {
-    test_buffer_pipe();
+    test_addrspace_getTranslationEntry();
+    //test_buffer_pipe();
     //test_synchconsole();
     return;
     char ch;

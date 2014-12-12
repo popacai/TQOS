@@ -47,7 +47,7 @@ public:
 
     // Load in to the entry file
     // Physical page has beed allocated
-    int LocalExecFile(TranslationEntry* entry);
+    int loadFromExecFile(TranslationEntry* entry);
 
     // set the physical page as zero
     int AllocStackPage(TranslationEntry* entry);
@@ -61,9 +61,6 @@ public:
     // Call backstore directly
     // int RestoreFromSwap(int virtualPageIndex);
 
-    
-
-
 private:
     TranslationEntry *pageTable;	// Assume linear page table translation
     // for now!
@@ -71,4 +68,5 @@ private:
     // address space
 };
 
+int test_addrspace_getTranslationEntry();
 #endif // ADDRSPACE_H

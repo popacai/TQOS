@@ -8,7 +8,7 @@ public:
     Pager();
     ~Pager();
 
-    int handlePageFault(int virtualPage);
+    int handlePageFault(int virtualAddr);
     /* Ask mem manager, freepgecount
        if not free page:
             //Find LRU Page from Tlist();

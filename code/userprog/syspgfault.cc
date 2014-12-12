@@ -5,5 +5,5 @@ void kpg_fault() {
     
     badAddr = machine->registers[BadVAddrReg];
     printf("bad addr %d\n", badAddr);
-    currentThread->space->PageIn(badAddr);
+    //currentThread->space->PageIn(badAddr);
 }
