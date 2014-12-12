@@ -347,6 +347,7 @@ aaa:
                 buffer = machine->ReadRegister(4);
                 size = machine->ReadRegister(5);
                 id = machine->ReadRegister(6);
+                /*
 
                 errno = RW_bufck(buffer, size);
                 if (errno < 0) {    
@@ -361,6 +362,7 @@ aaa:
                     PushPC();
                     break;
                 }
+                */
 
                 io_return_value = kwrite((char*)buffer, size, id);
                 write_return_value(io_return_value);
@@ -395,7 +397,7 @@ aaa:
         printf("adderror %d %d\n", which, type);
         kill_process();
     } else if (which == PageFaultException) {
-        printf("page fault exception\n");
+        //printf("page fault exception\n");
         virtualAddr = machine->registers[BadVAddrReg];
         pager->handlePageFault(virtualAddr);
         //kpg_fault();

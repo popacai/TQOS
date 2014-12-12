@@ -55,6 +55,7 @@ int Pager::pageIn(TranslationEntry* entry) {
 
     //TODO:
     if (entry->virtualPage <= (sharedPages)) {
+        stats->numPageIns++;
         entry->addrspace->loadFromExecFile(entry);
     }
 

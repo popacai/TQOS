@@ -136,10 +136,18 @@ int u2kmemcpy(unsigned char* dst, int src, int n) {
     int value;
     int i;
     for (i = 0; i < n; i++) {
+        while (!(machine->ReadMem(src + i, 1, &value)))
+        {
+            //yes ppg!
+        }
+        *(dst + i) = value;
+
+        /* Old version
         if (machine->ReadMem(src + i, 1, &value))
             *(dst + i) = value;
         else
             return i;
+        */
     }
     return i;
 }
@@ -170,9 +178,13 @@ int k2umemcpy(int dst, unsigned char* src, int n) {
     int i;
     for (i = 0; i < n; i++) {
         value = *(src + i);
+        while (!(machine->WriteMem(dst + i, 1, value))) {}
+
+        /* Old version
         if (!(machine->WriteMem(dst + i, 1, value))){
             return i;
         }
+        */
     }
     return i;
 }
