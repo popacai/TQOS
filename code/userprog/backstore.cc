@@ -1,9 +1,10 @@
+// This is a mock implementation
+#ifdef mock_backstore
+
 #include "backstore.h"
 #include "system.h"
 
 //qi
-// This is a mock implementation
-#ifdef mock_backstore
 
 BackStore::BackStore() {
 }

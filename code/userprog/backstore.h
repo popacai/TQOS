@@ -1,13 +1,15 @@
+// This is mock implementation.
+// undefine the mock_backstore will work
+#ifdef mock_backstore
+#ifdef mock_backstore
+
+#define mock_backstore 1
 #ifndef BACKSTORE_H 
 #define BACKSTORE_H
 
 #include "machine.h"
 
-// This is mock implementation.
-// undefine the mock_backstore will work
-#define mock_backstore 1
 
-#ifdef mock_backstore
 #include <vector>
 
 using namespace std;
