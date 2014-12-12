@@ -20,7 +20,7 @@ int Pager::handlePageFault(int virtualAddr) {
     TranslationEntry* faultPage;
     
     faultPage = currentThread->space->getTranslationEntry(virtualAddr);
-    //printf("handle pagefault for v=%d\n", faultPage->virtualPage);
+    //printf("handle pagefault for spid=%d,v=%d\n", currentThread->spid, faultPage->virtualPage);
 
     if (memoryManager->GetFreePageCount() < 1) {
         //No free page any more
@@ -103,10 +103,6 @@ int Pager::pageOut(TranslationEntry* entry) {
     free this page(memory manager)
 */
 
-int Pager::removeEntry(TranslationEntry* entry) {
-    return 0;
-}
-
 int Pager::addEntry(TranslationEntry* entry) {
     Tlist->Append((void*)entry);
     return 0;
@@ -114,6 +110,8 @@ int Pager::addEntry(TranslationEntry* entry) {
 
 TranslationEntry* Pager::findLRUEntry() {
     TranslationEntry* entry;
-    entry = (TranslationEntry*)Tlist->Remove();
+    do {
+        entry = (TranslationEntry*)Tlist->Remove();
+    } while (entry->valid == FALSE);
     return entry;
 }
