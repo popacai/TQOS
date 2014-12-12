@@ -124,8 +124,11 @@ int ustrlen(int src) {
     n = 0;
 
     do {
+        while (!(machine->ReadMem(src + n, 1, &value))){}
+        /* Old Code
         if (!(machine->ReadMem(src + n, 1, &value)))
           return -1;
+        */
         n++;
     } while (value != 0);
 

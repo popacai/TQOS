@@ -223,6 +223,7 @@ AddrSpace::~AddrSpace()
     //TODO: To be fixed in future
     unsigned int i;
     for(i = 0; i < numPages; i++) {
+        /*
         if ((pageTable[i].reference)) {
             (*(pageTable[i].reference)) --;
             if (*(pageTable[i].reference) == 0) {
@@ -230,13 +231,21 @@ AddrSpace::~AddrSpace()
             }
         }
         else
+        */
         {
             //TODO: important to fix in future
-            memoryManager->FreePage(pageTable[i].physicalPage);
+            //printf("currentThread,spid=%d", currentThread->spid);
+            //printf("try to free page,v=%d, p=%d, valid=%d\n", 
+            //        pageTable[i].virtualPage, pageTable[i].physicalPage, pageTable[i].valid);
+            if (pageTable[i].valid) {
+                //printf("free page,v=%d, p=%d\n", pageTable[i].virtualPage, pageTable[i].physicalPage);
+                memoryManager->FreePage(pageTable[i].physicalPage);
+                pageTable[i].valid = FALSE;
+            }
         }
     }
     if(pageTable != NULL) {
-        delete [] pageTable;
+        //delete [] pageTable;
     }
     delete executable;//close
 }
@@ -356,7 +365,7 @@ int test_addrspace_getTranslationEntry() {
     OpenFile *executable = fileSystem->Open("/home/tao/TQOS/code/test/halt");
     addr = new AddrSpace();
     b = addr->Initialize(executable);
-    printf("%d,hi\n", b);
+    //printf("%d,hi\n", b);
     entry = addr->getTranslationEntry(PageSize * 2);
-    printf("page_index = %d\n", entry->virtualPage);
+    //printf("page_index = %d\n", entry->virtualPage);
 }

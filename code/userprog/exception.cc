@@ -97,11 +97,14 @@ int kill_process() {
      printf("kernel level thread name = %s\n",thread_name);
      num_pages = space->getNumPages();
      printf("numPages = %d\n",num_pages);*/
+     //printf("kill_process===============\n");
 
      IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+
      delete currentThread->space; // memory manager
      Thread* next;
      Thread* temp;
+     /*
 
      next = currentThread->nextThread;
      if (next != currentThread) {
@@ -116,6 +119,7 @@ int kill_process() {
              temp->nextThread = temp;
          }
      }
+     */
      (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
@@ -195,6 +199,7 @@ ExceptionHandler(ExceptionType which)
                 argc_ = machine->ReadRegister(5);
                 argv_ = machine->ReadRegister(6);
                 opt = machine->ReadRegister(7);
+                /*
                 if (fname_addrck((char*)name) <= 0) {
                     printf("name error\n");
                     machine->WriteRegister(2, 0); // return err code 0
@@ -213,16 +218,20 @@ ExceptionHandler(ExceptionType which)
                     PushPC();
                     break;
                 }
+                */
                 size = ustrlen(name);
                 path = new unsigned char[size+1];
                 u2kmemcpy(path, name, size+1);
+                /*
                 if (fexist_ck(path) <= 0) {
                     printf("name not exits\n");
                     machine->WriteRegister(2, 0); // return err code 0
                     PushPC();
                     break;
                 }
+                */
                 argv_len = 0;
+                /*
                 for (i = 0; i < argc_; i++) {
                     j = 0;
                     if (!machine->ReadMem(argv_ + i*4, 4, &inargv)) {
@@ -252,6 +261,7 @@ ExceptionHandler(ExceptionType which)
 			        goto aaa;
                     }
                 } 
+                */
                 kexec();
                 break;
 aaa:
@@ -383,7 +393,7 @@ aaa:
     }
     else if (which == IllegalInstrException) {
         //TODO handle illegal instruction
-        printf("illegal instruction exception\n");
+        printf("spid=%d, illegal instruction exception\n", currentThread->spid);
         kill_process();
     } 
     else if (which == OverflowException) {

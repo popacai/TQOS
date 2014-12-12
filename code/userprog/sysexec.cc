@@ -57,15 +57,19 @@ void kexec() {
     argv = machine->ReadRegister(6);
     opt = machine->ReadRegister(7);
     // first check the location of filename is valid
+    /*
     if(!fname_addrck((char*)srcPath)){
         ASSERT(false);
     }
+    */
     len = ustrlen((int)srcPath);
     path = new unsigned char[len+1];
     u2kmemcpy(path, srcPath, len + 1);
+    /*
     if (fexist_ck(path) == -1) {
         ASSERT(false);
     }
+    */
     //printf("user str : %s, len: %d \n", path, len);
     if(argc == 0) {
         passArgv = NULL;
@@ -89,8 +93,8 @@ void kexec() {
         return;
         ASSERT(false); // should not reach here
     }
-    delete executable;
-    delete path;
+    //delete executable;
+    //delete path;
     spid = processManager->Alloc((void*)t);
     machine->WriteRegister(2, spid);
     if(spid == 0) {// not enough spid in process manager
