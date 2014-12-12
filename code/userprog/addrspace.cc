@@ -353,6 +353,17 @@ int AddrSpace::loadFromExecFile(TranslationEntry* entry)
     } else {
         //TODO stack page in
     }*/
+    return 0;
+}
+
+int AddrSpace::AllocStackPage(TranslationEntry* entry) {
+    int vpn, ppn;
+    vpn = entry->virtualPage;
+    ppn = entry->physicalPage;
+    memset(&machine->mainMemory[ppn * PageSize], 0, PageSize);
+    entry->valid = TRUE;
+
+    return 0;
 }
 
 int test_addrspace_getTranslationEntry() {

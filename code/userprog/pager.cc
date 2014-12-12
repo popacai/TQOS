@@ -38,13 +38,29 @@ int Pager::handlePageFault(int virtualAddr) {
 */
 int Pager::pageIn(TranslationEntry* entry) {
     int freePhysicalPage;
+    int section;
+    int totalPages, stackPages, sharedPages;
+    //section = 1 as stack
+    //section = 0 as data+code
+
     freePhysicalPage = memoryManager->AllocPage();
 
     entry->physicalPage = freePhysicalPage;
     //TODO: search from backstore
 
+    //shared page is the code+data. 
+    totalPages = currentThread->space->getNumPages();
+    stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared 
+    sharedPages = totalPages - stackPages;
+
     //TODO:
-    entry->addrspace->loadFromExecFile(entry);
+    if (entry->virtualPage <= (sharedPages)) {
+        entry->addrspace->loadFromExecFile(entry);
+    }
+
+    if (entry->virtualPage > (sharedPages)) {
+        entry->addrspace->AllocStackPage(entry);
+    }
 
     return 0;
 }
