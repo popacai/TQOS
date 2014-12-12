@@ -28,6 +28,7 @@ int Pager::handlePageFault(int virtualAddr) {
         //No free page any more
         pageToBePagedOut = this->findLRUEntry();
         this->pageOut(pageToBePagedOut);
+        pageToBePagedOut->valid = FALSE;
         //printf("page out for v=%d, p=%d\n", pageToBePagedOut->virtualPage, pageToBePagedOut->physicalPage);
     }
 
@@ -98,7 +99,6 @@ int Pager::pageIn(TranslationEntry* entry) {
 int Pager::pageOut(TranslationEntry* entry) {
     backstore->SavePage(entry);
     memoryManager->FreePage(entry->physicalPage);
-    entry->valid = FALSE;
 }
 /* if dirty?(write back)
       write to backstore
