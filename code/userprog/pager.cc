@@ -16,19 +16,19 @@ Pager::~Pager() {
 }
 
 int Pager::handlePageFault(int virtualAddr) {
-    printf("=====start=====\n");
+    //printf("=====start=====\n");
     pagerLock->Acquire();
     TranslationEntry* pageToBePagedOut;
     TranslationEntry* faultPage;
     
     faultPage = currentThread->space->getTranslationEntry(virtualAddr);
-    printf("handle pagefault for v=%d\n", faultPage->virtualPage);
+    //printf("handle pagefault for v=%d\n", faultPage->virtualPage);
 
     if (memoryManager->GetFreePageCount() < 1) {
         //No free page any more
         pageToBePagedOut = this->findLRUEntry();
         this->pageOut(pageToBePagedOut);
-        printf("page out for v=%d, p=%d\n", pageToBePagedOut->virtualPage, pageToBePagedOut->physicalPage);
+        //printf("page out for v=%d, p=%d\n", pageToBePagedOut->virtualPage, pageToBePagedOut->physicalPage);
     }
 
     faultPage->physicalPage = memoryManager->AllocPage();
@@ -37,7 +37,7 @@ int Pager::handlePageFault(int virtualAddr) {
     this->addEntry(faultPage);
     faultPage->valid = TRUE;
 
-    printf("page in for v=%d, p=%d\n", faultPage->virtualPage, faultPage->physicalPage);
+    //printf("page in for v=%d, p=%d\n", faultPage->virtualPage, faultPage->physicalPage);
 
     pagerLock->Release();
     return 0;
@@ -67,12 +67,12 @@ int Pager::pageIn(TranslationEntry* entry) {
 
     foundInSwap = backstore->RestorePage(entry);
     if (foundInSwap == 0) {
-        printf("found in swap\n");
+        //printf("found in swap\n");
         return 0;
     }
 
     if (foundInSwap == 1) {
-        printf("not found in swap\n");
+        //printf("not found in swap\n");
     }
     
 
@@ -89,7 +89,7 @@ int Pager::pageIn(TranslationEntry* entry) {
 
     if (entry->virtualPage > (sharedPages)) {
         entry->addrspace->AllocStackPage(entry);
-        printf("alloc stack space\n");
+        //printf("alloc stack space\n");
     }
 
     return 0;
