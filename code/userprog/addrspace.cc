@@ -64,6 +64,7 @@ SwapHeader (NoffHeader *noffH)
 
 AddrSpace::AddrSpace() {
     pageTable = NULL;
+    backstore = NULL;
 }
 
 int
@@ -237,6 +238,9 @@ AddrSpace::~AddrSpace()
     }
     if(pageTable != NULL) {
         delete [] pageTable;
+    }
+    if(backstore != NULL) {
+        delete backstore;
     }
     delete executable;//close
 }

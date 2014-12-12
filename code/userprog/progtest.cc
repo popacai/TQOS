@@ -69,6 +69,7 @@ StartProcess(char *filename)
     int spid = processManager->Alloc((void*)currentThread);
     ASSERT(spid == 1);
     currentThread->spid = spid;
+    space->backstore = new BackStore(space, spid);
     machine->Run();			// jump to the user progam
     ASSERT(FALSE);			// machine->Run never returns;
     // the address space exits
@@ -103,7 +104,8 @@ static void WriteDone(int arg) {
 void
 ConsoleTest (char *in, char *out)
 {
-    test_addrspace_getTranslationEntry();
+    test_backstore();
+    //test_addrspace_getTranslationEntry();
     //test_buffer_pipe();
     //test_synchconsole();
     return;

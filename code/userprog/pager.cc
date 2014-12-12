@@ -6,13 +6,11 @@ Pager::Pager() {
     pagerLock = new Lock("pagerLock");
 
     Tlist = new List;
-    backstore = new BackStore();
 }
 
 Pager::~Pager() {
     delete pagerLock;
     delete Tlist;
-    delete backstore;
 }
 
 int Pager::handlePageFault(int virtualAddr) {
@@ -66,7 +64,7 @@ int Pager::pageIn(TranslationEntry* entry) {
     //printf("in  page in  2 : machine->pageTable=%d\n", machine->pageTable);
     //TODO: search from backstore
 
-    foundInSwap = backstore->RestorePage(entry);
+    foundInSwap = entry->addrspace->backstore->RestorePage(entry);
     if (foundInSwap == 0) {
         //printf("found in swap\n");
         return 0;
@@ -97,7 +95,7 @@ int Pager::pageIn(TranslationEntry* entry) {
 }
 
 int Pager::pageOut(TranslationEntry* entry) {
-    backstore->SavePage(entry);
+    entry->addrspace->backstore->SavePage(entry);
     memoryManager->FreePage(entry->physicalPage);
 }
 /* if dirty?(write back)
