@@ -103,6 +103,7 @@ void kexec() {
         PushPC();
         return;
     }
+    space->backstore = new BackStore(space, spid);
     //printf("new spid: %d\n", spid);
     t->spid = spid;
     t->Fork(StartUserProcess, (int)passArgv); 
