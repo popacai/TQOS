@@ -336,23 +336,7 @@ int AddrSpace::loadFromExecFile(TranslationEntry* entry)
     copyInFileStart = noffH.code.inFileAddr + (copyStart - codeVirtStart);
     //printf("copyInFileStart = %u\n",copyInFileStart);
 
-    /*
-    if (copyStart > codeVirtStart + codeSize + dataSize) {
-        memset(&machine->mainMemory[ppn * PageSize], 0, PageSize);
-    }
-    */
     this->executable->ReadAt(&(machine->mainMemory[ppn*PageSize]), PageSize, copyInFileStart);
-
-    //entry->valid = TRUE;
-    //pageTable[vpn].valid = TRUE;
-    
-    /*if (copyStart < codeSize) {
-        copyInFileStart = noffH.code.inFileAddr + copyStart;
-    } else if(copyStart >= codeSize && copyStart < (codeSize + dataSize)) {
-        copyInFileStart = noffH.iniData.inFileAddr + copyStart - codeSize;
-    } else {
-        //TODO stack page in
-    }*/
     return 0;
 }
 
