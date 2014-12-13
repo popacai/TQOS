@@ -112,14 +112,14 @@ int Pager::pageIn(TranslationEntry* entry) {
     sharedPages = totalPages - stackPages;
 
     //TODO:
-    if (entry->virtualPage <= (sharedPages)) {
+    if (entry->virtualPage < (sharedPages)) {
         stats->numPageIns++;
         //entry->addrspace->loadFromExecFile(entry);
         entry->dirty = FALSE;
         space->loadFromExecFile(entry);
     }
 
-    if (entry->virtualPage > (sharedPages)) {
+    if (entry->virtualPage >= (sharedPages)) {
         // entry->addrspace->AllocStackPage(entry);
         entry->dirty = FALSE;
         space->AllocStackPage(entry);
