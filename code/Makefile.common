@@ -109,7 +109,8 @@ USERPROG_H = ../userprog/addrspace.h\
 	../userprog/ksyscall.h\
 	../userprog/bufferpipe.h\
 	../userprog/pager.h\
-	../userprog/backstore.cc
+	../userprog/backstore.h\
+    ../userprog/lruheap.h
 
 USERPROG_C = ../userprog/progtest.cc\
         ../userprog/addrspace.cc\
@@ -131,14 +132,15 @@ USERPROG_C = ../userprog/progtest.cc\
         ../userprog/memorymanager.cc \
 	../userprog/bufferpipe.cc\
 	../userprog/pager.cc \
-	../userprog/backstore.cc
+	../userprog/backstore.cc\
+    ../userprog/lruheap.cc
 
 USERPROG_O = progtest.o addrspace.o bitmap.o exception.o console.o machine.o \
 	mipssim.o translate.o \
 	sysexit.o sysexec.o sysjoin.o sysfork.o syscommon.o sysio.o synchconsole.o syspgfault.o\
         memorymanager.o processmanager.o\
 		bufferpipe.o\
-		pager.o backstore.o
+		pager.o backstore.o lruheap.o
 
 VM_H = 
 VM_C = 

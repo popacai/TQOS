@@ -1,3 +1,6 @@
+#ifndef LRUHEAP_H
+#define LRUHEAP_H
+
 #include "translate.h" 
 #include <vector>
 
@@ -11,3 +14,5 @@ private:
     int compare(TranslationEntry* entry1, TranslationEntry* entry2);
     std::vector<TranslationEntry*> entry_vec;
 };
+
+#endif
