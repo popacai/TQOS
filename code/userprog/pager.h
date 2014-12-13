@@ -17,7 +17,11 @@ public:
        //Insert the page into the Tlist
        page into this 
     */
+
+    // In killing a process, we need to remove the entries in the Memory
     int removePhysicalPage(int physicalPage);
+
+    //Stop paging if we are trying to kill a process
     int stop();
     int start();
 

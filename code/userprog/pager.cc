@@ -32,12 +32,12 @@ Pager::~Pager() {
 int Pager::handlePageFault(int virtualAddr) {
     pagerLock->Acquire();
     stats->numPageFaults++;
-    fprintf(stderr, "=====start=====\n");
+    //fprintf(stderr, "=====start=====\n");
     TranslationEntry* pageToBePagedOut;
     TranslationEntry* faultPage;
     
     faultPage = currentThread->space->getTranslationEntry(virtualAddr);
-    fprintf(stderr, "handle pagefault for spid=%d,v=%d\n", currentThread->spid, faultPage->virtualPage);
+    //fprintf(stderr, "handle pagefault for spid=%d,v=%d\n", currentThread->spid, faultPage->virtualPage);
 
     if (memoryManager->GetFreePageCount() < 1) {
         //No free page any more
@@ -45,7 +45,7 @@ int Pager::handlePageFault(int virtualAddr) {
         stats->numPageOuts++;
         this->pageOut(pageToBePagedOut);
         pageToBePagedOut->valid = FALSE;
-        fprintf(stderr, "page out for v=%d, p=%d\n", pageToBePagedOut->virtualPage, pageToBePagedOut->physicalPage);
+        //fprintf(stderr, "page out for v=%d, p=%d\n", pageToBePagedOut->virtualPage, pageToBePagedOut->physicalPage);
     }
 
     faultPage->physicalPage = memoryManager->AllocPage();
@@ -54,7 +54,7 @@ int Pager::handlePageFault(int virtualAddr) {
 
     this->addEntry(faultPage);
 
-    fprintf(stderr, "page in for v=%d, p=%d\n", faultPage->virtualPage, faultPage->physicalPage);
+    //fprintf(stderr, "page in for v=%d, p=%d\n", faultPage->virtualPage, faultPage->physicalPage);
 
     pagerLock->Release();
     return 0;
@@ -115,11 +115,13 @@ int Pager::pageIn(TranslationEntry* entry) {
     if (entry->virtualPage <= (sharedPages)) {
         stats->numPageIns++;
         //entry->addrspace->loadFromExecFile(entry);
+        entry->dirty = FALSE;
         space->loadFromExecFile(entry);
     }
 
     if (entry->virtualPage > (sharedPages)) {
         // entry->addrspace->AllocStackPage(entry);
+        entry->dirty = FALSE;
         space->AllocStackPage(entry);
         //printf("alloc stack space\n");
     }
