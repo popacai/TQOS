@@ -246,7 +246,7 @@ AddrSpace::~AddrSpace()
         }
     }
     if(pageTable != NULL) {
-        //delete [] pageTable;
+        delete [] pageTable;
     }
     if(backstore != NULL) {
         delete backstore;
