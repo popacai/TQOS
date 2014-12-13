@@ -240,6 +240,7 @@ AddrSpace::~AddrSpace()
             //        pageTable[i].virtualPage, pageTable[i].physicalPage, pageTable[i].valid);
             if (pageTable[i].valid) {
                 //printf("free page,v=%d, p=%d\n", pageTable[i].virtualPage, pageTable[i].physicalPage);
+                pager->removePhysicalPage(pageTable[i].physicalPage);
                 memoryManager->FreePage(pageTable[i].physicalPage);
                 pageTable[i].valid = FALSE;
             }

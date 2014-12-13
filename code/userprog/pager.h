@@ -17,6 +17,9 @@ public:
        //Insert the page into the Tlist
        page into this 
     */
+    int removePhysicalPage(int physicalPage);
+    int stop();
+    int start();
 
 private:
  

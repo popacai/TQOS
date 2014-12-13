@@ -30,28 +30,31 @@ Pager::~Pager() {
 }
 
 int Pager::handlePageFault(int virtualAddr) {
-    //printf("=====start=====\n");
     pagerLock->Acquire();
+    stats->numPageFaults++;
+    fprintf(stderr, "=====start=====\n");
     TranslationEntry* pageToBePagedOut;
     TranslationEntry* faultPage;
     
     faultPage = currentThread->space->getTranslationEntry(virtualAddr);
-    //printf("handle pagefault for spid=%d,v=%d\n", currentThread->spid, faultPage->virtualPage);
+    fprintf(stderr, "handle pagefault for spid=%d,v=%d\n", currentThread->spid, faultPage->virtualPage);
 
     if (memoryManager->GetFreePageCount() < 1) {
         //No free page any more
         pageToBePagedOut = this->findLRUEntry();
+        stats->numPageOuts++;
         this->pageOut(pageToBePagedOut);
         pageToBePagedOut->valid = FALSE;
-        //printf("page out for v=%d, p=%d\n", pageToBePagedOut->virtualPage, pageToBePagedOut->physicalPage);
+        fprintf(stderr, "page out for v=%d, p=%d\n", pageToBePagedOut->virtualPage, pageToBePagedOut->physicalPage);
     }
 
     faultPage->physicalPage = memoryManager->AllocPage();
     this->pageIn(faultPage);
-    this->addEntry(faultPage);
     faultPage->valid = TRUE;
 
-    //printf("page in for v=%d, p=%d\n", faultPage->virtualPage, faultPage->physicalPage);
+    this->addEntry(faultPage);
+
+    fprintf(stderr, "page in for v=%d, p=%d\n", faultPage->virtualPage, faultPage->physicalPage);
 
     pagerLock->Release();
     return 0;
@@ -89,12 +92,18 @@ int Pager::pageIn(TranslationEntry* entry) {
     foundInSwap = space->backstore->RestorePage(entry);
     if (foundInSwap == 0) {
         //printf("found in swap\n");
+        stats->numPageIns++;
+        entry->dirty = FALSE;
         return 0;
     }
 
+    ASSERT(foundInSwap == 1);
+
+    /*
     if (foundInSwap == 1) {
         //printf("not found in swap\n");
     }
+    */
     
 
     //shared page is the code+data. 
@@ -134,6 +143,9 @@ int Pager::pageOut(TranslationEntry* entry) {
 */
 
 int Pager::addEntry(TranslationEntry* entry) {
+    //printf("%d\n", entry->physicalPage);
+    ASSERT(age[entry->physicalPage] == -1);
+    ASSERT(inMemoryPage[entry->physicalPage] == 0);
     age[entry->physicalPage] = stats->totalTicks;
     inMemoryPage[entry->physicalPage] = entry;
     //Tlist->Append((void*)entry);
@@ -155,6 +167,7 @@ TranslationEntry* Pager::findLRUEntry() {
     ASSERT(oldest_page != -1);
     entry = inMemoryPage[oldest_page];
     inMemoryPage[oldest_page] = 0;
+    age[oldest_page] = -1;
     return entry;
     /*
     do {
@@ -162,4 +175,20 @@ TranslationEntry* Pager::findLRUEntry() {
     } while (entry->valid == FALSE);
     */
     return entry;
+}
+
+int Pager::removePhysicalPage(int physicalPage) {
+    
+    ASSERT(inMemoryPage[physicalPage] != 0);
+    inMemoryPage[physicalPage] = 0;
+    age[physicalPage] = -1;
+    return 0;
+}
+
+int Pager::stop() {
+    pagerLock->Acquire();
+}
+
+int Pager::start() {
+    pagerLock->Release();
 }

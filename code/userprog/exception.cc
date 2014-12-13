@@ -99,9 +99,7 @@ int kill_process() {
      printf("numPages = %d\n",num_pages);*/
      //printf("kill_process===============\n");
 
-     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
-     delete currentThread->space; // memory manager
      Thread* next;
      Thread* temp;
      /*
@@ -120,7 +118,9 @@ int kill_process() {
          }
      }
      */
-     (void) interrupt->SetLevel(oldLevel);	// re-enable interrupts
+     pager->stop();
+     delete currentThread->space; // memory manager
+     pager->start();
      processManager->Release(currentThread->spid); // process manager
      currentThread->Finish();
      return 1;
