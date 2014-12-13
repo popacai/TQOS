@@ -3,14 +3,20 @@
 #include "memorymanager.h"
 
 Pager::Pager() {
+    int i;
     pagerLock = new Lock("pagerLock");
 
     Tlist = new List;
+    addrspaceList = new AddrSpace*[NumPhysPages];
+    for(i = 0; i < NumPhysPages; i++) {
+        addrspaceList[i] = NULL;
+    }
 }
 
 Pager::~Pager() {
     delete pagerLock;
     delete Tlist;
+    delete addrspaceList;
 }
 
 int Pager::handlePageFault(int virtualAddr) {
@@ -31,7 +37,6 @@ int Pager::handlePageFault(int virtualAddr) {
     }
 
     faultPage->physicalPage = memoryManager->AllocPage();
-
     this->pageIn(faultPage);
     this->addEntry(faultPage);
     faultPage->valid = TRUE;
@@ -64,7 +69,14 @@ int Pager::pageIn(TranslationEntry* entry) {
     //printf("in  page in  2 : machine->pageTable=%d\n", machine->pageTable);
     //TODO: search from backstore
 
-    foundInSwap = entry->addrspace->backstore->RestorePage(entry);
+    int ppn;
+    AddrSpace * space;
+
+    ppn = entry->physicalPage;
+    this->addrspaceList[ppn] = currentThread->space;
+    space = this->addrspaceList[ppn];
+    ASSERT(space != NULL);
+    foundInSwap = space->backstore->RestorePage(entry);
     if (foundInSwap == 0) {
         //printf("found in swap\n");
         return 0;
@@ -83,11 +95,13 @@ int Pager::pageIn(TranslationEntry* entry) {
     //TODO:
     if (entry->virtualPage <= (sharedPages)) {
         stats->numPageIns++;
-        entry->addrspace->loadFromExecFile(entry);
+        //entry->addrspace->loadFromExecFile(entry);
+        space->loadFromExecFile(entry);
     }
 
     if (entry->virtualPage > (sharedPages)) {
-        entry->addrspace->AllocStackPage(entry);
+        // entry->addrspace->AllocStackPage(entry);
+        space->AllocStackPage(entry);
         //printf("alloc stack space\n");
     }
 
@@ -95,7 +109,13 @@ int Pager::pageIn(TranslationEntry* entry) {
 }
 
 int Pager::pageOut(TranslationEntry* entry) {
-    entry->addrspace->backstore->SavePage(entry);
+    int ppn;
+    AddrSpace * space;
+
+    ppn = entry->physicalPage;
+    space = addrspaceList[ppn];
+    space->backstore->SavePage(entry);
+    addrspaceList[ppn] = NULL;
     memoryManager->FreePage(entry->physicalPage);
 }
 /* if dirty?(write back)

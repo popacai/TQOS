@@ -122,7 +122,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
         pageTable[i].reference = 0;
-        pageTable[i].addrspace = this;
+        //pageTable[i].addrspace = this;
         // a separate page, we could set its
         // pages to be read-only
     }

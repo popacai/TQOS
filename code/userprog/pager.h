@@ -45,6 +45,7 @@ private:
     //Use a vector instead
     int addEntry(TranslationEntry* entry);
     TranslationEntry* findLRUEntry();
+    AddrSpace ** addrspaceList; // usd ppn as index, addrspace as element
 };
 
 #endif 
