@@ -4,14 +4,13 @@
 
 Pager::Pager() {
     pagerLock = new Lock("pagerLock");
-    lruheap = new LRUheap;
-    //Tlist = new List;
+
+    Tlist = new List;
 }
 
 Pager::~Pager() {
     delete pagerLock;
-    delete lruheap;
-    //delete Tlist;
+    delete Tlist;
 }
 
 int Pager::handlePageFault(int virtualAddr) {
@@ -23,7 +22,6 @@ int Pager::handlePageFault(int virtualAddr) {
     faultPage = currentThread->space->getTranslationEntry(virtualAddr);
     //printf("handle pagefault for spid=%d,v=%d\n", currentThread->spid, faultPage->virtualPage);
 
-    //printf("*****freepage %d\n", memoryManager->GetFreePageCount());
     if (memoryManager->GetFreePageCount() < 1) {
         //No free page any more
         pageToBePagedOut = this->findLRUEntry();
@@ -106,16 +104,14 @@ int Pager::pageOut(TranslationEntry* entry) {
 */
 
 int Pager::addEntry(TranslationEntry* entry) {
-    //Tlist->Append((void*)entry);
-    this->lruheap->push(entry);
+    Tlist->Append((void*)entry);
     return 0;
 }
 
 TranslationEntry* Pager::findLRUEntry() {
     TranslationEntry* entry;
-    /*do {
+    do {
         entry = (TranslationEntry*)Tlist->Remove();
-    } while (entry->valid == FALSE);*/
-    entry = this->lruheap->pop();
+    } while (entry->valid == FALSE);
     return entry;
 }

@@ -3,7 +3,6 @@
 
 #include "synch.h"
 #include "backstore.h"
-#include "lruheap.h"
 
 class Pager {
 public:
@@ -44,7 +43,6 @@ private:
 
     List* Tlist; //TranslationEntry list, All TranslationEntry in Memory
     //Use a vector instead
-    LRUheap *lruheap;
     int addEntry(TranslationEntry* entry);
     TranslationEntry* findLRUEntry();
 };
