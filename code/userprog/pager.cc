@@ -11,6 +11,16 @@ Pager::Pager() {
     for(i = 0; i < NumPhysPages; i++) {
         addrspaceList[i] = NULL;
     }
+
+    age = new int[NumPhysPages];
+    for (i = 0; i < NumPhysPages; i++) {
+        age[i] = -1;
+    }
+
+    inMemoryPage = new TranslationEntry*[NumPhysPages];
+    for(i = 0; i < NumPhysPages; i++) {
+        inMemoryPage[i] = NULL;
+    }
 }
 
 Pager::~Pager() {
@@ -124,14 +134,32 @@ int Pager::pageOut(TranslationEntry* entry) {
 */
 
 int Pager::addEntry(TranslationEntry* entry) {
-    Tlist->Append((void*)entry);
+    age[entry->physicalPage] = stats->totalTicks;
+    inMemoryPage[entry->physicalPage] = entry;
+    //Tlist->Append((void*)entry);
     return 0;
 }
 
 TranslationEntry* Pager::findLRUEntry() {
     TranslationEntry* entry;
+    int i;
+    int oldest_age, oldest_page;
+    oldest_age = stats->totalTicks;
+    oldest_page = -1;
+    for (i = 0; i < NumPhysPages; i++) {
+        if (oldest_age > age[i]) {
+            oldest_age = age[i];
+            oldest_page = i;
+        }
+    }
+    ASSERT(oldest_page != -1);
+    entry = inMemoryPage[oldest_page];
+    inMemoryPage[oldest_page] = 0;
+    return entry;
+    /*
     do {
         entry = (TranslationEntry*)Tlist->Remove();
     } while (entry->valid == FALSE);
+    */
     return entry;
 }

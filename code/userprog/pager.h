@@ -46,6 +46,8 @@ private:
     int addEntry(TranslationEntry* entry);
     TranslationEntry* findLRUEntry();
     AddrSpace ** addrspaceList; // usd ppn as index, addrspace as element
+    TranslationEntry** inMemoryPage;
+    int* age;
 };
 
 #endif 
