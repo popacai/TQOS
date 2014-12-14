@@ -27,9 +27,6 @@
 // In addition, there are some extra bits for access control (valid and
 // read-only) and some bits for usage information (use and dirty).
 
-#ifdef USER_PROGRAM
-class AddrSpace;
-#endif
 
 class TranslationEntry {
 public:
@@ -41,14 +38,11 @@ public:
     bool readOnly;	// If this bit is set, the user program is not allowed
     // to modify the contents of the page.
 
-    // ATTENTION! AMAZING NEWS! use now is a unsigned int, which is used for storing the tick
-    //bool use;           // This bit is set by the hardware every time the
-    unsigned int use;
-
+    bool use;           // This bit is set by the hardware every time the
     // page is referenced or modified.
     bool dirty;         // This bit is set by the hardware every time the
     // page is modified.
-    int *reference;
+    int *reference; //This is NOT for project3, but for project 2
 };
 
 #endif
