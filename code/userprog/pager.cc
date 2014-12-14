@@ -159,7 +159,7 @@ int Pager::addEntry(TranslationEntry* entry) {
     for (i = 0; i < NumPhysPages; i++) {
         if (inMemoryPage[i] != 0) {
             if ((inMemoryPage[i])->use == 1) {
-                age[i] = stats->totalTicks;
+                age[i] = stats->totalTicks - 1;
             }
             (inMemoryPage[i])->use = 0;       //set all as not used
         }
