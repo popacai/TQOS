@@ -235,7 +235,6 @@ AddrSpace::~AddrSpace()
         else
         */
         {
-            //TODO: important to fix in future
             //printf("currentThread,spid=%d", currentThread->spid);
             //printf("try to free page,v=%d, p=%d, valid=%d\n",
             //        pageTable[i].virtualPage, pageTable[i].physicalPage, pageTable[i].valid);

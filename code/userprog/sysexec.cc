@@ -5,6 +5,8 @@
 #include "addrspace.h"
 #include "processmanager.h"
 
+#define PATH_MAX 64
+
 void
 StartUserProcess(int argv) {
     int i;
@@ -47,30 +49,70 @@ void kexec() {
     int srcPath, len, argc, argv, opt;
     unsigned char ** passArgv;
     unsigned char * path;
+    unsigned char * buffer;
     Thread * t;
     OpenFile * executable;
     AddrSpace * space;
     int spid;
+    int buf_size;
+    int num_pages;
+    unsigned long task_size;
     //printf("Thread name that call EXEC: %s\n", currentThread->getName());
     srcPath = machine->ReadRegister(4);
     argc = machine->ReadRegister(5);
     argv = machine->ReadRegister(6);
     opt = machine->ReadRegister(7);
     // first check the location of filename is valid
-    /*
-    if(!fname_addrck((char*)srcPath)){
-        ASSERT(false);
+    if(argc < 0 || opt < 0 || opt > 0x111b) {
+        printf("argc or opt invalid! \n");
+        machine->WriteRegister(2, 0); // return err code 0
+        PushPC();
+        return;
     }
-    */
-    len = ustrlen((int)srcPath);
-    path = new unsigned char[len+1];
-    u2kmemcpy(path, srcPath, len + 1);
-    /*
-    if (fexist_ck(path) == -1) {
-        ASSERT(false);
+    // check file name memory addr 
+    num_pages = machine->pageTableSize;
+    task_size = num_pages * PageSize;
+    if((unsigned long)srcPath > task_size) {
+        printf("file name memory addr invalid!\n");
+        machine->WriteRegister(2, 0); // return err code 0
+        PushPC();
+        return;
     }
-    */
-    //printf("user str : %s, len: %d \n", path, len);
+    if(task_size - (unsigned long)srcPath < PATH_MAX) {
+        // adjust len to max size
+        len = task_size - (unsigned long)srcPath;
+    }
+    else {
+        len = PATH_MAX;
+    }
+    
+    // check file name 
+    buffer = new unsigned char[len + 2];
+    u2kmemcpy(buffer, srcPath,  len + 1);
+    buffer[len + 1] = '\0';
+    buf_size = strlen((char*)buffer);
+    printf("buf size: %d\n", buf_size);
+    if(buf_size < 1 || buf_size > len) {
+        delete buffer;
+        printf("file path invalid\n");
+        machine->WriteRegister(2, 0); // return err code 0
+        PushPC();
+        return;
+    }
+    path = new unsigned char[buf_size + 1];
+    strcpy((char*)path, (char*)buffer);
+    delete buffer;
+    
+    // check file exist
+    if(!fexist_ck(path)) {
+        printf("file does not exist\n");
+        delete path;
+        machine->WriteRegister(2, 0); // return err code 0
+        PushPC();
+        return;
+    }
+   
+    // in P3, just support argc == 0
     if(argc == 0) {
         passArgv = NULL;
     }

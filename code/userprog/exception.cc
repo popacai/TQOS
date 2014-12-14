@@ -100,8 +100,8 @@ int kill_process() {
     //printf("kill_process===============\n");
 
 
-    Thread* next;
-    Thread* temp;
+    //Thread* next;
+    //Thread* temp;
     /*
 
     next = currentThread->nextThread;
@@ -118,6 +118,7 @@ int kill_process() {
         }
     }
     */
+    //stop pager, we can't let the pager to page in and page out
     pager->stop();
     delete currentThread->space; // memory manager
     pager->start();
@@ -219,9 +220,9 @@ ExceptionHandler(ExceptionType which)
                 break;
             }
             */
-            size = ustrlen(name);
-            path = new unsigned char[size+1];
-            u2kmemcpy(path, name, size+1);
+            //size = ustrlen(name);
+            //path = new unsigned char[size+1];
+            //u2kmemcpy(path, name, size+1);
             /*
             if (fexist_ck(path) <= 0) {
                 printf("name not exits\n");
@@ -230,7 +231,7 @@ ExceptionHandler(ExceptionType which)
                 break;
             }
             */
-            argv_len = 0;
+            //argv_len = 0;
             /*
             for (i = 0; i < argc_; i++) {
                 j = 0;

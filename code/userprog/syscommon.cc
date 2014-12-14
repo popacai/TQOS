@@ -19,7 +19,7 @@ int fexist_ck(unsigned char* name) {
     openFile = fileSystem->Open(name_signed);
     if (openFile == NULL) {
         printf("file cannot be found\n");
-        return -1;
+        return 0;
     }
     return ret;
 }

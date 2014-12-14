@@ -18,7 +18,7 @@ int main()
     Exec((char*)(invalid_addr), 0, 0, 0);
     Yield();
     Write("exec5exec\n", 11, ConsoleOutput);
-    Exec("../test/thread_yield", 1, (char*)(invalid_addr), 0);
+    //Exec("../test/thread_yield", 1, (char*)(invalid_addr), 0);
     Yield();
     Write("exec6exec\n", 11, ConsoleOutput);
     Exec("../test/threa", 0, 0, 0);
