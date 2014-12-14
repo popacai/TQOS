@@ -45,7 +45,7 @@ public:
     // page is referenced or modified.
     bool dirty;         // This bit is set by the hardware every time the
     // page is modified.
-    int *reference;
+    int *reference; //This is NOT for project3 but for the project2
 };
 
 #endif
