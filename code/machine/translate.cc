@@ -252,8 +252,7 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
         return BusErrorException;
     }
 
-    //entry->use = TRUE;		// set the use, dirty bits
-    entry->use = stats->totalTicks;
+    entry->use = TRUE;		// set the use, dirty bits
     if (writing)
         entry->dirty = TRUE;
     *physAddr = pageFrame * PageSize + offset;
