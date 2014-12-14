@@ -42,6 +42,7 @@ int Pager::handlePageFault(int virtualAddr) {
     if (memoryManager->GetFreePageCount() < 1) {
         //No free page any more
         pageToBePagedOut = this->findLRUEntry();
+        //fprintf(stderr, "is dirty?                          %d\n", pageToBePagedOut->dirty);
         stats->numPageOuts++;
         this->pageOut(pageToBePagedOut);
         pageToBePagedOut->valid = FALSE;

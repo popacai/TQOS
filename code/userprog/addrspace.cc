@@ -98,6 +98,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
         return -1; // TODO: handle fail
     }
     */
+    //printf("total page number : %d\n", numPages);
     pageTable = new TranslationEntry[numPages];
     // to run anything too big --
     // at least until we have
