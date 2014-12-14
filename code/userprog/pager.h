@@ -55,9 +55,6 @@ private:
     AddrSpace ** addrspaceList; // usd ppn as index, addrspace as element
     TranslationEntry** inMemoryPage;
     int* age;
-
-    int random;
-    int seed;
 };
 
 #endif

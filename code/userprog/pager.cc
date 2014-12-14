@@ -3,8 +3,6 @@
 #include "memorymanager.h"
 
 #define LRU
-//#define RANDOM
-
 Pager::Pager() {
     int i;
     pagerLock = new Lock("pagerLock");
@@ -24,9 +22,6 @@ Pager::Pager() {
     for(i = 0; i < NumPhysPages; i++) {
         inMemoryPage[i] = 0;
     }
-
-    random = 17623793;
-    seed = 782723;
 }
 
 Pager::~Pager() {
@@ -155,34 +150,10 @@ int Pager::addEntry(TranslationEntry* entry) {
     //printf("%d\n", entry->physicalPage);
     ASSERT(age[entry->physicalPage] == -1);
     ASSERT(inMemoryPage[entry->physicalPage] == 0);
-
-    //LRU & FIFO
-    //Set the age with the ticks
-#ifndef RANDOM
     age[entry->physicalPage] = stats->totalTicks;
-#endif
-
-    //RANDOM
-    //Set the age randomly
-#ifdef RANDOM
-    age[entry->physicalPage] = random % NumPhysPages;
-
-    unsigned int a = 1588635695, m = 429496U, q = 2, r = 1117695901;
-    int h, l, val;
-    h = 2787348127;
-    l = 0;
-
-    seed = a*(seed % q) - r*(seed / q);
-    val = (seed / m) % (h - l) + l;
-
-    random = val;
-#endif
-
     inMemoryPage[entry->physicalPage] = entry;
     //Tlist->Append((void*)entry);
 
-    //FOR the LRU, we need to set all use as 0
-    //Wait for CPU to set use as 1
 #ifdef LRU
     int i;
     for (i = 0; i < NumPhysPages; i++) {
@@ -196,9 +167,6 @@ int Pager::addEntry(TranslationEntry* entry) {
 }
 
 TranslationEntry* Pager::findLRUEntry() {
-
-    //FIFO
-    //pick up the lowest oldest_age;
 #ifndef LRU
     TranslationEntry* entry;
     int i;
@@ -216,10 +184,9 @@ TranslationEntry* Pager::findLRUEntry() {
     inMemoryPage[oldest_page] = 0;
     age[oldest_page] = -1;
     return entry;
-#else
-    //LRU
-    //check the use bit first. Pick up one page from used page
-    //if all of them are used bit. Pick up the oldest page
+#endif
+
+#ifdef LRU
     TranslationEntry* entry;
     int i;
     int oldest_age, oldest_page;
@@ -261,8 +228,8 @@ TranslationEntry* Pager::findLRUEntry() {
     do {
         entry = (TranslationEntry*)Tlist->Remove();
     } while (entry->valid == FALSE);
-    return entry;
     */
+    return entry;
 }
 
 int Pager::removePhysicalPage(int physicalPage) {
