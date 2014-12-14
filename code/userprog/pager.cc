@@ -2,12 +2,12 @@
 #include "system.h"
 #include "memorymanager.h"
 
+// If LRU is not define, it will work as FIFO
 #define LRU
 Pager::Pager() {
     int i;
     pagerLock = new Lock("pagerLock");
 
-    Tlist = new List;
     addrspaceList = new AddrSpace*[NumPhysPages];
     for(i = 0; i < NumPhysPages; i++) {
         addrspaceList[i] = NULL;
@@ -26,8 +26,9 @@ Pager::Pager() {
 
 Pager::~Pager() {
     delete pagerLock;
-    delete Tlist;
     delete addrspaceList;
+    delete age;
+    delete inMemoryPage;
 }
 
 int Pager::handlePageFault(int virtualAddr) {
@@ -70,20 +71,13 @@ int Pager::handlePageFault(int virtualAddr) {
 */
 int Pager::pageIn(TranslationEntry* entry) {
     int freePhysicalPage;
-    int section;
+    //int section;
     int totalPages, stackPages, sharedPages;
 
     int foundInSwap;
-    //section = 1 as stack
-    //section = 0 as data+code
     //printf("in  page in  1 : machine->pageTable=%d\n", machine->pageTable);
 
-    //freePhysicalPage = memoryManager->AllocPage();
-
-    //entry->physicalPage = freePhysicalPage;
-    //printf("in  page in  2 : machine->pageTable=%d\n", machine->pageTable);
-    //TODO: search from backstore
-
+    //search from backstore
     int ppn;
     AddrSpace * space;
 
@@ -113,16 +107,13 @@ int Pager::pageIn(TranslationEntry* entry) {
     stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared
     sharedPages = totalPages - stackPages;
 
-    //TODO:
     if (entry->virtualPage < (sharedPages)) {
         stats->numPageIns++;
-        //entry->addrspace->loadFromExecFile(entry);
         entry->dirty = FALSE;
         space->loadFromExecFile(entry);
     }
 
     if (entry->virtualPage >= (sharedPages)) {
-        // entry->addrspace->AllocStackPage(entry);
         entry->dirty = FALSE;
         space->AllocStackPage(entry);
         //printf("alloc stack space\n");
@@ -191,7 +182,7 @@ TranslationEntry* Pager::findLRUEntry() {
 
     if (oldest_page == -1) {
         //All pages are used
-        //research all pages and pick up the oldest page
+        //re-search all pages and pick up the oldest page
         for (i = 0; i < NumPhysPages; i++) {
             if (inMemoryPage[i] == 0)
                 continue;

@@ -36,25 +36,23 @@ private:
     */
 
     int pageOut(TranslationEntry* entry);
-    /* if dirty?(write back)
-          write to backstore
+    /*  write to backstore, backstore will check whether it is a dirty page and decide whether write back
         free this page(memory manager)
     */
 
     BackStore *backstore;
 
-
     Lock* pagerLock;
 
-    //TODO: I need a counter here
-
-    List* Tlist; //TranslationEntry list, All TranslationEntry in Memory
-    //Use a vector instead
+    // LRU related functions & data structure
     int addEntry(TranslationEntry* entry);
     TranslationEntry* findLRUEntry();
-    AddrSpace ** addrspaceList; // usd ppn as index, addrspace as element
     TranslationEntry** inMemoryPage;
-    int* age;
+    int* age; //this should be renamed as ticks. But for the history reason, we keep it as "age"
+              //we will page out the lowest-age page
+
+    // We need addrspace to load in pages
+    AddrSpace ** addrspaceList; // usd ppn as index, addrspace as element
 };
 
 #endif

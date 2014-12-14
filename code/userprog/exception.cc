@@ -100,8 +100,8 @@ int kill_process() {
     //printf("kill_process===============\n");
 
 
-    Thread* next;
-    Thread* temp;
+    //Thread* next;
+    //Thread* temp;
     /*
 
     next = currentThread->nextThread;
@@ -118,6 +118,7 @@ int kill_process() {
         }
     }
     */
+    //stop pager, we can't let the pager to page in and page out
     pager->stop();
     delete currentThread->space; // memory manager
     pager->start();

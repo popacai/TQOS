@@ -24,7 +24,6 @@ public:
 
 
 private:
-    vector<TranslationEntry*> pageIndexs;
     vector<unsigned char*> pages;
     char* fileName;
     OpenFile* swapFile;
