@@ -91,7 +91,7 @@ void kexec() {
     u2kmemcpy(buffer, srcPath,  len + 1);
     buffer[len + 1] = '\0';
     buf_size = strlen((char*)buffer);
-    printf("buf size: %d\n", buf_size);
+    //printf("buf size: %d\n", buf_size);
     if(buf_size < 1 || buf_size > len) {
         delete buffer;
         printf("file path invalid\n");
