@@ -158,6 +158,9 @@ int Pager::addEntry(TranslationEntry* entry) {
     int i;
     for (i = 0; i < NumPhysPages; i++) {
         if (inMemoryPage[i] != 0) {
+            if ((inMemoryPage[i])->use == 1) {
+                age[i] = stats->totalTicks;
+            }
             (inMemoryPage[i])->use = 0;       //set all as not used
         }
     }
@@ -167,24 +170,6 @@ int Pager::addEntry(TranslationEntry* entry) {
 }
 
 TranslationEntry* Pager::findLRUEntry() {
-#ifndef LRU
-    TranslationEntry* entry;
-    int i;
-    int oldest_age, oldest_page;
-    oldest_age = stats->totalTicks;
-    oldest_page = -1;
-    for (i = 0; i < NumPhysPages; i++) {
-        if (oldest_age > age[i]) {
-            oldest_age = age[i];
-            oldest_page = i;
-        }
-    }
-    ASSERT(oldest_page != -1);
-    entry = inMemoryPage[oldest_page];
-    inMemoryPage[oldest_page] = 0;
-    age[oldest_page] = -1;
-    return entry;
-#endif
 
 #ifdef LRU
     TranslationEntry* entry;
@@ -223,7 +208,27 @@ TranslationEntry* Pager::findLRUEntry() {
     inMemoryPage[oldest_page] = 0;
     age[oldest_page] = -1;
     return entry;
-#endif
+#else
+    int i;
+    TranslationEntry* entry;
+    int oldest_age, oldest_page;
+    oldest_age = stats->totalTicks - 1;
+    oldest_page = -1;
+    for (i = 0; i < NumPhysPages; i++) {
+        if (oldest_age > age[i]) {
+            oldest_age = age[i];
+            oldest_page = i;
+        }
+    }
+    ASSERT(oldest_page != -1);
+    entry = inMemoryPage[oldest_page];
+    inMemoryPage[oldest_page] = 0;
+    age[oldest_page] = -1;
+    return entry;
+
+
+
+#endif 
     /*
     do {
         entry = (TranslationEntry*)Tlist->Remove();
