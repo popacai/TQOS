@@ -21,6 +21,8 @@
 #define UserStackSize		1024 	// increase this as necessary!
 #define ArgvSize		128     // add space for argv
 
+class BackStore;
+
 class AddrSpace {
 public:
     AddrSpace();	// Create an address space,

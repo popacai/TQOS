@@ -5,9 +5,12 @@
 
 #include "machine.h"
 #include "bitmap.h"
+#include "addrspace.h"
 #include <vector>
 
 using namespace std;
+
+class AddrSpace;
 
 class BackStore {
 public:
