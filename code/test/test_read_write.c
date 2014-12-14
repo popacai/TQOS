@@ -6,7 +6,7 @@ int main() {
     for (;;) {
         Read(ch, 10, ConsoleInput);
         Write(ch, 10, ConsoleOutput);
-        for (i = 0; i < 10; i++){
+        for (i = 0; i < 10; i++) {
             if (ch[i] == 'q')
                 return 0;
         }

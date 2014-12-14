@@ -1,14 +1,14 @@
 #include "synchconsole.h"
 #include "system.h"
 
-static void 
-read_done (int arg){
+static void
+read_done (int arg) {
     SynchConsole* synchconsole_t = (SynchConsole*) arg;
     synchconsole_t->ReadDone();
 }
 
-static void 
-write_done (int arg){
+static void
+write_done (int arg) {
     SynchConsole* synchconsole_t = (SynchConsole*) arg;
     synchconsole_t->WriteDone();
 }
@@ -35,7 +35,7 @@ char SynchConsole::GetChar() {
     redirect_stdin = (currentThread->join & 0x4);
     if (redirect_stdin) {
         value = bufferpipe->pop();
-    //fprintf(stderr, "%x, %c\n", value, value);
+        //fprintf(stderr, "%x, %c\n", value, value);
     } else {
         read_lock->Acquire();
         read_semaphore->P();
@@ -73,7 +73,7 @@ void test_synchconsole()
     char ch;
     ch = 'a';
     while (ch != 'q') {
-        ch = synchconsole->GetChar(); 
+        ch = synchconsole->GetChar();
         synchconsole->PutChar(ch);
     }
 }

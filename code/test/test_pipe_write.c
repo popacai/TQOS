@@ -7,7 +7,7 @@ int main() {
         Read(ch, 10, ConsoleInput);
         Yield();
         Write(ch, 10, ConsoleOutput);
-        for (i = 0; i < 10; i++){
+        for (i = 0; i < 10; i++) {
             if (ch[i] == 'q')
                 return 0;
         }

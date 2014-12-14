@@ -15,7 +15,7 @@ StartUserProcess(int argv) {
     char** _argv;
     if(argv != 0) {
         _argv = (char**)argv;
-        argc = (int)_argv[0]; 
+        argc = (int)_argv[0];
     }
     currentThread->space->InitRegisters();
     currentThread->space->RestoreState();
@@ -32,14 +32,14 @@ StartUserProcess(int argv) {
         argvPtrAddr = machine->ReadRegister(StackReg) + 16 - UserStackSize + ArgvSize;
         machine->WriteRegister(4, argc);
         machine->WriteRegister(5, argvPtrAddr);
-        // delete 
+        // delete
         for(i = 1; i <= argc; i++) {
             delete _argv[i];
         }
         delete _argv;
     }
     machine->Run();
-    
+
     ASSERT(false);
 }
 
@@ -51,7 +51,7 @@ void kexec() {
     OpenFile * executable;
     AddrSpace * space;
     int spid;
-    //printf("Thread name that call EXEC: %s\n", currentThread->getName()); 
+    //printf("Thread name that call EXEC: %s\n", currentThread->getName());
     srcPath = machine->ReadRegister(4);
     argc = machine->ReadRegister(5);
     argv = machine->ReadRegister(6);
@@ -106,7 +106,7 @@ void kexec() {
     space->backstore = new BackStore(space, spid);
     //printf("new spid: %d\n", spid);
     t->spid = spid;
-    t->Fork(StartUserProcess, (int)passArgv); 
-    currentThread->Yield(); 
+    t->Fork(StartUserProcess, (int)passArgv);
+    currentThread->Yield();
     PushPC();
 }

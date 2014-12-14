@@ -6,10 +6,10 @@ class Lock;
 #include "synch.h"
 
 
-class ProcessManager{
+class ProcessManager {
 public:
-    ProcessManager(int size); // Table in description	
-    ~ProcessManager();	
+    ProcessManager(int size); // Table in description
+    ~ProcessManager();
     int Alloc(void *object);
     void *Get(int index);
     void Release(int index);

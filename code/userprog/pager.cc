@@ -1,4 +1,4 @@
-#include "pager.h" 
+#include "pager.h"
 #include "system.h"
 #include "memorymanager.h"
 
@@ -36,13 +36,14 @@ int Pager::handlePageFault(int virtualAddr) {
     //fprintf(stderr, "=====start=====\n");
     TranslationEntry* pageToBePagedOut;
     TranslationEntry* faultPage;
-    
+
     faultPage = currentThread->space->getTranslationEntry(virtualAddr);
     //fprintf(stderr, "handle pagefault for spid=%d,v=%d\n", currentThread->spid, faultPage->virtualPage);
 
     if (memoryManager->GetFreePageCount() < 1) {
         //No free page any more
         pageToBePagedOut = this->findLRUEntry();
+        //fprintf(stderr, "is dirty?                          %d\n", pageToBePagedOut->dirty);
         stats->numPageOuts++;
         this->pageOut(pageToBePagedOut);
         pageToBePagedOut->valid = FALSE;
@@ -61,11 +62,11 @@ int Pager::handlePageFault(int virtualAddr) {
     return 0;
 }
 
- /*
-   get a page from memory manager
-   if  seach for backstore
-   elif Load in data if in execute space
-   elif in stack space, allocate free
+/*
+  get a page from memory manager
+  if  seach for backstore
+  elif Load in data if in execute space
+  elif in stack space, allocate free
 */
 int Pager::pageIn(TranslationEntry* entry) {
     int freePhysicalPage;
@@ -105,11 +106,11 @@ int Pager::pageIn(TranslationEntry* entry) {
         //printf("not found in swap\n");
     }
     */
-    
 
-    //shared page is the code+data. 
+
+    //shared page is the code+data.
     totalPages = currentThread->space->getNumPages();
-    stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared 
+    stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared
     sharedPages = totalPages - stackPages;
 
     //TODO:
@@ -153,14 +154,14 @@ int Pager::addEntry(TranslationEntry* entry) {
     inMemoryPage[entry->physicalPage] = entry;
     //Tlist->Append((void*)entry);
 
-    #ifdef LRU
+#ifdef LRU
     int i;
     for (i = 0; i < NumPhysPages; i++) {
         if (inMemoryPage[i] != 0) {
             (inMemoryPage[i])->use = 0;       //set all as not used
         }
     }
-    #endif 
+#endif
 
     return 0;
 }
@@ -232,7 +233,7 @@ TranslationEntry* Pager::findLRUEntry() {
 }
 
 int Pager::removePhysicalPage(int physicalPage) {
-    
+
     ASSERT(inMemoryPage[physicalPage] != 0);
     inMemoryPage[physicalPage] = 0;
     age[physicalPage] = -1;

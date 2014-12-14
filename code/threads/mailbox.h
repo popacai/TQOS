@@ -10,7 +10,9 @@ public:
     void Send(int message); // increase the resource
     void Receive(int* message);          // decrease the resource
     //Lock* getBufferLock() {return buffer_lock;}
-    int* getBuffer() {return buffer;}
+    int* getBuffer() {
+        return buffer;
+    }
 private:
     int* buffer;
     char* name;
@@ -21,12 +23,12 @@ private:
     Lock* buffer_lock;
     Condition* mailbox_cond;
     Lock* mailbox_lock;
-    
+
     int resource;
     int b_count;
     //Semaphore* sema_S;
     //Semaphore* sema_R;
-};    
+};
 
 #endif
 

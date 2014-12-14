@@ -13,26 +13,26 @@ void test_release_not_held_by_itself() {
     Lock* lock = new Lock("lock_not_held");
     Thread* t = new Thread("t3");
     printf("Current lock name is %s\n",lock->getName());
-    printf("Current thread name is %s\n",currentThread->getName());    
+    printf("Current thread name is %s\n",currentThread->getName());
     lock->Acquire();
     printf("Process A has already aquire this lock\n");   // test for some thread first release the lock
     t->Fork(release_not_held_lock, (int)lock);
     // The process B has release the lock, since the queue is empty for the lock, it will successfully acquire twice for Process A
     currentThread->Yield();
     // If no Yield(), the parents will acquire the lock twice and append to the queue
-    // The current code in Lock::Release will check "ASSERT" the holder of lock, Process B cannot release  
+    // The current code in Lock::Release will check "ASSERT" the holder of lock, Process B cannot release
     lock->Acquire();
     printf("Process A aquires the same lock twice\n");
     currentThread->Yield();
-}   
+}
 
 void release_lock_twice(int args) {
     Lock* lock = (Lock*) args;
     ASSERT(lock->isHeld());
     ASSERT(lock->isHeldByCurrentThread());
     printf("Acquire the lock held by itself!\n");
-    lock->Acquire(); 
-}     
+    lock->Acquire();
+}
 
 void test_require_lock_twice() {
     Lock* lock = new Lock("require_twice_lock");
@@ -50,7 +50,7 @@ void release_not_held_lock_by_allthreads(int args) {
 
 void test_release_not_held_by_allthreads() {
     Lock* lock = new Lock("lock_not_held_by_allthreads");
-    int args = (int) lock; 
+    int args = (int) lock;
     release_not_held_lock_by_allthreads(args);
 }
 
@@ -89,7 +89,7 @@ void lock_and_increase(int arg) {
 
         currentThread->Yield();
         (*value)++;
-		// printf("currentThread=%s,%d\n", currentThread->getName(), *value);
+        // printf("currentThread=%s,%d\n", currentThread->getName(), *value);
         second_value_in_loop = *value;
         ASSERT(second_value_in_loop == first_value_in_loop + 1);
 
@@ -125,7 +125,7 @@ int test_single_lock() {
 void i_am_not_holder(int arg) {
     Lock* lock = (Lock*) arg;
     printf("currentThread=%s, lock->is_held_by_current=%d\n", \
-            currentThread->getName(), lock->isHeldByCurrentThread());
+           currentThread->getName(), lock->isHeldByCurrentThread());
     ASSERT(lock->isHeldByCurrentThread() == false);
     currentThread->Yield();
 }
@@ -139,9 +139,9 @@ int test_holder() {
     t->Fork(i_am_not_holder, args);
 
     printf("currentThread=%s, lock->is_held_by_current=%d\n",
-            currentThread->getName(), lock->isHeldByCurrentThread());
+           currentThread->getName(), lock->isHeldByCurrentThread());
     ASSERT (lock->isHeldByCurrentThread() == true);
-    for (int i = 0; i < 10; i++){
+    for (int i = 0; i < 10; i++) {
         currentThread->Yield();
     }
     return 1;
@@ -151,7 +151,7 @@ int test_delete() {      //to test the case that delete a lock that is held
     Lock *lock = new Lock("simplelock");
     lock->Acquire();    //the main thread held the lock
     printf("currentThread=%s, lock->is_held_by_current=%d\n",
-            currentThread->getName(), lock->isHeldByCurrentThread());
+           currentThread->getName(), lock->isHeldByCurrentThread());
     printf("currentThread=%s, is going to delete the lock\n", currentThread->getName());
     delete lock;    //the lock is deleted by the main thread which used to held it
     //printf("Delete the lock which is held.\n");

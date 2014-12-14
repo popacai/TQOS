@@ -13,6 +13,6 @@ void kjoin() {
     joineeThread = (Thread*)(processManager->Get(joineeId));
     joineeThread -> Join();
     exitStatus = joineeThread->exitStatusCode;
-    machine->WriteRegister(2, exitStatus); // return exit code 
+    machine->WriteRegister(2, exitStatus); // return exit code
     PushPC();
 }

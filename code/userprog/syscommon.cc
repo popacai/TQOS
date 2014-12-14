@@ -20,7 +20,7 @@ int fexist_ck(unsigned char* name) {
     if (openFile == NULL) {
         printf("file cannot be found\n");
         return -1;
-    } 
+    }
     return ret;
 }
 
@@ -37,7 +37,7 @@ int bufck(int buffer, int size) {
     if (buffsize > task_size) {
         printf("buffer last exceed user address space\n");
         return -1;
-    } 
+    }
     return 1;
 }
 
@@ -48,7 +48,7 @@ int RW_bufck(int buffer, int size) {
     task_size = num_pages * PageSize;
     buffsize = (unsigned long)buffer + (unsigned long)size;
     //printf("user address space size = %ld\n",task_size);
-    
+
     if (buffsize > task_size || buffer < 0) {
         printf("buffer last exceed user address space\n");
         return -1;
@@ -57,7 +57,7 @@ int RW_bufck(int buffer, int size) {
         printf("size is less than zero\n");
         return -1;
     }
- 
+
     return 1;
 }
 
@@ -79,7 +79,7 @@ int fname_addrck(char* name) {
     if (task_size - (unsigned long)name < path_max) {
         len = task_size - (unsigned long)name;
     }
-    
+
     do {
         if (!(machine->ReadMem((unsigned long)name + n, 1, &value))) {
             printf("physical address cannot be accessed\n");
@@ -91,12 +91,12 @@ int fname_addrck(char* name) {
         printf("null string\n");
         return -1;
     }
-    
+
     if (value) {
         printf("filename string is not end up with a null\n");
         return -1;
     }
-    
+
     if (n > 0) {
         if (n < len || (n == len && !value)) {
             return n;
@@ -110,13 +110,13 @@ int fname_addrck(char* name) {
         printf("name is empty\n");
         return -1; // no name
     }
-          
+
 }
 
 void PushPC() {
     machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
     machine->WriteRegister(PCReg, machine->ReadRegister(PCReg) + 4);
-    machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg) + 4); 
+    machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg) + 4);
 }
 
 int ustrlen(int src) {
@@ -124,7 +124,7 @@ int ustrlen(int src) {
     n = 0;
 
     do {
-        while (!(machine->ReadMem(src + n, 1, &value))){}
+        while (!(machine->ReadMem(src + n, 1, &value))) {}
         /* Old Code
         if (!(machine->ReadMem(src + n, 1, &value)))
           return -1;
@@ -164,16 +164,16 @@ int u2kmemread(int src) {
 }
 
 int u2kmatrixcpy(unsigned char** dst, int src, int n) {
-   int i, len;
-   int addr;
+    int i, len;
+    int addr;
 
-   for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         machine->ReadMem(src + i*4,4,&addr);
         len = ustrlen(addr);
         dst[i] = new unsigned char[len + 1];
         u2kmemcpy(dst[i],addr,len + 1);
-   }
-   return i;
+    }
+    return i;
 }
 
 int k2umemcpy(int dst, unsigned char* src, int n) {

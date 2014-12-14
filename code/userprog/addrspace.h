@@ -39,8 +39,12 @@ public:
 
     void SaveState();			// Save/restore address space-specific
     void RestoreState();		// info on a context switch
-    unsigned int getNumPages() {return numPages;}
-    TranslationEntry* getPageTable() {return pageTable;}
+    unsigned int getNumPages() {
+        return numPages;
+    }
+    TranslationEntry* getPageTable() {
+        return pageTable;
+    }
     OpenFile* executable;
 
     // Get the entry from the virtual addr
@@ -61,7 +65,7 @@ public:
     // return 0 as success, return -1 as fail, return 1 as not found
     // Call backstore directly
     // int RestoreFromSwap(int virtualPageIndex);
-    
+
     BackStore* backstore;
 
 private:

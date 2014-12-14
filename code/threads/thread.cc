@@ -115,20 +115,20 @@ Thread::Fork(VoidFunctionPtr func, int arg)
     (void) interrupt->SetLevel(oldLevel);
 }
 
-void 
+void
 Thread::Join() {
-   ASSERT(currentThread != this);
-   ASSERT((this->join & 1) && this->forked && !this->joined);
-   this->joined = 1;
-   this->conditionLock->Acquire();
-   if(currentThread->getPriority() > this->getPriority()) {
-       this->donatePriority(currentThread->getPriority());
-   }
-   while(!done)
-       this->joinCondition->Wait(conditionLock); // Assume "currentThread" is parent.
-   this->end = 1;
-   this->joinCondition->Signal(conditionLock);
-   this->conditionLock->Release();
+    ASSERT(currentThread != this);
+    ASSERT((this->join & 1) && this->forked && !this->joined);
+    this->joined = 1;
+    this->conditionLock->Acquire();
+    if(currentThread->getPriority() > this->getPriority()) {
+        this->donatePriority(currentThread->getPriority());
+    }
+    while(!done)
+        this->joinCondition->Wait(conditionLock); // Assume "currentThread" is parent.
+    this->end = 1;
+    this->joinCondition->Signal(conditionLock);
+    this->conditionLock->Release();
 }
 
 //----------------------------------------------------------------------
@@ -336,18 +336,18 @@ Thread::StackAllocate (VoidFunctionPtr func, int arg)
 
 void
 Thread::setPriority(int newPriority) {
-    this->priority = newPriority; 
+    this->priority = newPriority;
     this->originalPriority = newPriority;
 }
 
 void
 Thread::donatePriority(int newPriority) {
-    this->priority= newPriority; 
+    this->priority= newPriority;
 }
 
 void
 Thread::clearDonatedPriority() {
-    this->priority = this->originalPriority; 
+    this->priority = this->originalPriority;
 }
 
 int
