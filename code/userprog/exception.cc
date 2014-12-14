@@ -219,9 +219,9 @@ ExceptionHandler(ExceptionType which)
                 break;
             }
             */
-            size = ustrlen(name);
-            path = new unsigned char[size+1];
-            u2kmemcpy(path, name, size+1);
+            //size = ustrlen(name);
+            //path = new unsigned char[size+1];
+            //u2kmemcpy(path, name, size+1);
             /*
             if (fexist_ck(path) <= 0) {
                 printf("name not exits\n");
@@ -230,7 +230,7 @@ ExceptionHandler(ExceptionType which)
                 break;
             }
             */
-            argv_len = 0;
+            //argv_len = 0;
             /*
             for (i = 0; i < argc_; i++) {
                 j = 0;

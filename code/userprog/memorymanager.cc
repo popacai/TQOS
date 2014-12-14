@@ -28,7 +28,9 @@ MemoryManager::AllocPage(int flag)
         pagenum = this->bitmap->Find();
     }
     if(pagenum != -1) {
+        memoryLock->Acquire();
         freePageCount--;
+        memoryLock->Release();
     }
     return pagenum;
 }
