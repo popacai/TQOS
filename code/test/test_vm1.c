@@ -8,6 +8,8 @@ int main() {
     int i;
     for(i = 0; i < 41600; i++) {
         c = *k++;
+        //k = 41599;
+        //c = *k;
     }
     return 0;
 }

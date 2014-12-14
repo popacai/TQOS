@@ -9,5 +9,5 @@ int a(int level) {
 }
 int main() {
     a(0);
-    Halt();
+    //Halt();
 }

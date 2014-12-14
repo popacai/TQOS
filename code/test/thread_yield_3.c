@@ -4,8 +4,8 @@ int
 main()
 {
     int i;
-    for (i = 0; i < 100000; i++)
+    for (i = 0; i < 10000; i++)
         Yield();
-    Write("\n",1,ConsoleOutput);
+    Write("1",1,ConsoleOutput);
     return 1;
 }

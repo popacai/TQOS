@@ -19,7 +19,14 @@ int main() {
             Yield();
         }    
     }
-    Exec("../test/thread_yield_3",0,0,0);
+    /*
+    for (i = 0; i < 1000; i++) {
+        Yield();
+    }
+    for (i = 0; i < 10; i++) {
+        Exec("../test/thread_yield_3",0,0,0);
+    }
+    */
     Write("1",1,ConsoleOutput);   
  //   Halt();
 }
