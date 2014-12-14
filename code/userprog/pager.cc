@@ -2,6 +2,7 @@
 #include "system.h"
 #include "memorymanager.h"
 
+#define LRU
 Pager::Pager() {
     int i;
     pagerLock = new Lock("pagerLock");
@@ -19,7 +20,7 @@ Pager::Pager() {
 
     inMemoryPage = new TranslationEntry*[NumPhysPages];
     for(i = 0; i < NumPhysPages; i++) {
-        inMemoryPage[i] = NULL;
+        inMemoryPage[i] = 0;
     }
 }
 
@@ -151,10 +152,21 @@ int Pager::addEntry(TranslationEntry* entry) {
     age[entry->physicalPage] = stats->totalTicks;
     inMemoryPage[entry->physicalPage] = entry;
     //Tlist->Append((void*)entry);
+
+    #ifdef LRU
+    int i;
+    for (i = 0; i < NumPhysPages; i++) {
+        if (inMemoryPage[i] != 0) {
+            (inMemoryPage[i])->use = 0;       //set all as not used
+        }
+    }
+    #endif 
+
     return 0;
 }
 
 TranslationEntry* Pager::findLRUEntry() {
+#ifndef LRU
     TranslationEntry* entry;
     int i;
     int oldest_age, oldest_page;
@@ -171,6 +183,46 @@ TranslationEntry* Pager::findLRUEntry() {
     inMemoryPage[oldest_page] = 0;
     age[oldest_page] = -1;
     return entry;
+#endif
+
+#ifdef LRU
+    TranslationEntry* entry;
+    int i;
+    int oldest_age, oldest_page;
+    //check use bit. If not used then, pick the oldest one
+    oldest_age = stats->totalTicks;
+    oldest_page = -1;
+    for (i = 0; i < NumPhysPages; i++) {
+        if (inMemoryPage[i] == 0)
+            continue;
+        if (inMemoryPage[i]->use == 0) {
+            if (oldest_age > age[i]) {
+                oldest_age = age[i];
+                oldest_page = i;
+            }
+        }
+    }
+
+    if (oldest_page == -1) {
+        //All pages are used
+        //research all pages and pick up the oldest page
+        for (i = 0; i < NumPhysPages; i++) {
+            if (inMemoryPage[i] == 0)
+                continue;
+            ASSERT(inMemoryPage[i]->use == 1);
+            if (oldest_age > age[i]) {
+                oldest_age = age[i];
+                oldest_page = i;
+            }
+        }
+    }
+
+    ASSERT(oldest_page != -1);
+    entry = inMemoryPage[oldest_page];
+    inMemoryPage[oldest_page] = 0;
+    age[oldest_page] = -1;
+    return entry;
+#endif
     /*
     do {
         entry = (TranslationEntry*)Tlist->Remove();
