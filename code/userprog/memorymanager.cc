@@ -21,17 +21,15 @@ MemoryManager::AllocPage(int flag)
     int pagenum;
     if(flag) {
         memoryLock->Acquire();
-        pagenum = this->bitmap->Find();
-        memoryLock->Release();
     }
-    else {
-        pagenum = this->bitmap->Find();
-    }
+    pagenum = this->bitmap->Find();
     if(pagenum != -1) {
-        memoryLock->Acquire();
         freePageCount--;
+    }
+    if(flag) {
         memoryLock->Release();
     }
+    
     return pagenum;
 }
 
