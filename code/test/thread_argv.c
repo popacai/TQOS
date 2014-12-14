@@ -11,7 +11,7 @@ main(char argc, char** argv)
     Write("\n", 2, ConsoleOutput);
     Write(arg2, 5, ConsoleOutput);
     Write("\n", 2, ConsoleOutput);
-   
+
     for(j = 0; j < 500; j++)
         Yield();
     Exit(1);

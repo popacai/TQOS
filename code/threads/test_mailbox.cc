@@ -9,7 +9,7 @@ void test_send(int _args) {
     Mailbox* mailbox = (Mailbox*) args[0];
     mailbox->Send(message);
 }
-    
+
 void test_receive(int _args) {
     int* args = (int*) _args;
     int* message = new int;
@@ -24,12 +24,12 @@ int test_simple_sendreceive() {
     int* args = new int[2];
     args[0] = (int)mailbox;
     args[1] = message;
-    
+
     Thread* t;
     t = new Thread("send");
     t->Fork(test_send, (int)args);
     currentThread->Yield();
-    
+
     printf("Send is wait.\n");
 
     t = new Thread("receive");
@@ -47,12 +47,12 @@ int test_simple_receivesend() {
     int* args = new int[2];
     args[0] = (int)mailbox;
     args[1] = message;
-    
+
     Thread* t;
     t = new Thread("receive");
     t->Fork(test_receive, (int)args);
     currentThread->Yield();
-    
+
     printf("Receive is wait.\n");
 
     t = new Thread("send");
@@ -63,7 +63,7 @@ int test_simple_receivesend() {
 
     return 1;
 }
-    
+
 void mult_sender_one_receiver_sender(int _args) {
     int* args = (int*)_args;
     Mailbox* mailbox = (Mailbox*)args[0];
@@ -85,11 +85,11 @@ void mult_sender_one_receiver_receiver(int _args) {
         ASSERT(sum == 10);
         printf("SUCCESS\n");
     }
-}   
+}
 
 
 
-    
+
 
 void test_mult_sender_one_receiver() {
     /*
@@ -98,10 +98,10 @@ void test_mult_sender_one_receiver() {
     */
 
     Mailbox* mailbox = new Mailbox("mailbox");
-    
+
     int* args = new int[2];
     args[0] = (int)mailbox;
-    
+
     Thread* t;
 
     args[1] = 3;
@@ -110,7 +110,7 @@ void test_mult_sender_one_receiver() {
     currentThread->Yield();
     currentThread->Yield();
     currentThread->Yield();
-    
+
     t = new Thread("receiver2");
     t->Fork(mult_sender_one_receiver_receiver,(int)args);
     currentThread->Yield();
@@ -119,7 +119,7 @@ void test_mult_sender_one_receiver() {
 
     t = new Thread("receiver1");
     t->Fork(mult_sender_one_receiver_receiver,(int)args);
-    currentThread->Yield();    
+    currentThread->Yield();
     currentThread->Yield();
     currentThread->Yield();
 
@@ -143,7 +143,7 @@ void test_mult_sender_one_receiver() {
     args = new int[2];
     args[0] = (int)mailbox;
     args[1] = 1;
-    t->Fork(mult_sender_one_receiver_sender,(int)args);   
+    t->Fork(mult_sender_one_receiver_sender,(int)args);
     currentThread->Yield();
     currentThread->Yield();
     currentThread->Yield();
@@ -152,12 +152,12 @@ void test_mult_sender_one_receiver() {
     args[0] = (int)mailbox;
     args[1] = 4;
     t = new Thread("sender4");
-    t->Fork(mult_sender_one_receiver_sender,(int)args);   
+    t->Fork(mult_sender_one_receiver_sender,(int)args);
     currentThread->Yield();
-    
+
     t = new Thread("receiver4");
     t->Fork(mult_sender_one_receiver_receiver,(int)args);
-    for (int i = 0; i < 1000; i++){
+    for (int i = 0; i < 1000; i++) {
         currentThread->Yield();
     }
     ASSERT(turn == 4);

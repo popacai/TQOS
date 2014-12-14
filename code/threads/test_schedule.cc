@@ -90,7 +90,7 @@ int test_priority_cond() {
     lock->Release();
 
     t_high->Join();
-    
+
     lock->Acquire();
     cond->Signal(lock);  //signal cond. expect low to run
     lock->Release();
@@ -134,7 +134,7 @@ int test_priority_broadcast() {
     t_high->Join();
     printf("SUCCESS\n");
     return 1;
- 
+
 }
 
 void P(int args) {
@@ -231,7 +231,7 @@ int test_inherient_lock() {
     Thread* t_medium = new Thread("medium", 1);
     t_medium->setPriority(20);
     t_medium->Fork(loop_10_times_no_lock, args);
-    
+
     Thread* t_high = new Thread("high", 1);
     t_high->setPriority(30);
     t_high->Fork(loop_10_times, args);

@@ -28,12 +28,12 @@ char cmd[16];
 #define RIGHT 3
 
 typedef struct worm_t {
-  int head;
-  int nsegs;
-  int ticks;
-  int dir;
-  char row[NUM_WORM_SEGS];
-  char col[NUM_WORM_SEGS];
+    int head;
+    int nsegs;
+    int ticks;
+    int dir;
+    char row[NUM_WORM_SEGS];
+    char col[NUM_WORM_SEGS];
 } worm_t;
 
 unsigned int seed;
@@ -41,182 +41,186 @@ unsigned int seed;
 void
 irand_init()
 {
-  seed = 93186752;
+    seed = 93186752;
 }
 
 /* a very poor random number generator */
 unsigned int
 irand(int l, int h)
 {
-  unsigned int a = 1588635695, m = 429496U, q = 2, r = 1117695901;
-  unsigned int val;
+    unsigned int a = 1588635695, m = 429496U, q = 2, r = 1117695901;
+    unsigned int val;
 
-  seed = a*(seed % q) - r*(seed / q);
-  val = (seed / m) % (h - l) + l;
- 
-  return val;
+    seed = a*(seed % q) - r*(seed / q);
+    val = (seed / m) % (h - l) + l;
+
+    return val;
 }
 
-#define clear_screen() CMD3('[', '2', 'J'); 
+#define clear_screen() CMD3('[', '2', 'J');
 
 void
 position(char row, char col)
 {
-  int rowh, rowl, colh, coll;
+    int rowh, rowl, colh, coll;
 
-  /* split into two digits, convert to ascii digits */
-  rowh = row / 10; rowl = row % 10; 
-  rowh = '0' + rowh; rowl = '0' + rowl;
-  colh = col / 10; coll = col % 10; 
-  colh = '0' + colh; coll = '0' + coll;
+    /* split into two digits, convert to ascii digits */
+    rowh = row / 10;
+    rowl = row % 10;
+    rowh = '0' + rowh;
+    rowl = '0' + rowl;
+    colh = col / 10;
+    coll = col % 10;
+    colh = '0' + colh;
+    coll = '0' + coll;
 
-  CMD7('[', rowh, rowl, ';', colh, coll, 'H');
+    CMD7('[', rowh, rowl, ';', colh, coll, 'H');
 }
 
 void
 worm_init(worm_t *worm)
 {
-  int i, j;
+    int i, j;
 
-  worm->nsegs = NUM_WORM_SEGS;
-  worm->head = worm->nsegs - 1;
-  worm->ticks = irand(2, 6);
-  worm->dir = RIGHT;
-  for (i = 0; i < worm->nsegs; i++) {
-    worm->row[i] = 1;
-    worm->col[i] = i + 6;
-  }
+    worm->nsegs = NUM_WORM_SEGS;
+    worm->head = worm->nsegs - 1;
+    worm->ticks = irand(2, 6);
+    worm->dir = RIGHT;
+    for (i = 0; i < worm->nsegs; i++) {
+        worm->row[i] = 1;
+        worm->col[i] = i + 6;
+    }
 }
 
 void
 worm_draw(worm_t *worm)
 {
-  int w;
+    int w;
 
-  for (w = 0; w < worm->nsegs; w++) {
-    position(worm->row[w], worm->col[w]);
-    putch('X');
-  }
+    for (w = 0; w < worm->nsegs; w++) {
+        position(worm->row[w], worm->col[w]);
+        putch('X');
+    }
 }
 
 void
 worm_erase(worm_t *worm)
 {
-  int w;
+    int w;
 
-  for (w = 0; w < worm->nsegs; w++) {
-    position(worm->row[w], worm->col[w]);
-    putch(' ');
-  }
+    for (w = 0; w < worm->nsegs; w++) {
+        position(worm->row[w], worm->col[w]);
+        putch(' ');
+    }
 }
 
 void
 worm_redirect(worm_t *worm)
 {
-  int head = worm->head;
+    int head = worm->head;
 
-  worm->ticks--;
+    worm->ticks--;
 
-  /* if we hit a wall, immediately change direction */
-  if (worm->row[head] == 0 && worm->dir == UP)
-    worm->ticks = 0;
-  if (worm->row[head] == MAX_ROWS && worm->dir == DOWN)
-    worm->ticks = 0;
-  if (worm->col[head] == 0 && worm->dir == LEFT)
-    worm->ticks = 0;
-  if (worm->col[head] == MAX_COLS && worm->dir == RIGHT)
-    worm->ticks = 0;
+    /* if we hit a wall, immediately change direction */
+    if (worm->row[head] == 0 && worm->dir == UP)
+        worm->ticks = 0;
+    if (worm->row[head] == MAX_ROWS && worm->dir == DOWN)
+        worm->ticks = 0;
+    if (worm->col[head] == 0 && worm->dir == LEFT)
+        worm->ticks = 0;
+    if (worm->col[head] == MAX_COLS && worm->dir == RIGHT)
+        worm->ticks = 0;
 
-  if (worm->ticks <= 0) {
-    /* choose a new direction */
+    if (worm->ticks <= 0) {
+        /* choose a new direction */
 
-    int newdir;
+        int newdir;
 
-    while (1) {
-      newdir = irand(0, 4);
+        while (1) {
+            newdir = irand(0, 4);
 
-      /* bounce off walls */
-      if (worm->row[head] == 0 && newdir == UP)
-	continue;
-      if (worm->row[head] == MAX_ROWS && newdir == DOWN)
-	continue;
-      if (worm->col[head] == 0 && newdir == LEFT)
-	continue;
-      if (worm->col[head] == MAX_COLS && newdir == RIGHT)
-	continue;
+            /* bounce off walls */
+            if (worm->row[head] == 0 && newdir == UP)
+                continue;
+            if (worm->row[head] == MAX_ROWS && newdir == DOWN)
+                continue;
+            if (worm->col[head] == 0 && newdir == LEFT)
+                continue;
+            if (worm->col[head] == MAX_COLS && newdir == RIGHT)
+                continue;
 
-      /* do not go in reverse */
-      if (worm->dir == UP && newdir == DOWN)
-	continue;
-      if (worm->dir == DOWN && newdir == UP)
-	continue;
-      if (worm->dir == LEFT && newdir == RIGHT)
-	continue;
-      if (worm->dir == RIGHT && newdir == LEFT)
-	continue;
+            /* do not go in reverse */
+            if (worm->dir == UP && newdir == DOWN)
+                continue;
+            if (worm->dir == DOWN && newdir == UP)
+                continue;
+            if (worm->dir == LEFT && newdir == RIGHT)
+                continue;
+            if (worm->dir == RIGHT && newdir == LEFT)
+                continue;
 
-      break;
+            break;
+        }
+
+        worm->dir = newdir;
+        worm->ticks = irand(2, 6);
     }
-
-    worm->dir = newdir;
-    worm->ticks = irand(2, 6);
-  }
 }
 
 void
 worm_advance(worm_t *worm)
 {
-  int tail;
+    int tail;
 
-  /* clear tail */
-  tail = (worm->head + 1) % worm->nsegs;
+    /* clear tail */
+    tail = (worm->head + 1) % worm->nsegs;
 
-  worm_erase(worm);
-  worm_redirect(worm);
+    worm_erase(worm);
+    worm_redirect(worm);
 
-  /* advance head (tail position is the new head position) */
-  switch (worm->dir) {
-  case UP:
-    worm->row[tail] = worm->row[worm->head] - 1;
-    worm->col[tail] = worm->col[worm->head];
-    break;
-  case DOWN:
-    worm->row[tail] = worm->row[worm->head] + 1;
-    worm->col[tail] = worm->col[worm->head];
-    break;
-  case LEFT:
-    worm->row[tail] = worm->row[worm->head];
-    worm->col[tail] = worm->col[worm->head] - 1;
-    break;
-  case RIGHT:
-    worm->row[tail] = worm->row[worm->head];
-    worm->col[tail] = worm->col[worm->head] + 1;
-    break;
-  default:
-    break;
-  }
+    /* advance head (tail position is the new head position) */
+    switch (worm->dir) {
+    case UP:
+        worm->row[tail] = worm->row[worm->head] - 1;
+        worm->col[tail] = worm->col[worm->head];
+        break;
+    case DOWN:
+        worm->row[tail] = worm->row[worm->head] + 1;
+        worm->col[tail] = worm->col[worm->head];
+        break;
+    case LEFT:
+        worm->row[tail] = worm->row[worm->head];
+        worm->col[tail] = worm->col[worm->head] - 1;
+        break;
+    case RIGHT:
+        worm->row[tail] = worm->row[worm->head];
+        worm->col[tail] = worm->col[worm->head] + 1;
+        break;
+    default:
+        break;
+    }
 
-  worm->head = tail;
-  worm_draw(worm);
+    worm->head = tail;
+    worm_draw(worm);
 }
 
 int
 main (int argc, char *argv[])
 {
-  int i, j, k;
-  worm_t worm_data, *worm = &worm_data ;
+    int i, j, k;
+    worm_t worm_data, *worm = &worm_data ;
 
-  irand_init();
+    irand_init();
 
-  clear_screen();
+    clear_screen();
 
-  worm_init(worm);
-  worm_draw(worm);
+    worm_init(worm);
+    worm_draw(worm);
 
-  while (1) {
-    /* spin */
-    for (j = 0; j < 15000; j++);
-    /* next move */
-    worm_advance(worm);
-  }
+    while (1) {
+        /* spin */
+        for (j = 0; j < 15000; j++);
+        /* next move */
+        worm_advance(worm);
+    }
 }

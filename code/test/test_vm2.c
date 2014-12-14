@@ -1,5 +1,5 @@
 #include "syscall.h"
-// modify data part, most page replacement should be dirty. 
+// modify data part, most page replacement should be dirty.
 int arr[10000];
 
 int main() {

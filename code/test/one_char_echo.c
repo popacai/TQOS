@@ -1,7 +1,7 @@
 #include "syscall.h"
 
 int main() {
-    char a; 
+    char a;
     Read(&a, 1, ConsoleInput);
     Write(&a, 1, ConsoleOutput);
     Halt();

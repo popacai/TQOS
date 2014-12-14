@@ -7,7 +7,7 @@ int main() {
     int k = 0;
     int i;
     for(i = 1; i < 5; i++) {
-    // do nothing here
+        // do nothing here
     }
     return 0;
 }

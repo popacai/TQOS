@@ -10,7 +10,7 @@ void PushPC();
 /* ustrlen()
  * while(*str != NUL)
  *   i++;
- * return i; 
+ * return i;
  */
 int ustrlen(int src);
 

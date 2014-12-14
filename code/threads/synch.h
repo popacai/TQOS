@@ -44,7 +44,7 @@ public:
         return name;   // debugging assist
     }
 
-    int getValue(){
+    int getValue() {
         return value;
     }
 
@@ -86,7 +86,7 @@ public:
     // Condition variable ops below.
     bool isHeld() {
         return this->held;
-    }    
+    }
 
 private:
     char* name;				// for debugging

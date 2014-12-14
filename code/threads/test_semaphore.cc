@@ -1,10 +1,10 @@
 #include "test_semaphore.h"
 
 
-void run_thread_v(int args){
+void run_thread_v(int args) {
     // execute semaphore V()
     Semaphore* semaphore = (Semaphore*) args;
-    for (int i=0; i<2; i++){
+    for (int i=0; i<2; i++) {
         semaphore->V();
         printf("currentThread=%s is %s,%d\n", currentThread->getName(),"producer",semaphore->getValue());
     }
@@ -14,17 +14,17 @@ void run_thread_v(int args){
     currentThread->Yield();
 }
 
-void run_thread_p(int args){
+void run_thread_p(int args) {
     // execute semaphore P()
     Semaphore* semaphore = (Semaphore*) args;
-    for (int i=0; i<3; i++){
+    for (int i=0; i<3; i++) {
         semaphore->P();
         printf("currentThread=%s is %s,%d\n", currentThread->getName(),"consumer",semaphore->getValue());
     }
     printf("Test Finish!");
 }
 
-int test_semaphore(){
+int test_semaphore() {
     Semaphore* semaphore1 = new Semaphore("simplesemaphore",0);
 
     Thread *t1 = new Thread("t1");
@@ -33,4 +33,4 @@ int test_semaphore(){
     Thread *t2 = new Thread("t2");
     t2->Fork(run_thread_p, (int)semaphore1);
     return 1;
-}    
+}

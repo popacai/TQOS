@@ -73,7 +73,7 @@ AddrSpace::Initialize(OpenFile *executable)
     return Initialize(executable, 1); // default has lock
 }
 
-int 
+int
 AddrSpace::Initialize(OpenFile *executable, int flag)
 {
     NoffHeader noffH;
@@ -110,7 +110,7 @@ AddrSpace::Initialize(OpenFile *executable, int flag)
     // first, set up the translation
     for (i = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-        // For Project 2, virtual page number should be i 
+        // For Project 2, virtual page number should be i
         // There is no real virtual memory, just assign a physical memory page
         //pageTable[i].physicalPage = memoryManager->AllocPage(flag);
         pageTable[i].physicalPage = 0;
@@ -152,7 +152,7 @@ int AddrSpace::CopyCurrentSpace() {
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
 
     numPages = currentThread->space->getNumPages();
-    stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared 
+    stackPages = UserStackSize / PageSize; //div Round Down. The rest of the stack pages will be shared
     sharedPages = numPages - stackPages;
 
     if(stackPages > memoryManager->GetFreePageCount() || numPages > NumPhysPages) {
@@ -161,7 +161,7 @@ int AddrSpace::CopyCurrentSpace() {
 
     //printf("numPages=%d\n", numPages);
     //printf("sharedPages=%d\n", sharedPages);
-    //printf("stackPages=%d\n", stackPages); 
+    //printf("stackPages=%d\n", stackPages);
 
     //init new Entries
     pageTable = new TranslationEntry[numPages];
@@ -204,8 +204,8 @@ int AddrSpace::CopyCurrentSpace() {
 
         memset(&machine->mainMemory[pageTable[i].physicalPage * PageSize], 'A', PageSize);
         /*
-        memcpy((void*)(machine->mainMemory + newPhysicalPage * PageSize), 
-                      (void*)(machine->mainMemory + oldPhysicalPage * PageSize), 
+        memcpy((void*)(machine->mainMemory + newPhysicalPage * PageSize),
+                      (void*)(machine->mainMemory + oldPhysicalPage * PageSize),
                       PageSize);
         */
 
@@ -237,7 +237,7 @@ AddrSpace::~AddrSpace()
         {
             //TODO: important to fix in future
             //printf("currentThread,spid=%d", currentThread->spid);
-            //printf("try to free page,v=%d, p=%d, valid=%d\n", 
+            //printf("try to free page,v=%d, p=%d, valid=%d\n",
             //        pageTable[i].virtualPage, pageTable[i].physicalPage, pageTable[i].valid);
             if (pageTable[i].valid) {
                 //printf("free page,v=%d, p=%d\n", pageTable[i].virtualPage, pageTable[i].physicalPage);
@@ -342,7 +342,7 @@ int AddrSpace::loadFromExecFile(TranslationEntry* entry)
     unsigned int codeVirtStart = noffH.code.virtualAddr;
     //printf("codeVirtStart = %u\n",codeVirtStart);
     //printf("pagein\n");
-    
+
     vpn = entry->virtualPage;
     ppn = entry->physicalPage;
 

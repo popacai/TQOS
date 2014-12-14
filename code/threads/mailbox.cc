@@ -8,17 +8,17 @@ Mailbox::Mailbox(char* debugName)
     buffer = new int;
     resource = 0;
     b_count = 0;
-    
+
     empty= new Semaphore("empty",1);
     full =new Semaphore("full",0);
 
-    mailbox_cond = new Condition("mailbox_cond"); 
+    mailbox_cond = new Condition("mailbox_cond");
     mailbox_lock = new Lock("mailbox_lock");
     buffer_cond = new Condition("send_cond");
     buffer_lock = new Lock("send_lock");
 }
 
-Mailbox::~Mailbox(){
+Mailbox::~Mailbox() {
     delete buffer;
     delete mailbox_cond;
     delete mailbox_lock;
@@ -26,14 +26,14 @@ Mailbox::~Mailbox(){
     delete buffer_lock;
 }
 
-void Mailbox::Send(int message){
+void Mailbox::Send(int message) {
     mailbox_lock->Acquire();
     resource++;
     if (resource > 0) {
         mailbox_cond->Wait(mailbox_lock);
     }
-    else{
-        
+    else {
+
         mailbox_cond->Signal(mailbox_lock);
     }
     mailbox_lock->Release();
@@ -53,13 +53,13 @@ void Mailbox::Send(int message){
 
 }
 
-void Mailbox::Receive(int* message){
+void Mailbox::Receive(int* message) {
     mailbox_lock->Acquire();
     resource--;
     if (resource < 0) {
         mailbox_cond->Wait(mailbox_lock);
     }
-    else{
+    else {
         mailbox_cond->Signal(mailbox_lock);
     }
     mailbox_lock->Release();

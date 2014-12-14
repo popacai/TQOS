@@ -1,7 +1,7 @@
 #include "synch.h"
 
 
-class Whale{
+class Whale {
 public:
     Whale(char* debugName);		// initialize condition to
     // "no one waiting"

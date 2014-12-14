@@ -11,7 +11,7 @@ BackStore::BackStore(AddrSpace * space, int spid) {
     int virtualPageCount;
     int fileSize;
     virtualPageCount = space->getNumPages();
-    fileSize = virtualPageCount * PageSize; 
+    fileSize = virtualPageCount * PageSize;
     //fileName = itoa(spid);
     fileName = new char[20];
     sprintf(fileName, "%d", spid);
@@ -20,7 +20,7 @@ BackStore::BackStore(AddrSpace * space, int spid) {
     if(!success) {
         printf("Create file not successful!\n");
         ASSERT(0);
-    } 
+    }
     swapFile = fileSystem->Open(fileName);
     vpnIndices = new BitMap(virtualPageCount);
 }
@@ -54,28 +54,28 @@ int BackStore::SavePage(TranslationEntry* entry) {
     //printf("not dirty\n");
     // no need to update backing store
     return 0;
-    
-/* mock
-    int ppn;
-    unsigned char* pageData;
 
-    ppn = entry->physicalPage;
-    size_t i;
-    for (i = 0; i < pageIndexs.size(); i++) {
-        if (pageIndexs[i] == entry) {
-            memcpy(pages[i], &(machine->mainMemory[ppn * PageSize]), PageSize); 
-            return 0;
+    /* mock
+        int ppn;
+        unsigned char* pageData;
+
+        ppn = entry->physicalPage;
+        size_t i;
+        for (i = 0; i < pageIndexs.size(); i++) {
+            if (pageIndexs[i] == entry) {
+                memcpy(pages[i], &(machine->mainMemory[ppn * PageSize]), PageSize);
+                return 0;
+            }
         }
-    }
 
-    pageData = new unsigned char[PageSize];
+        pageData = new unsigned char[PageSize];
 
-    pageIndexs.push_back(entry);
-    memcpy(pageData, &(machine->mainMemory[ppn * PageSize]), PageSize);
-    pages.push_back(pageData);
+        pageIndexs.push_back(entry);
+        memcpy(pageData, &(machine->mainMemory[ppn * PageSize]), PageSize);
+        pages.push_back(pageData);
 
-    return 0;
-*/
+        return 0;
+    */
 }
 
 int BackStore::RestorePage(TranslationEntry* entry) {
@@ -101,34 +101,34 @@ int BackStore::RestorePage(TranslationEntry* entry) {
         //printf("not in backing store\n");
         return 1; // not in backing store, should load from img
     }
-/* mock
-    int ppn;
-    //unsigned char* pageData;
-    size_t i;
-    ppn = entry->physicalPage;
+    /* mock
+        int ppn;
+        //unsigned char* pageData;
+        size_t i;
+        ppn = entry->physicalPage;
 
-    for (i = 0; i < pageIndexs.size(); i++) {
-        if (pageIndexs[i] == entry) {
-            memcpy(&(machine->mainMemory[ppn * PageSize]), pages[i], PageSize); 
-            return 0;
+        for (i = 0; i < pageIndexs.size(); i++) {
+            if (pageIndexs[i] == entry) {
+                memcpy(&(machine->mainMemory[ppn * PageSize]), pages[i], PageSize);
+                return 0;
+            }
         }
-    }
-    return 1;
-*/
+        return 1;
+    */
 }
 
-int test_backstore(){
+int test_backstore() {
     AddrSpace * space = new AddrSpace();
     OpenFile * executable = fileSystem->Open("../test/snake");
     space -> Initialize(executable, 1);
     BackStore * backstore = new BackStore(space, 100);
     TranslationEntry * testPage = new TranslationEntry();
-   
+
     testPage->physicalPage = 3;
     testPage->virtualPage = 2;
     testPage->dirty = 1;
 
-    
+
     memset(&(machine->mainMemory[3*PageSize]), 1, PageSize);
     printf("before save: %d\n", machine->mainMemory[40*PageSize]);
     backstore->SavePage(testPage);
@@ -136,7 +136,7 @@ int test_backstore(){
     printf("after save: %d\n", machine->mainMemory[40*PageSize]);
     backstore->RestorePage(testPage);
     printf("after restore: %d\n", machine->mainMemory[40*PageSize]);
-    
+
 }
 
 

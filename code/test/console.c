@@ -5,7 +5,7 @@ int main() {
     for (;;) {
         Read(&ch, 1, ConsoleInput);
         Write(&ch, 1, ConsoleOutput);
-        if (ch == 'q'){
+        if (ch == 'q') {
             return 0;
         }
     }

@@ -83,14 +83,14 @@ Scheduler::FindNextToRun ()
     copy->Append(frontThread);
     while(!readyList->IsEmpty() ) {
         iterator = (Thread *)readyList->Remove();
-        if(minimumKey > (0-iterator->getPriority())){
+        if(minimumKey > (0-iterator->getPriority())) {
             // if same priority, select the first one.
             minimumKey = 0 - iterator->getPriority();
         }
         copy->Append(iterator);
     }
-        // need to pop the max priority thread to the front
-        // use and only use the stupid list API
+    // need to pop the max priority thread to the front
+    // use and only use the stupid list API
     int found = 0;
     while(!copy->IsEmpty()) {
         iterator = (Thread*)copy->Remove();

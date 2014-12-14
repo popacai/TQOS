@@ -8,10 +8,10 @@ class Lock;
 #include "synch.h"
 
 
-class MemoryManager{
+class MemoryManager {
 public:
-    MemoryManager(int numPages);	
-    ~MemoryManager();	
+    MemoryManager(int numPages);
+    ~MemoryManager();
     int AllocPage(int flag = 1);
     void FreePage(int physPageNum);
     bool PageIsAllocated(int physPageNum);

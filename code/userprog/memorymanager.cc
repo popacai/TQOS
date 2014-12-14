@@ -2,7 +2,7 @@
 #include "system.h"
 #include "bitmap.h"
 
-MemoryManager::MemoryManager(int numPages) 
+MemoryManager::MemoryManager(int numPages)
 {
     this->freePageCount = numPages;
     this->bitmap = new BitMap(numPages);
@@ -15,13 +15,13 @@ MemoryManager::~MemoryManager()
     delete memoryLock;
 }
 
-int 
+int
 MemoryManager::AllocPage(int flag)
 {
     int pagenum;
     if(flag) {
         memoryLock->Acquire();
-        pagenum = this->bitmap->Find(); 
+        pagenum = this->bitmap->Find();
         memoryLock->Release();
     }
     else {
@@ -51,7 +51,7 @@ MemoryManager::GetFreePageCount()
     return this->freePageCount;
 }
 
-bool 
+bool
 MemoryManager::PageIsAllocated(int physPageNum)
 {
     memoryLock->Acquire();
@@ -74,5 +74,5 @@ MemoryManager::RandomInitializationTest()
             this->freePageCount--;
             printf("DEBUG RAMDOM INIT TEST: mark page %d\n", j);
         }
-    } 
+    }
 }

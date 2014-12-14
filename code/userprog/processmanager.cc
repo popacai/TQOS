@@ -1,7 +1,7 @@
 #include "processmanager.h"
 #include "system.h"
 
-ProcessManager::ProcessManager(int size) 
+ProcessManager::ProcessManager(int size)
 {
     int i;
     indexArray = (void**) new int[size];
@@ -26,7 +26,7 @@ ProcessManager::~ProcessManager()
  * return index + 1 as spid
  * return 0 if no space
  */
-int 
+int
 ProcessManager::Alloc(void *object)
 {
     lock->Acquire();
@@ -49,7 +49,7 @@ ProcessManager::Get(int index)
     lock->Acquire();
     void * process;
     if(index >= 1 && index <= arraySize) {
-    	process = indexArray[index-1];
+        process = indexArray[index-1];
     }
     else {
         process = NULL;
@@ -78,7 +78,7 @@ ProcessManager::TestForExit()
     for(i = 0; i < arraySize; i++) {
         if(indexArray[i] != NULL) result++;
     }
-    if(result == 0) ASSERT(false); 
+    if(result == 0) ASSERT(false);
     lock->Release();
     return result;
 }

@@ -1,4 +1,4 @@
-#ifndef PAGER_H 
+#ifndef PAGER_H
 #define PAGER_H
 
 #include "synch.h"
@@ -15,7 +15,7 @@ public:
             //Find LRU Page from Tlist();
             pageout one page(pageNum)
        //Insert the page into the Tlist
-       page into this 
+       page into this
     */
 
     // In killing a process, we need to remove the entries in the Memory
@@ -26,13 +26,13 @@ public:
     int start();
 
 private:
- 
+
     int pageIn(TranslationEntry* entry);
-     /*
-       get a page from memory manager
-       if  seach for backstore
-       elif Load in data if in execute space
-       elif in stack space, allocate free
+    /*
+      get a page from memory manager
+      if  seach for backstore
+      elif Load in data if in execute space
+      elif in stack space, allocate free
     */
 
     int pageOut(TranslationEntry* entry);
@@ -42,10 +42,10 @@ private:
     */
 
     BackStore *backstore;
-    
+
 
     Lock* pagerLock;
-    
+
     //TODO: I need a counter here
 
     List* Tlist; //TranslationEntry list, All TranslationEntry in Memory
@@ -57,6 +57,6 @@ private:
     int* age;
 };
 
-#endif 
+#endif
 
 

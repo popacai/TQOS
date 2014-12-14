@@ -28,7 +28,7 @@ Thread* find_next_thread() {
     }
     return previous;
 }
-    
+
 int kfork(int func_ptr) {
     Thread* t;
     Thread* the_end_of_currentThread;

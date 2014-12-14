@@ -24,7 +24,7 @@
 //	memory, and jump to it.
 //----------------------------------------------------------------------
 
-MemoryManager* memoryManager; 
+MemoryManager* memoryManager;
 ProcessManager* processManager;
 SynchConsole* synchconsole;
 BufferPipe* bufferpipe;
@@ -65,7 +65,7 @@ StartProcess(char *filename)
 
     space->InitRegisters();		// set the initial register values
     space->RestoreState();		// load page table register
-    
+
     int spid = processManager->Alloc((void*)currentThread);
     ASSERT(spid == 1);
     currentThread->spid = spid;

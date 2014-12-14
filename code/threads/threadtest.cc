@@ -82,8 +82,8 @@ ThreadTest()
         test_single_lock();
         break;
     case 12:
-    	test_holder();
-    	break;
+        test_holder();
+        break;
     case 21:
         test_delete();
         break;
@@ -92,7 +92,7 @@ ThreadTest()
         break;
     case 23:
         test_broadcast_cond();
-        break;       
+        break;
     case 26:
         test_release_not_held_by_allthreads();
         break;
@@ -106,14 +106,14 @@ ThreadTest()
         test_nowaiter(1); //broadcast with no waiter
         break;
     case 31:
-    	test_single_cond();
+        test_single_cond();
         break;
     case 32:
         test_signal_cond();
-    	break;
+        break;
     case 100:
-    	test_simple_whale();
-    	break;
+        test_simple_whale();
+        break;
     case 101:
         test_no_whale();
         break;

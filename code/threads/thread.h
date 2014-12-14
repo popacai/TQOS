@@ -114,7 +114,7 @@ public:
     }
     void setPriority(int newPriority);
     void donatePriority(int newPriority);
-    void clearDonatedPriority(); 
+    void clearDonatedPriority();
     int getPriority();
     int join;
     int forked;
